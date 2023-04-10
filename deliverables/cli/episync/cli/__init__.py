@@ -10,6 +10,8 @@ import platform
 import sys
 import warnings
 from pathlib import Path
+from fastapi import FastAPI
+from pydantic import BaseModel
 
 import click
 import pandas as pd
@@ -91,6 +93,92 @@ def cli(context, debug, ini):
 def ddl():
     """Commands to create and manage EpiSync Data Dictionary"""
     pass
+
+
+@cli.group()
+def publish():
+    """Commands to publish EpiSync CSV data"""
+    pass
+
+
+@cli.group()
+def validate():
+    """Commands to validate EpiSync CSV data"""
+    pass
+
+
+@cli.group()
+def test():
+    """Commands to test EpiSync"""
+    pass
+
+
+
+@cli.group()
+def generate():
+    """Commands to generate EpiSync CSV data"""
+    pass
+
+
+@cli.group()
+def api():
+    """EpiSync API server commands"""
+    pass
+
+
+def get_edd_json():
+    db = CONFIG.get("database", "uri")
+
+    engine = create_engine(db, echo=True)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+
+        conn = engine.raw_connection()
+        try:
+            dd_rows = conn.execute(
+                "select column, name, description,type, rule, cardinality  from episync_dd"
+            )
+
+            row_list = list(dd_rows)
+            return [
+                    {
+                        "column": row[0].strip() if row[0] else "",
+                        "name": row[1].strip() if row[1] else "",
+                        "type": row[3].strip() if row[3] else "",
+                        "rule": row[4].strip() if row[4] else "",
+                        "cardinality": row[5].strip() if row[5] else "",
+                        "description": row[2].strip() if row[2] else "",
+                    }
+                    for row in row_list
+                ]
+        finally:
+            conn.close()
+
+
+@api.command()
+def start():
+    """Start EpiSync Data Dictionary Server"""
+    import uvicorn
+    from pydantic import BaseModel
+
+    app = FastAPI(title="EpiSync",
+    description="EpiSync Data Dictionary API",
+    version="0.0.1",)
+
+    class EpiSyncDataField(BaseModel):
+        column: str
+        name: str
+        rule: str
+        type: str
+        cardinality: str
+        description: str
+
+    @app.get("/edd/", response_model=list[EpiSyncDataField], tags=["dictionary"])
+    async def show():
+        return get_edd_json()
+
+    uvicorn.run(app, host="0.0.0.0", port=8014)
 
 
 @ddl.command(name="show")
