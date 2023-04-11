@@ -9,9 +9,10 @@ import os
 import platform
 import sys
 import warnings
+from io import StringIO
 from pathlib import Path
-from fastapi import FastAPI
 from pydantic import BaseModel
+from fastapi import FastAPI, File, UploadFile
 
 import click
 import pandas as pd
@@ -113,7 +114,6 @@ def test():
     pass
 
 
-
 @cli.group()
 def generate():
     """Commands to generate EpiSync CSV data"""
@@ -161,10 +161,15 @@ def start():
     """Start EpiSync Data Dictionary Server"""
     import uvicorn
     from pydantic import BaseModel
+    from fastapi.encoders import jsonable_encoder
 
     app = FastAPI(title="EpiSync",
     description="EpiSync Data Dictionary API",
     version="0.0.1",)
+
+    class EpiSyncValidation(BaseModel):
+        validates: bool
+        message: str
 
     class EpiSyncDataField(BaseModel):
         column: str
@@ -174,9 +179,35 @@ def start():
         cardinality: str
         description: str
 
-    @app.get("/edd/", response_model=list[EpiSyncDataField], tags=["dictionary"])
+    @app.get("/dictionary/", response_model=list[EpiSyncDataField], tags=["dictionary"])
     async def show():
         return get_edd_json()
+
+    @app.post("/validate/", response_model=EpiSyncValidation, tags=["validate"])
+    async def validate(file: UploadFile = File(...)) -> EpiSyncValidation:
+        df = pd.read_csv(file.file)
+        print(df.iloc[[0]])
+
+        print("DF", df)
+        db = CONFIG.get("database", "uri")
+        print(db)
+        engine = create_engine(db, echo=True)
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+
+            conn = engine.raw_connection()
+            try:
+                df.to_sql("episync_mmg", conn, if_exists="append", index=False)
+
+                response = EpiSyncValidation(validates=True, message="All rows validate")
+            except Exception as ex:
+                print(ex)
+                response = EpiSyncValidation(validates=False, message=str(ex))
+            finally:
+                conn.close()
+
+        return response
 
     uvicorn.run(app, host="0.0.0.0", port=8014)
 
