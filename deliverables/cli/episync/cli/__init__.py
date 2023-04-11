@@ -180,7 +180,7 @@ def start():
         description: str
 
     @app.get("/dictionary/", response_model=list[EpiSyncDataField], tags=["dictionary"])
-    async def show():
+    async def dictionary():
         return get_edd_json()
 
     @app.post("/validate/", response_model=EpiSyncValidation, tags=["validate"])
