@@ -339,7 +339,7 @@ def create_ddl():
             epi_de_card = mmg_des["May Repeat"].tolist()
             epi_de_names = mmg_des["Data Element (DE) Name"].tolist()
 
-            ethnicity_table = "CREATE TABLE phinvads_ethnicity (code text, name text)"
+            ethnicity_table = "CREATE TABLE phinvads_ethnicity (code text primary key , name text)"
 
             c.execute(ethnicity_table)
             print("Created phinvads_ethnicity table.")
@@ -391,6 +391,7 @@ def create_ddl():
                 df = pd.DataFrame([metarow])
                 df.to_sql("episync_dd", conn, if_exists="append", index=False)
 
+            fks = []
             for col, type, rule in zip(epi_de_cols, epi_de_types, epi_de_rules):
                 check = " "
                 try:
@@ -406,6 +407,7 @@ def create_ddl():
 
                 try:
                     float(rule)
+
                 except:
                     if rule.find("PHINVADS_RACE") > 0:
                         races = c.execute(
@@ -413,14 +415,18 @@ def create_ddl():
                         ).fetchall()
                         races = ",".join(['"' + race[0] + '"' for race in races])
                         rule = rule.replace("PHINVADS_RACE", races)
-                    check = " CHECK(" + rule + ") "
+
+                        rule = f", FOREIGN KEY ({col}) REFERENCES phinvads_ethnicity(code) "
+                        fks += [rule]
+                    else:
+                        check = " CHECK(" + rule + ") "
 
                 table_string += col + " " + str(_type) + " " + check + ","
 
-            table_string = table_string[:-1] + ")"
-
+            table_string = table_string[:-1] + " ".join(fks) +")"
+            print(table_string)
             c.execute(table_string)
-
+            c.execute("PRAGMA foreign_keys = ON")
             print("Created episync_mmg table.")
             # Create two sample data rows, one with a violation
             row1 = {key: None for key in epi_de_cols if str(key) != "nan"}
