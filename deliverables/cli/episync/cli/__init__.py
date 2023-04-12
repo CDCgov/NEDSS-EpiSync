@@ -11,12 +11,12 @@ import sys
 import warnings
 from io import StringIO
 from pathlib import Path
-from pydantic import BaseModel
-from fastapi import FastAPI, File, UploadFile
 
 import click
 import pandas as pd
 import requests
+from fastapi import FastAPI, File, UploadFile
+from pydantic import BaseModel
 from sqlalchemy import create_engine
 
 logging.basicConfig(
@@ -28,6 +28,7 @@ logging.basicConfig(
     "%(message)s",
 )
 
+USE_FK = False
 HOSTNAME = platform.node()
 
 current_user = getpass.getuser()
@@ -142,16 +143,16 @@ def get_edd_json():
 
             row_list = list(dd_rows)
             return [
-                    {
-                        "column": row[0].strip() if row[0] else "",
-                        "name": row[1].strip() if row[1] else "",
-                        "type": row[3].strip() if row[3] else "",
-                        "rule": row[4].strip() if row[4] else "",
-                        "cardinality": row[5].strip() if row[5] else "",
-                        "description": row[2].strip() if row[2] else "",
-                    }
-                    for row in row_list
-                ]
+                {
+                    "column": row[0].strip() if row[0] else "",
+                    "name": row[1].strip() if row[1] else "",
+                    "type": row[3].strip() if row[3] else "",
+                    "rule": row[4].strip() if row[4] else "",
+                    "cardinality": row[5].strip() if row[5] else "",
+                    "description": row[2].strip() if row[2] else "",
+                }
+                for row in row_list
+            ]
         finally:
             conn.close()
 
@@ -160,12 +161,14 @@ def get_edd_json():
 def start():
     """Start EpiSync Data Dictionary Server"""
     import uvicorn
-    from pydantic import BaseModel
     from fastapi.encoders import jsonable_encoder
+    from pydantic import BaseModel
 
-    app = FastAPI(title="EpiSync",
-    description="EpiSync Data Dictionary API",
-    version="0.0.1",)
+    app = FastAPI(
+        title="EpiSync",
+        description="EpiSync Data Dictionary API",
+        version="0.0.1",
+    )
 
     class EpiSyncValidation(BaseModel):
         validates: bool
@@ -200,7 +203,9 @@ def start():
             try:
                 df.to_sql("episync_mmg", conn, if_exists="append", index=False)
 
-                response = EpiSyncValidation(validates=True, message="All rows validate")
+                response = EpiSyncValidation(
+                    validates=True, message="All rows validate"
+                )
             except Exception as ex:
                 print(ex)
                 response = EpiSyncValidation(validates=False, message=str(ex))
@@ -339,7 +344,9 @@ def create_ddl():
             epi_de_card = mmg_des["May Repeat"].tolist()
             epi_de_names = mmg_des["Data Element (DE) Name"].tolist()
 
-            ethnicity_table = "CREATE TABLE phinvads_ethnicity (code text primary key , name text)"
+            ethnicity_table = (
+                "CREATE TABLE phinvads_ethnicity (code text primary key , name text)"
+            )
 
             c.execute(ethnicity_table)
             print("Created phinvads_ethnicity table.")
@@ -416,14 +423,19 @@ def create_ddl():
                         races = ",".join(['"' + race[0] + '"' for race in races])
                         rule = rule.replace("PHINVADS_RACE", races)
 
-                        rule = f", FOREIGN KEY ({col}) REFERENCES phinvads_ethnicity(code) "
+                        fkrule = f", FOREIGN KEY ({col}) REFERENCES phinvads_ethnicity(code) "
                         fks += [rule]
-                    else:
+
+                    if not USE_FK:
                         check = " CHECK(" + rule + ") "
 
                 table_string += col + " " + str(_type) + " " + check + ","
 
-            table_string = table_string[:-1] + " ".join(fks) +")"
+            if USE_FK:
+                table_string = table_string[:-1] + " ".join(fks) + ")"
+            else:
+                table_string = table_string[:-1] + ")"
+
             print(table_string)
             c.execute(table_string)
             c.execute("PRAGMA foreign_keys = ON")
