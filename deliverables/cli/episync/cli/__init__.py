@@ -9,14 +9,12 @@ import os
 import platform
 import sys
 import warnings
-from io import StringIO
 from pathlib import Path
 
 import click
 import pandas as pd
 import requests
 from fastapi import FastAPI, File, UploadFile
-from pydantic import BaseModel
 from sqlalchemy import create_engine
 
 logging.basicConfig(

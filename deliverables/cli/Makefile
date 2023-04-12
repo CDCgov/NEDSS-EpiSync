@@ -32,6 +32,7 @@ setup:
 install: depends init
 	. venv/bin/activate && ( \
 	pip3 install -r requirements.txt; \
+	yes|mypy --install-types; \
 	python3 setup.py install; \
 	python3 setup.py clean; \
 	)
