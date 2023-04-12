@@ -31,7 +31,7 @@ setup:
 .PHONY: install
 install: depends init
 	. venv/bin/activate && ( \
-	pip3 install -r requirements.txt; \
+	pip3 install -r  --no-cache-dir requirements.txt; \
 	yes|mypy --install-types; \
 	python3 setup.py install; \
 	python3 setup.py clean; \
