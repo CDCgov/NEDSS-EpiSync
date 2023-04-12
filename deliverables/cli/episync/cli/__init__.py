@@ -159,7 +159,6 @@ def get_edd_json():
 def start():
     """Start EpiSync Data Dictionary Server"""
     import uvicorn
-    from fastapi.encoders import jsonable_encoder
     from pydantic import BaseModel
 
     app = FastAPI(
