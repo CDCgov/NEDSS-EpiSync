@@ -1,3 +1,5 @@
+openpyxl
+mypy
 anyio==3.6.2
 black==23.3.0
 certifi==2022.12.7
