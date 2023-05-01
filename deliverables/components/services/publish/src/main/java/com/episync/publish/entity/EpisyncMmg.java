@@ -146,7 +146,7 @@ public class EpisyncMmg {
 
     @Column(name = "episync_mmg_age_at_case_investigation")
     @Schema(description = "Subject age at time of case investigation")
-    private String ageAtCaseInvestigation;
+    private Integer ageAtCaseInvestigation;
 
     @Column(name = "episync_mmg_age_unit_at_case_investigation")
     @Schema(description = "Subject age unit at time of case investigation")

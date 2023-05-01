@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.10</version>
+        <version>2.7.11</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.episync</groupId>
@@ -20,6 +20,7 @@
         <springdoc.version>1.7.0</springdoc.version>
         <amazonaws.version>1.12.450</amazonaws.version>
         <lombok.version>1.18.26</lombok.version>
+        <sqlite.version>3.41.2.1</sqlite.version>
     </properties>
     <dependencies>
         <dependency>
@@ -33,6 +34,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -62,6 +67,7 @@
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
+            <version>${sqlite.version}</version>
         </dependency>
         <dependency>
             <groupId>com.zsoltfabok</groupId>
