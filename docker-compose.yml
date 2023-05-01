@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+
+  dictionary:
+    build:
+      context: .
+      dockerfile: services/dictionary/Dockerfile
+    image: nedss/dictionary:latest
+    container_name: dictionary
+    ports:
+      - 8014:8014
+
+  nbsdb:
+    container_name: nbsdb
+    image: postgres:latest
+    hostname: nbsdb
+    #restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: episync
+      POSTGRES_DB: episync
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5434:5432"
+    volumes:
+      - "pgdata:/var/lib/postgresql/data"
+      - ./conf/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 6
+
+volumes:
+  pgdata:
