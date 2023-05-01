@@ -6,10 +6,17 @@ services:
     build:
       context: .
       dockerfile: services/dictionary/Dockerfile
-    image: nedss/dictionary:latest
+    image: nedss/episync-dd:latest
     container_name: dictionary
     ports:
       - 8014:8014
+
+  test:
+    build:
+      context: .
+      dockerfile: services/test/Dockerfile
+    image: nedss/episync-test:latest
+    container_name: dictionary
 
   nbsdb:
     container_name: nbsdb
