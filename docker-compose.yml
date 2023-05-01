@@ -2,24 +2,24 @@ version: '3.9'
 
 services:
 
-  dictionary:
+  episync-dd:
     build:
       context: .
       dockerfile: services/dictionary/Dockerfile
     image: nedss/episync-dd:latest
-    container_name: dictionary
+    container_name: episync-dd
     ports:
       - 8014:8014
 
-  test:
+  episync-test:
     build:
       context: .
       dockerfile: services/test/Dockerfile
     image: nedss/episync-test:latest
-    container_name: dictionary
+    container_name: episync-test
 
-  nbsdb:
-    container_name: nbsdb
+  episync-db:
+    container_name: episync-db
     image: postgres:latest
     hostname: nbsdb
     #restart: always
