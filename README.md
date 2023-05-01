@@ -1,6 +1,8 @@
-# CDC-EpiSync
+# NEDSS-EpiSync
+![Logo](docs/logo.svg "EpiSync Logo")
 
-## EpiSync Components
+A set of component services for:
+- Creating EpiSync Data Dictionary
+- Validating EpiSync CSV data
+- Publishing EpiSync CSV data
 
-![Figure 1](docs/design.png "Figure 1")
-![Figure 2](docs/design2.png "Figure 2")
