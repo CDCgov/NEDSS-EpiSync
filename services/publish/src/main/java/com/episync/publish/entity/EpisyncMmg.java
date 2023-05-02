@@ -87,7 +87,7 @@ public class EpisyncMmg {
 
     @Column(name = "episync_mmg_illness_duration")
     @Schema(description = "Length of time this subject had this disease or condition")
-    private String illnessDuration;
+    private Integer illnessDuration;
 
     @Column(name = "episync_mmg_illness_duration_units")
     @Schema(description = "Unit of time used to describe the length of the illness or condition")
