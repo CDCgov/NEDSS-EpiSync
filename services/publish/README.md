@@ -5,10 +5,10 @@ Episync service to publish STLT tabular data to be consumed by CDC. Data is vali
 ## Quickstart
 
 ```shell
-$ cd $PROJECT_ROOT/deliverables
-$ docker build -t episync/docker-publish:1.0-SNAPSHOT -f Dockerfile.publish .
+$ cd $PROJECT_ROOT
+$ docker build -t episync/docker-publish:1.0-SNAPSHOT -f services/publish/Dockerfile .
 $ docker run -d -p 8088:8088 \
-$       -v $PROJECT_ROOT/deliverables/cli/episync.db:/opt/episync/episync.db \
+$       -v $PROJECT_ROOT/cli/episync.db:/opt/episync/episync.db \
 $       -v ~/.aws:/home/publish/.aws \
 $       episync/docker-publish:1.0-SNAPSHOT
 ```

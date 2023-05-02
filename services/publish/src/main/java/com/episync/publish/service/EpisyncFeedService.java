@@ -1,6 +1,5 @@
 package com.episync.publish.service;
 
-import com.amazonaws.services.dynamodbv2.xspec.L;
 import com.episync.publish.entity.EpisyncMmg;
 
 import java.time.LocalDate;

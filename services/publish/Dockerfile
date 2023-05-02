@@ -1,8 +1,8 @@
 FROM maven:3.8.3-openjdk-11 AS maven-build
 
-COPY components/services/publish/pom.xml .
+COPY services/publish/pom.xml .
 RUN mvn dependency:go-offline
-COPY components/services/publish/src ./src
+COPY services/publish/src ./src
 RUN mvn package -DskipTests
 
 FROM eclipse-temurin:11-jre
