@@ -21,6 +21,7 @@
         <amazonaws.version>1.12.450</amazonaws.version>
         <lombok.version>1.18.26</lombok.version>
         <sqlite.version>3.41.2.1</sqlite.version>
+        <jackson.version>2.15.0</jackson.version>
     </properties>
     <dependencies>
         <dependency>
@@ -58,6 +59,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
             <version>${commons-csv.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

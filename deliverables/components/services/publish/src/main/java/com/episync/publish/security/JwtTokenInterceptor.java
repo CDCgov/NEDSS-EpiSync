@@ -1,5 +1,7 @@
 package com.episync.publish.security;
 
+import com.episync.publish.shared.SimpleResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -7,12 +9,16 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 
 @Component
 public class JwtTokenInterceptor implements HandlerInterceptor {
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtil jwtTokenUtil;
+
+    public JwtTokenInterceptor(JwtTokenUtil jwtTokenUtil) {
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -25,7 +31,11 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
             return true; // Proceed to the controller
         } else {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.getWriter().write("Unauthorized");
+            response.setContentType("application/json");
+            PrintWriter writer = response.getWriter();
+            writer.write(new ObjectMapper().writeValueAsString(
+                    new SimpleResponse(HttpStatus.UNAUTHORIZED.value(), "Unauthorized")));
+            writer.flush();
             return false; // Abort request processing
         }
     }
