@@ -33,6 +33,8 @@ services:
 
   mvps-s3:
     image: adobe/s3mock
+    hostname: episync-mvps-s3
+    container_name: episync-mvps-s3
     ports:
      - 9090:9090
     environment:
