@@ -6,6 +6,7 @@ services:
     build:
       context: .
       dockerfile: services/dictionary/Dockerfile
+    hostname: episync-dd
     image: nedss/episync-dd:latest
     container_name: episync-dd
     ports:
@@ -18,10 +19,29 @@ services:
     image: nedss/episync-test:latest
     container_name: episync-test
 
+  episync-publish:
+    build:
+      context: .
+      dockerfile: services/publish/Dockerfile
+    hostname: episync-publish
+    image: nedss/episync-publish:latest
+    container_name: episync-publish
+    volumes:
+      - ./cli/episync.db:/opt/episync/episync.db
+    ports:
+      - 8088:8088
+
+  mvps-s3:
+    image: adobe/s3mock
+    ports:
+     - 9090:9090
+    environment:
+      - initialBuckets=mvps-bucket
+
   episync-db:
     container_name: episync-db
     image: postgres:latest
-    hostname: nbsdb
+    hostname: episync-db
     #restart: always
     environment:
       POSTGRES_USER: postgres

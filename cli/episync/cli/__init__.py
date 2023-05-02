@@ -52,6 +52,8 @@ sqltypes = {
     "ethnicity": "text",
     "country": "text",
     "number": "int",
+    "age": "int",
+    "duration": "int"
 }
 
 
