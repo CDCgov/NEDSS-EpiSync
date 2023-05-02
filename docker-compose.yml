@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+
+  episync-dd:
+    build:
+      context: .
+      dockerfile: services/dictionary/Dockerfile
+    image: nedss/episync-dd:latest
+    container_name: episync-dd
+    ports:
+      - 8014:8014
+
+  episync-test:
+    build:
+      context: .
+      dockerfile: services/test/Dockerfile
+    image: nedss/episync-test:latest
+    container_name: episync-test
+
+  episync-db:
+    container_name: episync-db
+    image: postgres:latest
+    hostname: nbsdb
+    #restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: episync
+      POSTGRES_DB: episync
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5434:5432"
+    volumes:
+      - "pgdata:/var/lib/postgresql/data"
+      - ./conf/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 6
+
+volumes:
+  pgdata:
