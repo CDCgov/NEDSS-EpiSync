@@ -2,24 +2,27 @@ package com.episync.publish.service;
 
 import com.episync.publish.entity.EpisyncMmg;
 import com.episync.publish.entity.EpisyncRepository;
+import com.episync.publish.shared.CsvWriterBean;
+import lombok.AllArgsConstructor;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.net.URI;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class EpisyncFeedServiceImpl implements EpisyncFeedService {
 
     private final EpisyncRepository repository;
+    private final CsvWriterBean csvWriter;
 
-    public EpisyncFeedServiceImpl(EpisyncRepository repository) {
-        this.repository = repository;
-    }
     @Override
-    public List<EpisyncMmg> getEpisyncFeed() {
-        return repository.findAll();
+    public List<EpisyncMmg> getEpisyncFeed(LocalDate begin, Optional<LocalDate> end) {
+        return repository.findEpisyncMmgByDateReportedBetween(begin, end.orElse(begin));
     }
 
     @Override
@@ -47,17 +50,12 @@ public class EpisyncFeedServiceImpl implements EpisyncFeedService {
         return repository.findEpisyncMmgByAdmissionDateBetween(begin, end.orElse(begin));
     }
     @Override
-    public List<EpisyncMmg> getEpisyncFeedByDeceasedDateRange(LocalDate begin, Optional<LocalDate> end) {
-        return repository.findEpisyncMmgByDeceasedDateBetween(begin, end.orElse(begin));
-    }
-
-    @Override
     public List<EpisyncMmg> getEpisyncFeedBySubjectAge(Integer age, Optional<Integer> max, String unit) {
         return repository.findEpisyncMmgByAgeAtCaseInvestigationBetweenAndAgeUnitAtCaseInvestigation(age, max.orElse(age), unit);
     }
 
     @Override
-    public List<EpisyncMmg> getEpisyncFeedBySubmittedDateRange(LocalDateTime begin, Optional<LocalDateTime> end) {
-        return repository.findEpisyncMmgByDateFirstSubmittedBetween(begin, end.orElse(begin));
+    public URI postEpisyncFeedCsv(InputStreamSource csvFeed, long size) throws IOException {
+        return csvWriter.writeStreamToS3(csvFeed.getInputStream(), size);
     }
 }

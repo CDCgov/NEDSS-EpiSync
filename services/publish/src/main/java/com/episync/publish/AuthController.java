@@ -6,6 +6,7 @@ import com.episync.publish.security.JwtTokenUtil;
 import com.episync.publish.shared.SimpleResponse;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,7 +33,11 @@ public class AuthController {
     }
 
     @PostMapping("/token")
-    public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest request) throws Exception {
+    public ResponseEntity<?> authenticate(
+            @RequestBody(description = "Obtain API token", required = true,
+                    content = @Content(schema=@Schema(implementation = AuthenticationRequest.class)))
+            @org.springframework.web.bind.annotation.RequestBody AuthenticationRequest request) {
+
         // Validate user credentials and generate JWT token - must be actual in future!!! - TODO
         if (!StringUtils.hasLength(request.getUsername())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -48,7 +52,5 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new SimpleResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
         }
-
     }
-
 }
