@@ -28,11 +28,10 @@ public class ExportFeedAspect {
         if (export) {
             try {
                 List<EpisyncMmg> data = ((ResponseEntity<List<EpisyncMmg>>) returnVal).getBody();
-                URI uri = writerBean.writeCsvToS3(data);
+                URI uri = writerBean.writeDataToS3(data);
                 return ResponseEntity.created(uri).body(new SimpleResponse(HttpStatus.CREATED.value(), "Export to S3: success"));
-            } catch (Exception ignored) {
-                return ResponseEntity.internalServerError().body(new SimpleResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Export to S3: failed"));
-
+            } catch (Exception e) {
+                return ResponseEntity.internalServerError().body(new SimpleResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Export to S3 failed: " + e.getMessage()));
             }
         }
 

@@ -1,7 +1,6 @@
 package com.episync.publish.shared;
 
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -25,11 +24,10 @@ import javax.persistence.Column;
 @Component
 public class CsvWriterBean {
     @Value("${s3.bucket.pub}")
-    String s3bucket;
+    private String s3bucket;
 
-    AWSCredentialsProvider credentialsProvider = new ProfileCredentialsProvider("episync");
-    private final AmazonS3 s3Client = AmazonS3ClientBuilder.standard() // AmazonS3ClientBuilder.defaultClient();
-        .withCredentials(credentialsProvider)
+    private final AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
+        .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
         .build();
 
     private String[] getHeader() {
@@ -64,24 +62,28 @@ public class CsvWriterBean {
         return rowData;
     }
 
-    public URI writeCsvToS3(List<EpisyncMmg> cases) throws IOException {
+    public URI writeDataToS3(List<EpisyncMmg> data) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         // Create the CSV writer
         CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), CSVFormat.DEFAULT.withHeader(getHeader()));
 
         // Write the feed data to the CSV
-        for (EpisyncMmg ecase : cases) {
-            csvPrinter.printRecord((Object[]) getRowData(ecase));
+        for (EpisyncMmg entity : data) {
+            csvPrinter.printRecord((Object[]) getRowData(entity));
         }
 
         // writing the underlying stream
         csvPrinter.flush();
 
-        String fileName = "episync-" + System.currentTimeMillis() + ".csv";
         InputStream inputStream = new ByteArrayInputStream(out.toByteArray());
+        return writeStreamToS3(inputStream, out.size());
+    }
+
+    public URI writeStreamToS3(InputStream inputStream, long size) {
+        String fileName = "episync-" + System.currentTimeMillis() + ".csv";
         ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentLength(out.toByteArray().length);
+        objectMetadata.setContentLength(size);
         s3Client.putObject(new PutObjectRequest(s3bucket, fileName, inputStream, objectMetadata));
 
         return URI.create("s3://" + s3bucket + "/" + fileName);

@@ -19,12 +19,24 @@ Application is deployed as a microservice and can be accessed locally via the UR
 
 ## Passing AWS Credentials to Docker Container
 The argument `-v ~/.aws:/home/publish/.aws` mounts the contents of local `.aws` folder including `config` and `credentials` files to the container working folder so that when it runs the application, it will find and use these.
-The `credentials` file should contain AWS access keys associated with a user that has the necessary S3 permissions defined under the '[episync]' profile:
+The `credentials` file should contain AWS access keys associated with a user that has the necessary S3 permissions:
 
 ```agsl
-[episync]
 aws_access_key_id=...
 aws_secret_access_keyid=...
+```
+
+## Supported environment variables
+
+Alternatively, access keys can be configured via environment variables and passed to docker run with the `-e` flag:
+```shell
+$ export AWS_ACCESS_KEY=AKIAIOSFODNN7EXAMPLE
+$ export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+$ export AWS_REGION=us-east-1
+```
+And for AWS S3 destination:
+```shell
+$ export S3_HOST=episync-mvps-s3-example
 ```
 
 ## Authorization
@@ -40,4 +52,3 @@ $ curl -X 'GET' 'http://localhost:8088/feed/all' \
 $  -H 'accept: application/json' \
 $  -H 'Authorization: Bearer $API_TOKEN'
 ```
-

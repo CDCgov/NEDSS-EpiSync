@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Hidden
@@ -21,9 +20,8 @@ public interface EpisyncRepository extends JpaRepository<EpisyncMmg, EpisyncMmgI
 
     List<EpisyncMmg> findEpisyncMmgByAdmissionDateBetween(LocalDate begin, LocalDate end);
 
-    List<EpisyncMmg> findEpisyncMmgByDeceasedDateBetween(LocalDate begin, LocalDate end);
     List<EpisyncMmg> findEpisyncMmgByAgeAtCaseInvestigationBetweenAndAgeUnitAtCaseInvestigation(Integer min, Integer max, String unit);
-    List<EpisyncMmg> findEpisyncMmgByDateFirstSubmittedBetween(LocalDateTime begin, LocalDateTime end);
+    List<EpisyncMmg> findEpisyncMmgByDateReportedBetween(LocalDate begin, LocalDate end);
 
 
 
