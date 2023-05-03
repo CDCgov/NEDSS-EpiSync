@@ -22,7 +22,7 @@ docker compose up -d
 
 Then open browser to http://localhost:8014/docs for the `dictionary` and `validate` service Swagger UI's
 
-To bring down the episync stack:
+To bring down the EpiSync stack:
 ```bash
 $ make stop
 docker compose stop
