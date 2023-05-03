@@ -34,3 +34,15 @@ docker compose stop
  ⠿ Container episync-dd       Stopped                                                                                                                                                                                                                0.8s                                                                              0.3s
 ```
 
+## Architecture
+Below is the current architecture for EpiSync Data Dictionary that addresses the following requirements:
+- Data Elements Stored in secure database, managed by existing tooling and best-practices
+- Allow multiple users to access and manage the data dictionary without conflict, data integrity errors, or other similar concerns
+- Allow stored data dictionary elements to be serialized into various formats such as JSON, CSV, HTML etc
+- Fully dynamic and data drive (i.e. nothing is static)
+- Supports transactional modifications
+- Supports data element value constraints
+- Re-uses existing architecture components and technology
+- Cloud neutral
+
+![Architecture](docs/arch.png "EpiSync Architecture")
