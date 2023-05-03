@@ -41,6 +41,7 @@ Below is the current architecture for EpiSync Data Dictionary that addresses the
 - Allow stored data dictionary elements to be serialized into various formats such as JSON, CSV, HTML etc
 - Fully dynamic and data driven (i.e. nothing is static)
 - Easy to change, extend and manage
+- Prevent logical errors or data corruption
 - Supports transactional modifications
 - Supports data element value constraints
 - Re-uses existing architecture components and technology
