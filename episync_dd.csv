@@ -1,0 +1,82 @@
+episync_mmg_message_profile_identifier,id,null,"Message Profile Identifiers provide a literal value to use for the references in MSH-21. MSH-21 will always contain a reference to the notification type in the ""PHINProfileID"" namespace and a reference to the implemented version of the Generic MMG in the ""PHINMsgMapID"" namespace. For conditions that have a condition-specific MMG, MSH-21 will also contain a reference to that MMG that is also in the ""PHINMsgMapID"" namespace.",Y/2,Message Profile Identifier
+episync_mmg_local_subject_id,id,null,The local ID of the subject/entity,N,Local Subject ID
+episync_mmg_birth_date,date,null,Patient’s date of birth,N,Birth Date
+episync_mmg_sex,sex,null,Subject’s current sex,N,Subject’s Sex
+episync_mmg_race,race,"episync_mmg_race IN (PHINVADS_RACE)
+",Race category - Major OMB Race Categories. Detailed race information would be rolled up to these major OMB race categories.,Y,Race Category
+episync_mmg_other_race,race,null,Other Race Text,N,Other Race Text
+episync_mmg_ethnic_group,ethnicity,null,Based on the self-identity of the subject as Hispanic or Latino,N,Ethnic Group
+episync_mmg_birth_country,country,null,Country of Birth,N,Country of Birth
+episync_mmg_other_birth_place,city,null,Other Birth Place,N,Other Birth Place
+episync_mmg_country_of_residence,country,null,"Where does the person usually live (defined as their residence).
+
+This variable replaces the Foreign Resident variable mentioned in 11-SI-04 titled ""Revised Guidelines for Determining Residency for Disease Reporting"" located at http://c.ymcdn.com/sites/www.cste.org/resource/resmgr/PS/11-SI-04.pdf.
+
+Cases with country of usual residence equal to the US, Puerto Rico, and US Virgin Islands as well as unknown and null responses will be included in the state-specific counts and rates.",N,Country of Usual Residence
+episync_mmg_subject_address_county,county,null,County of residence of the subject,N,Subject Address County
+episync_mmg_subject_address_state,state,null,State of residence of the subject,N,Subject Address State
+episync_mmg_subject_address_zip,zip,null,ZIP Code of residence of the subject,N,Subject Address ZIP Code
+episync_mmg_date_of_illness_onset,date,null,Date of the beginning of the illness.  Reported date of the onset of symptoms of the condition being reported to the public health system.,N,Date of Illness Onset
+episync_mmg_illness_end_date,date,null,Date at which the disease or condition ends.,N,Illness End Date
+episync_mmg_illness_duration,duration,null,Length of time this subject had this disease or condition.,N,Illness Duration
+episync_mmg_illness_duration_units,time_unit,null,Unit of time used to describe the length of the illness or condition.,N,Illness Duration Units
+episync_mmg_pregnancy_status,yesnounk,null,Indicates whether the subject was pregnant at the time of the event.,N,Pregnancy Status
+episync_mmg_diagnosis_date,date,episync_mmg_diagnosis_date > episync_mmg_birth_date AND (episync_mmg_diagnosis_date < episync_mmg_deceased_date AND episync_mmg_diagnosis_date < episync_mmg_illness_end_date) ,Earliest date of diagnosis (clinical or laboratory) of condition being reported to public health system.,N,Diagnosis Date
+episync_mmg_hospitalized,yesnounk,null,Was subject hospitalized because of this event?,N,Hospitalized
+episync_mmg_admission_date,date,null,Subject’s most recent admission date to the hospital for the condition covered by the investigation.,N,Admission Date
+episync_mmg_discharge_date,date,null,Subject's most recent discharge date from the hospital for the condition covered by the investigation.,N,Discharge Date
+episync_mmg_duration_of_hospital_stay_in_days,duration,episync_mmg_duration_of_hospital_stay_in_days > 0 and episync_mmg_duration_of_hospital_stay_in_days < 120,Subject's duration of stay at the hospital for the condition covered by the investigation.,N,Duration of Hospital Stay in Days
+episync_mmg_subject_died,yesnounk,null,Did the subject die from this illness or complications of this illness?,N,Subject Died
+episync_mmg_deceased_date,date,null,"If the subject died from this illness or complications associated with this illness, indicate the date of death.",N,Deceased Date
+episync_mmg_condition_code,condition_code,null,Condition or event that constitutes the reason the notification is being sent.,N,Condition Code
+episync_mmg_local_record_id,id,null,Sending system-assigned local ID of the case investigation with which the subject is associated.,N,Local Record ID
+episync_mmg_state_case_identifier,id,null,States use this identifier to link NEDSS investigations back to their own state investigations.,N,State Case Identifier
+episync_mmg_legacy_case_identifier,id,null,"CDC uses this identifier to link current case notifications to case notifications submitted by a previous system (NETSS, STD-MIS, etc.).  If migrating between systems, incorporate the original Local Record ID (INV168 in OBR-3) into the Legacy Case Identifier (77997-5) field in the new system. ",N,Legacy Case Identifier
+episync_mmg_age_at_case_investigation,age,null,Subject age at time of case investigation,N,Age at Case Investigation
+episync_mmg_age_unit_at_case_investigation,years,null,Subject age unit at time of case investigation,N,Age Unit at Case Investigation
+episync_mmg_case_disease_imported_code,code,null,Indication of where the disease/condition was likely acquired.,N,Case Disease Imported Code
+episync_mmg_imported_country,country,null,"If the disease or condition was imported, indicates the country in which the disease was likely acquired.",N,Imported Country
+episync_mmg_imported_state,state,null,"If the disease or condition was imported, indicates the state in which the disease was likely acquired.",N,Imported State
+episync_mmg_imported_city,city,null,"If the disease or condition was imported, indicates the city in which the disease was likely acquired.",N,Imported City
+episync_mmg_imported_county,country,null,"If the disease or condition was imported, contains the county of origin of the disease or condition.",N,Imported County
+episync_mmg_country_of_exposure,country,null,Indicates the country in which the disease was likely acquired.,N,Country of Exposure
+episync_mmg_state_or_province_of_exposure,state/province,null,"Indicates the state (or Province) in which the disease was likely acquired.
+
+Note: If Country of exposure was US, populate with US State. If Country of exposure was Mexico, populate with Mexican State. If country of exposure was Canada, populated with Canadian Province. For all other countries, leave null.",N,State or Province of Exposure
+episync_mmg_city_of_exposure,city,null,"Indicates the city in which the disease was likely acquired
+
+Note: If country of exposure is US, populate with US city. For all other cities, can be populated but not required.",N,City of Exposure
+episync_mmg_county_of_exposure,county,null,"Indicates the county in which the disease was likely acquired
+
+Note: If country of exposure is US, populate with US county.  Otherwise, leave null.",N,County of Exposure
+episync_mmg_transmission_mode,transmission_mode,null,Code for the mechanism by which disease or condition was acquired by the subject of the investigation.,N,Transmission Mode
+episync_mmg_case_class_status_code,code,null,"Status of the case/event as suspect, probable, confirmed, or not a case per CSTE/CDC/ surveillance case definitions.",N,Case Class Status Code
+episync_mmg_immediate_national_notifiable_condition,condition_code,null,"Does this case meet the criteria for immediate (extremely urgent or urgent) notification to CDC? 
+
+Refer to the Notifications Requirements for the relevant year to see the NNCs by notification timeliness category at the following link: https://ndc.services.cdc.gov/event-codes-other-surveillance-resources/",N,Immediate National Notifiable Condition
+episync_mmg_case_outbreak_indicator,string,null,Denotes whether the reported case was associated with an identified outbreak.,N,Case Outbreak Indicator
+episync_mmg_case_outbreak_name,string,null,A state-assigned name for an identified outbreak.,N,Case Outbreak Name
+episync_mmg_notification_result_status,string,null,Status of the notification,N,Notification Result Status
+episync_mmg_jurisdiction_code,code,null,Identifier for the physical site from which the notification is being submitted.,N,Jurisdiction Code
+episync_mmg_reporting_source_type_code,code,null,Type of facility or provider associated with the source of information sent to Public Health.,N,Reporting Source Type Code
+episync_mmg_reporting_source_zip_code,code,null,ZIP Code of the reporting source for this case.,N,Reporting Source ZIP Code
+episync_mmg_binational_reporting_criteria,string,null,"For cases meeting the binational criteria, select all the criteria which are met.",Y,Binational Reporting Criteria
+episync_mmg_person_reporting_to_cdc_name,string,null,Name of the person who is reporting the case to the CDC.  This is the person that CDC should contact in a state if there are questions regarding this case notification.,N,Person Reporting to CDC - Name
+episync_mmg_person_reporting_to_cdc_phone,phone,null,Phone Number of the person who is reporting the case to the CDC.  This is the person that CDC should contact in a state if there are questions regarding this case notification.,N,Person Reporting to CDC - Phone Number
+episync_mmg_person_reporting_to_cdc_email,email,null,Email Address of the person reporting the case to the CDC. This is the person that CDC should contact in a state if there are questions regarding this case notification.,N,Person Reporting to CDC - Email
+episync_mmg_case_investigation_start_date,date,null,The date the case investigation was initiated.,N,Case Investigation Start Date
+episync_mmg_date_first_electronically_submitted,date,null,Date/time the notification was first electronically sent to CDC.  This value does not change after the original notification.,N,Date First Electronically Submitted
+episync_mmg_date_of_electronic_case_notification_to_cdc,date,null,"Date/time this version of the electronic case notification was sent.  It will be the same value as NOT103 for the original notification.  For updates, this is the update/send date/time.",N,Date of Electronic Case Notification to CDC
+episync_mmg_date_reported,date,null,Date that a health department first suspected the subject might have the condition.,N,Date Reported
+episync_mmg_earliest_date_reported_to_county,date,null,Earliest date reported to county public health system.,N,Earliest Date Reported to County
+episync_mmg_earliest_date_reported_to_state,date,null,Earliest date reported to state public health system.,N,Earliest Date Reported to State
+episync_mmg_mmwr_week,week,null,MMWR Week for which case information is to be counted for MMWR publication.,N,MMWR Week
+episync_mmg_mmwr_year,year,null,MMWR Year (YYYY) for which case information is to be counted for MMWR publication.,N,MMWR Year
+episync_mmg_date_cdc_was_first_verbally_notified_of_this_case,date,null,Date the case of an Immediately National Notifiable Condition was first verbally reported to the CDC Emergency Operation Center or the CDC Subject Matter Expert responsible for this condition.,N,Date CDC Was First Verbally Notified of This Case
+episync_mmg_date_first_reported_to_phd,date,null,"Date the report was first sent to the public health department (local, county or state) by reporter (physician, lab, etc.).",N,Date First Reported to PHD
+episync_mmg_reporting_state,state,null,State reporting the notification,N,Reporting State
+episync_mmg_reporting_county,county,null,County reporting the notification,N,Reporting County
+episync_mmg_national_reporting_jurisdiction,jurisdiction,null,National jurisdiction reporting the notification to CDC,N,National Reporting Jurisdiction
+episync_mmg_comment,text,null,"Use this field, if needed, to communicate anything unusual about this case, which is not already covered with the other data elements.  
+
+Do not send personally identifiable information to CDC in this field.",N,Comment
