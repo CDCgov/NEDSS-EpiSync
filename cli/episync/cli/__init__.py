@@ -11,11 +11,11 @@ import platform
 import sys
 import warnings
 from pathlib import Path
+
 import click
 import pandas as pd
 import requests
 from fastapi import FastAPI, File, UploadFile
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
@@ -71,7 +71,7 @@ def cli(context, debug, ini):
             format="%(asctime)s : %(name)s %(levelname)s : %(message)s",
             level=logging.ERROR,
         )
-        logger = logging.getLogger('sqlalchemy.engine.Engine')
+        logger = logging.getLogger("sqlalchemy.engine.Engine")
         logger.setLevel(logging.ERROR)  # modifies the current log handler
         logger.addHandler(logging.NullHandler())  # creates an additional log handler
 
