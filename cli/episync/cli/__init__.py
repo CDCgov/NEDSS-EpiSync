@@ -25,8 +25,6 @@ HOSTNAME = platform.node()
 
 current_user = getpass.getuser()
 
-home = str(Path.home())
-
 CONFIG = configparser.ConfigParser()
 
 HOME = str(Path.home())
