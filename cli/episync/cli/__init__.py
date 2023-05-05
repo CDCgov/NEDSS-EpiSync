@@ -1,6 +1,7 @@
 """
 cli.py - EpiSync CLI command tool
 """
+
 import configparser
 import getpass
 import json
@@ -10,21 +11,14 @@ import platform
 import sys
 import warnings
 from pathlib import Path
-
 import click
 import pandas as pd
 import requests
 from fastapi import FastAPI, File, UploadFile
-from sqlalchemy import create_engine
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(filename)s: "
-    "%(levelname)s: "
-    "%(funcName)s(): "
-    "%(lineno)d:\t"
-    "%(message)s",
-)
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+from sqlalchemy.sql import text
 
 USE_FK = False
 HOSTNAME = platform.node()
@@ -41,9 +35,6 @@ CONFIG.read(ini)
 
 INIPATHS = [".", HOME]
 
-logger = logging.getLogger(__name__)
-
-
 sqltypes = {
     "id": "text",
     "date": "date",
@@ -53,7 +44,7 @@ sqltypes = {
     "country": "text",
     "number": "int",
     "age": "int",
-    "duration": "int"
+    "duration": "int",
 }
 
 
@@ -78,8 +69,12 @@ def cli(context, debug, ini):
     else:
         logging.basicConfig(
             format="%(asctime)s : %(name)s %(levelname)s : %(message)s",
-            level=logging.INFO,
+            level=logging.ERROR,
         )
+        logger = logging.getLogger('sqlalchemy.engine.Engine')
+        logger.setLevel(logging.ERROR)  # modifies the current log handler
+        logger.addHandler(logging.NullHandler())  # creates an additional log handler
+
     if len(sys.argv) == 1:
         click.echo(context.get_help())
 
@@ -89,6 +84,15 @@ def cli(context, debug, ini):
                 CONFIG.read(inipath + "/episync.ini")
     else:
         CONFIG.read(ini)
+
+    db = CONFIG.get("database", "uri")
+    logging.info("database %s", db)
+    engine = create_engine(db, echo=False, isolation_level="REPEATABLE READ")
+    session = Session(engine)
+    context.obj = {"session": session, "engine": engine}
+    raw = engine.raw_connection()
+    context.obj["raw"] = raw
+    context.obj["connect"] = engine.connect()
 
 
 @cli.group()
@@ -127,24 +131,19 @@ def api():
     pass
 
 
-def get_edd_json():
-    db = CONFIG.get("database", "uri")
-
-    engine = create_engine(db, echo=True)
-
+def get_edd_json(session):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
 
-        conn = engine.raw_connection()
-        try:
-            dd_rows = conn.execute(
-                "select column, name, description,type, rule, cardinality  from episync_dd"
+        with session:
+            dd_rows = session.execute(
+                "select col, name, description,type, rule, cardinality  from episync_dd"
             )
 
             row_list = list(dd_rows)
             return [
                 {
-                    "column": row[0].strip() if row[0] else "",
+                    "col": row[0].strip() if row[0] else "",
                     "name": row[1].strip() if row[1] else "",
                     "type": row[3].strip() if row[3] else "",
                     "rule": row[4].strip() if row[4] else "",
@@ -153,16 +152,16 @@ def get_edd_json():
                 }
                 for row in row_list
             ]
-        finally:
-            conn.close()
 
 
 @api.command()
-def start():
+@click.pass_context
+def start(context):
     """Start EpiSync Data Dictionary Server"""
     import uvicorn
     from pydantic import BaseModel
 
+    engine = context.obj["engine"]
     app = FastAPI(
         title="EpiSync",
         description="EpiSync Data Dictionary API",
@@ -174,7 +173,7 @@ def start():
         message: str
 
     class EpiSyncDataField(BaseModel):
-        column: str
+        col: str
         name: str
         rule: str
         type: str
@@ -193,14 +192,17 @@ def start():
         print("DF", df)
         db = CONFIG.get("database", "uri")
         print(db)
-        engine = create_engine(db, echo=True)
+        engine = create_engine(db, echo=True, isolation_level="REPEATABLE READ")
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-
-            conn = engine.raw_connection()
             try:
-                df.to_sql("episync_mmg", conn, if_exists="append", index=False)
+                df.to_sql(
+                    "episync_mmg",
+                    con=context.obj["connect"],
+                    if_exists="append",
+                    index=False,
+                )
 
                 response = EpiSyncValidation(
                     validates=True, message="All rows validate"
@@ -208,8 +210,6 @@ def start():
             except Exception as ex:
                 print(ex)
                 response = EpiSyncValidation(validates=False, message=str(ex))
-            finally:
-                conn.close()
 
         return response
 
@@ -228,7 +228,8 @@ def start():
 @click.option(
     "-d", "--desc", is_flag=True, default=False, help="Add the field description"
 )
-def show_ddl(jsonformat, desc):
+@click.pass_context
+def show_ddl(context, jsonformat, desc):
     """Show the current EpiSync DDL"""
     from prettytable import PrettyTable
 
@@ -244,15 +245,16 @@ def show_ddl(jsonformat, desc):
 
     db = CONFIG.get("database", "uri")
 
-    engine = create_engine(db, echo=True)
+    engine = create_engine(db, echo=True, isolation_level="REPEATABLE READ")
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
 
-        conn = engine.raw_connection()
-        try:
-            dd_rows = conn.execute(
-                "select column, name, description,type, rule, cardinality  from episync_dd"
+        with context.obj["session"] as session:
+            dd_rows = session.execute(
+                text(
+                    "select col, name, description,type, rule, cardinality  from episync_dd"
+                )
             )
 
             row_list = list(dd_rows)
@@ -270,7 +272,7 @@ def show_ddl(jsonformat, desc):
                     json.dumps(
                         [
                             {
-                                "column": row[0].strip() if row[0] else "",
+                                "col": row[0].strip() if row[0] else "",
                                 "name": row[1].strip() if row[1] else "",
                                 "type": row[3].strip() if row[3] else "",
                                 "rule": row[4].strip() if row[4] else "",
@@ -282,24 +284,20 @@ def show_ddl(jsonformat, desc):
                         indent=4,
                     )
                 )
-        finally:
-            conn.close()
 
 
 @ddl.command(name="create")
-def create_ddl():
+@click.pass_context
+def create_ddl(context):
     """Create the EpiSync DDL Data Dictionary"""
     db = CONFIG.get("database", "uri")
 
-    engine = create_engine(db, echo=True)
+    engine = create_engine(db, echo=True, isolation_level="REPEATABLE READ")
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
 
-        conn = engine.raw_connection()
-        try:
-            c = conn.cursor()
-
+        with context.obj["session"] as session:
             mmg_dd = CONFIG.get("mmg", "file")
             mmg_des = pd.read_excel(mmg_dd, sheet_name="Data Elements")
 
@@ -343,22 +341,29 @@ def create_ddl():
             epi_de_card = mmg_des["May Repeat"].tolist()
             epi_de_names = mmg_des["Data Element (DE) Name"].tolist()
 
-            ethnicity_table = (
-                "CREATE TABLE phinvads_ethnicity (code text primary key , name text)"
+            session.execute(
+                text("CREATE TABLE phinvads_ethnicity (code text , name text)")
             )
-
-            c.execute(ethnicity_table)
+            session.commit()
             print("Created phinvads_ethnicity table.")
             for code_2000, code_2022 in zip(codes_2000, codes_2022):
                 code_2000df = pd.DataFrame([code_2000])
                 code_2022df = pd.DataFrame([code_2022])
                 try:
+                    print(code_2000df, code_2022df)
                     code_2000df.to_sql(
-                        "phinvads_ethnicity", conn, if_exists="append", index=False
+                        "phinvads_ethnicity",
+                        con=context.obj["connect"],
+                        if_exists="append",
+                        index=False,
                     )
                     code_2022df.to_sql(
-                        "phinvads_ethnicity", conn, if_exists="append", index=False
+                        "phinvads_ethnicity",
+                        con=context.obj["connect"],
+                        if_exists="append",
+                        index=False,
                     )
+                    print("Done")
                 except Exception as ex:
                     print(ex)
 
@@ -367,10 +372,14 @@ def create_ddl():
 
             epi_col_names = []
 
-            c.execute(
-                "CREATE table episync_dd (column text, type text, rule text, description text, cardinality text, name text)"
+            print("Creating episync_dd table")
+            session.execute(
+                text(
+                    "CREATE table episync_dd (col text, type text, rule text, description text, cardinality text, name text)"
+                )
             )
 
+            session.commit()
             print("Created episync_dd table.")
             for col, type, rule, description, cardinality, name in zip(
                 epi_de_cols,
@@ -387,7 +396,7 @@ def create_ddl():
                     pass
 
                 metarow = {
-                    "column": col,
+                    "col": col,
                     "type": type,
                     "rule": rule,
                     "name": name,
@@ -395,7 +404,12 @@ def create_ddl():
                     "cardinality": cardinality,
                 }
                 df = pd.DataFrame([metarow])
-                df.to_sql("episync_dd", conn, if_exists="append", index=False)
+                df.to_sql(
+                    "episync_dd",
+                    con=context.obj["connect"],
+                    if_exists="append",
+                    index=False,
+                )
 
             fks = []
             for col, type, rule in zip(epi_de_cols, epi_de_types, epi_de_rules):
@@ -416,10 +430,10 @@ def create_ddl():
 
                 except:
                     if rule.find("PHINVADS_RACE") > 0:
-                        races = c.execute(
-                            """SELECT code FROM phinvads_ethnicity"""
+                        races = session.execute(
+                            text("SELECT code FROM phinvads_ethnicity")
                         ).fetchall()
-                        races = ",".join(['"' + race[0] + '"' for race in races])
+                        races = ",".join(["'" + race[0] + "'" for race in races])
                         rule = rule.replace("PHINVADS_RACE", races)
 
                         fkrule = f", FOREIGN KEY ({col}) REFERENCES phinvads_ethnicity(code) "
@@ -435,10 +449,11 @@ def create_ddl():
             else:
                 table_string = table_string[:-1] + ")"
 
-            print(table_string)
-            c.execute(table_string)
-            c.execute("PRAGMA foreign_keys = ON")
-            print("Created episync_mmg table.")
+            logging.info("TABLE_STRING %s", table_string)
+            session.execute(text(table_string))
+            # session.execute("PRAGMA foreign_keys = ON")
+            session.commit()
+            logging.info("Created episync_mmg table.")
             # Create two sample data rows, one with a violation
             row1 = {key: None for key in epi_de_cols if str(key) != "nan"}
             row1["episync_mmg_duration_of_hospital_stay_in_days"] = 90
@@ -451,11 +466,14 @@ def create_ddl():
             for row in [row1, row2]:
                 df = pd.DataFrame([row])
                 try:
-                    df.to_sql("episync_mmg", conn, if_exists="append", index=False)
+                    df.to_sql(
+                        "episync_mmg",
+                        con=context.obj["connect"],
+                        if_exists="append",
+                        index=False,
+                    )
                 except Exception as ex:
                     print(ex)
 
             # Get all the rows that passed validation constraints
-            all = c.execute("""SELECT * FROM episync_mmg""").fetchall()
-        finally:
-            conn.close()
+            all = session.execute(text("SELECT * FROM episync_mmg")).fetchall()
