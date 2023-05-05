@@ -19,7 +19,7 @@ format:
 
 .PHONY: lint
 lint:
-	mypy --show-error-codes  --ignore-missing-imports episync
+	mypy --show-error-codes  --check-untyped-defs --ignore-missing-imports episync
 	flake8 --ignore=E203,F841,E501,E722,W503 episync
 	$(isort) --check-only --df
 	$(black) --check --diff

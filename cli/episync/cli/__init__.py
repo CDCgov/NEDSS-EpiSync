@@ -180,7 +180,7 @@ def start(context):
 
     @app.get("/dictionary/", response_model=list[EpiSyncDataField], tags=["dictionary"])
     async def dictionary():
-        return get_edd_json()
+        return get_edd_json(context.obj["session"])
 
     @app.post("/validate/", response_model=EpiSyncValidation, tags=["validate"])
     async def validate(file: UploadFile = File(...)) -> EpiSyncValidation:
@@ -454,11 +454,12 @@ def create_ddl(context):
             logging.info("Created episync_mmg table.")
             # Create two sample data rows, one with a violation
             row1 = {key: None for key in epi_de_cols if str(key) != "nan"}
-            row1["episync_mmg_duration_of_hospital_stay_in_days"] = 90
+            row1["episync_mmg_duration_of_hospital_stay_in_days"] = 90  # type: ignore[assignment]
 
             row2 = {key: None for key in epi_de_cols if str(key) != "nan"}
-            row2["episync_mmg_duration_of_hospital_stay_in_days"] = 100
-            row2["episync_mmg_race"] = "2155-0"
+            row2["episync_mmg_duration_of_hospital_stay_in_days"] = 100  # type: ignore[assignment]
+
+            row2["episync_mmg_race"] = "2155-0"  # type: ignore[assignment]
 
             # Inject these sample rows into the SQL episync_mmg internal database
             for row in [row1, row2]:
