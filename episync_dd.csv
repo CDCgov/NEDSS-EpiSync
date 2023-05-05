@@ -1,3 +1,4 @@
+column,type,rule,description,cardinality,name
 episync_mmg_message_profile_identifier,id,null,"Message Profile Identifiers provide a literal value to use for the references in MSH-21. MSH-21 will always contain a reference to the notification type in the ""PHINProfileID"" namespace and a reference to the implemented version of the Generic MMG in the ""PHINMsgMapID"" namespace. For conditions that have a condition-specific MMG, MSH-21 will also contain a reference to that MMG that is also in the ""PHINMsgMapID"" namespace.",Y/2,Message Profile Identifier
 episync_mmg_local_subject_id,id,null,The local ID of the subject/entity,N,Local Subject ID
 episync_mmg_birth_date,date,null,Patient’s date of birth,N,Birth Date
