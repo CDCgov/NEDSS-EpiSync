@@ -27,8 +27,9 @@ services:
     image: nedss/episync-publish:latest
     container_name: episync-publish
     environment:
-      - AWS_SECRET = fakesecret
-      - AWS_KEY = fakekey
+      - AWS_SECRET_ACCESS_KEY = ${AWS_SECRET_ACCESS_KEY}
+      - AWS_ACCESS_KEY = ${AWS_ACCESS_KEY}
+      - AWS_REGION = ${AWS_REGION}
       - S3_HOST = episync-mvps-s3
     volumes:
       - ./cli/episync.db:/opt/episync/episync.db
