@@ -64,3 +64,8 @@ public class DbConfig {
 @PropertySource("classpath:persistence-sqlite.properties")
 class SqliteConfig {
 }
+
+@Configuration
+@PropertySource("classpath:query.properties")
+class QueryConfiguration {
+}
