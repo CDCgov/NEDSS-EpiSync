@@ -2,6 +2,15 @@ version: '3.9'
 
 services:
 
+  episync-cli:
+    build:
+      context: cli
+      dockerfile: Dockerfile
+    hostname: episync-cli
+    image: nedss/episync-cli:latest
+    container_name: episync-cli
+    command: tail -f requirements.txt
+
   episync-dd:
     build:
       context: .

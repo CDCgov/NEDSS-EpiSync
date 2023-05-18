@@ -99,10 +99,34 @@ def ddl():
     pass
 
 
-@cli.group()
-def publish():
-    """Commands to publish EpiSync CSV data"""
-    pass
+@cli.command()
+@click.option("--file", default=None, required=True, help="Source file of the message")
+@click.option("--out", default="out.csv", required=False, help="Output .csv filename")
+@click.option("--type", "-t", type=click.Choice(['hl7', 'xml']), multiple=True, help="Is the file an HL7 or XML message")
+@click.option("--s3", default=None, required=True, help="URL of S3 bucket to send result to")
+@click.pass_context
+def publish(context, file, out, type, s3):
+    """Publish an HL7 message to a destination"""
+    import csv
+    from .hl7_to_dict import hl7_str_to_dict
+    from jsonflat import JsonFlat
+
+    with open(file, 'r') as _file:
+        hl7_msg = _file.read()
+        if type[0] == 'hl7':
+            hl7_dict = hl7_str_to_dict(hl7_msg, use_long_name=True)
+
+            flat_hl7 = JsonFlat().flatten([hl7_dict])
+
+            with open(out, 'w', encoding='UTF8') as f:
+                writer = csv.writer(f)
+
+                writer.writerow(flat_hl7['field_names'])
+
+                rows = flat_hl7['rows']
+
+                for row in rows:
+                    writer.writerow(row.values())
 
 
 @cli.group()
