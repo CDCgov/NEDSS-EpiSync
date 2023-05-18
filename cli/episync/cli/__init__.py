@@ -99,10 +99,27 @@ def ddl():
     pass
 
 
-@cli.group()
-def publish():
-    """Commands to publish EpiSync CSV data"""
-    pass
+@cli.command()
+@click.option("--file", default=None, required=True, help="Source file of the data")
+@click.option("--path", default='/data.csv', required=True, help="S3 key path for the object")
+@click.option("--s3", default='http://172.30.0.10:9000', required=True, help="Target S3 endpoint")
+@click.option("-b", "--bucket", default='mvps', required=True, help="Target S3 bucket")
+def publish(file, path, s3, bucket):
+    """Publish EpiSync CSV data to S3 bucket"""
+    import boto3
+
+    session = boto3.session.Session()
+
+    s3_client = session.client(
+        service_name='s3',
+        aws_access_key_id='minioadmin',
+        aws_secret_access_key='minioadmin',
+        endpoint_url=s3
+    )
+
+    with open(file, 'r') as fileobj:
+        data = fileobj.read()
+        s3_client.put_object(Body=data.encode('utf8'), Bucket=bucket, Key=path)
 
 
 @cli.command()
