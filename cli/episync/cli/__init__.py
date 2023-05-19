@@ -102,7 +102,7 @@ def ddl():
 @cli.command()
 @click.option("--file", default=None, required=True, help="Source file of the data")
 @click.option("--path", default='/data.csv', required=True, help="S3 key path for the object")
-@click.option("--s3", default='http://172.30.0.10:9000', required=True, help="Target S3 endpoint")
+@click.option("--s3", default='http://127.0.0.1:9000', required=True, help="Target S3 endpoint")
 @click.option("-b", "--bucket", default='mvps', required=True, help="Target S3 bucket")
 def publish(file, path, s3, bucket):
     """Publish EpiSync CSV data to S3 bucket"""
