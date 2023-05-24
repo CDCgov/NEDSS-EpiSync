@@ -89,7 +89,8 @@ public class EpisyncFeedController {
         return ResponseEntity.ok(feedService.getEpisyncFeedBySubjectAge(age, maxAge, unit));
     }
 
-    @PostMapping(value = "/upload", consumes = "multipart/form-data")
+    @Operation(summary = "Upload CSV feed, validate and export to S3")
+    @PostMapping(value = "/upload/csv", consumes = "multipart/form-data")
     public ResponseEntity<?> postFeedFromCsvFile (@RequestParam("file") MultipartFile file) {
         ResponseEntity<String> validateResponse = apiService.validateFeed(file);
         HttpStatus status = validateResponse.getStatusCode();
