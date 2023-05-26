@@ -286,7 +286,7 @@ def show_ddl(context, jsonformat, desc):
     cols = ["Column", "Name"]
     if desc:
         cols.append("Description")
-    cols += ["Type", "Rule", "Cardinality"]
+    cols += ["Type", "Rule", "Cardinality", "XML"]
 
     x.field_names = cols
     x._max_width = {"Name": 30, "Column": 30, "Rule": 20, "Description": 120}
@@ -301,14 +301,14 @@ def show_ddl(context, jsonformat, desc):
         with context.obj["session"] as session:
             dd_rows = session.execute(
                 text(
-                    "select col, name, description,type, rule, cardinality  from episync_dd"
+                    "select col, name, description,type, rule, cardinality, xml  from episync_dd"
                 )
             )
 
             row_list = list(dd_rows)
             for row in row_list:
                 if not desc:
-                    _row = [row[0], row[1], row[3], row[4], row[5]]
+                    _row = [row[0], row[1], row[3], row[4], row[5], row[6]]
                 else:
                     _row = row
                 x.add_row(_row)
@@ -326,6 +326,7 @@ def show_ddl(context, jsonformat, desc):
                                 "rule": row[4].strip() if row[4] else "",
                                 "cardinality": row[5].strip() if row[5] else "",
                                 "description": row[2].strip() if row[2] else "",
+                                "xml": row[6].strip() if row[6] else "",
                             }
                             for row in row_list
                         ],
@@ -359,6 +360,7 @@ def drop_ddl(context):
         print("Table phinvads_ethnicity dropped.")
         print("Table episync_dd dropped.")
         print("Table episync_mmg dropped.")
+
 
 @ddl.command(name="create")
 @click.pass_context
