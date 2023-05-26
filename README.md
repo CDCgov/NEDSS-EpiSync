@@ -204,6 +204,16 @@ $ episync ddl show -j
         "description": "The local ID of the subject/entity",
         "xml": "PatientIdentification.PatientIdentifierList"
     },
+    {
+        "col": "episync_mmg_diagnosis_date",
+        "name": "Diagnosis Date",
+        "type": "date",
+        "rule": "episync_mmg_diagnosis_date > episync_mmg_birth_date AND (episync_mmg_diagnosis_date < episync_mmg_deceased_date AND episync_mmg_diagnosis_date < episync_mmg_illness_end_date)",
+        "cardinality": "N",
+        "description": "Earliest date of diagnosis (clinical or laboratory) of condition being reported to public health system.",
+        "xml": ""
+    },
+
 ...
 $ 
 ```
