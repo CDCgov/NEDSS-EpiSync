@@ -1,7 +1,7 @@
 # NEDSS-EpiSync
 ![Logo](docs/logo.svg "EpiSync Logo")
 
-A set of component services for:
+A CLI, components and services for:
 - Creating, Serving & Managing EpiSync Data Dictionary
 - Validating EpiSync data
 - Publishing EpiSync data
