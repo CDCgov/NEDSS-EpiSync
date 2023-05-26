@@ -262,6 +262,41 @@ mmg_date_cdc_was_first_verbally_notified_of_this_case,episync_mmg_date_first_rep
 isdiction,episync_mmg_comment
 ,,,,,,,,,,,,,,,,,,,,,,90,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ```
+## Browsing Published Data in S3
+EpiSync dev stack in this repo uses `minio`https://min.io/ S3 containers to simulate AWS S3 endpoints.
+
+To easily work with S3 in this setting, please install the minio CLI: https://min.io/docs/minio/linux/reference/minio-mc.html#quickstart
+
+Then set an S3 endpoint alias:
+```bash
+$ mc alias set episync  http://localhost:9000 minioadmin minioadmin
+```
+To list the episync bucket:
+```bash
+$ mc ls episync
+[2023-05-18 04:15:14 EDT]     0B mvps/
+(venv) darren@phoenix:~/git/NEDSS-EpiSync$ mc ls episync/mvps
+[2023-05-18 04:53:51 EDT]    36B STANDARD data1
+[2023-05-18 20:51:36 EDT] 1.5KiB STANDARD out.csv
+[2023-05-26 08:02:29 EDT] 1.5KiB STANDARD out2.csv
+```
+Or you can log into the `episync-cli` container to run `mc` command there (the alias is pre-set):
+```bash
+$ docker exec -it episync-cli bash
+mc: Configuration written to `/root/.mc/config.json`. Please update your access credentials.
+mc: Successfully created `/root/.mc/share`.
+mc: Initialized share uploads `/root/.mc/share/uploads.json` file.
+mc: Initialized share downloads `/root/.mc/share/downloads.json` file.
+Added `episync` successfully.
+root@episync-cli:/opt/episync# mc ls episync/mvps
+[2023-05-18 08:53:51 UTC]    36B STANDARD data1
+[2023-05-19 00:51:36 UTC] 1.5KiB STANDARD out.csv
+[2023-05-26 12:02:29 UTC] 1.5KiB STANDARD out2.csv
+root@episync-cli:/opt/episync# 
+
+
+```
+
 ## Docker Stack
 ```bash
 $ docker ps
