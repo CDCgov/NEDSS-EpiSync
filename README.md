@@ -242,7 +242,20 @@ mmg_date_cdc_was_first_verbally_notified_of_this_case,episync_mmg_date_first_rep
 isdiction,episync_mmg_comment
 ,,,,,,,,,,,,,,,,,,,,,,90,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ```
-
+## Docker Stack
+```bash
+$ docker ps
+CONTAINER ID   IMAGE                                              COMMAND                  CREATED          STATUS                            PORTS                                                 NAMES
+535771dbfd1f   nedss/episync-dd:latest                            "/opt/episync/venv/b…"   24 seconds ago   Up 3 seconds                      0.0.0.0:8014->8014/tcp, :::8014->8014/tcp             episync-dd
+a191f02506b5   nedss/episync-cli:latest                           "tail -f requirement…"   24 seconds ago   Up 3 seconds                                                                            episync-cli
+2589385ab256   postgres:latest                                    "docker-entrypoint.s…"   24 seconds ago   Up 3 seconds (health: starting)   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp             episync-db
+a2bc7ffe39a0   nedss/episync-publish:latest                       "java -jar -Duser.ti…"   24 seconds ago   Up 3 seconds                      0.0.0.0:8088->8088/tcp, :::8088->8088/tcp             episync-publish
+52f5103e7e45   quay.io/minio/minio:RELEASE.2023-05-04T21-44-30Z   "/usr/bin/docker-ent…"   3 hours ago      Up 4 seconds (health: starting)   0.0.0.0:9000->9000/tcp, :::9000->9000/tcp, 9001/tcp   minio1
+9ef93a8ce7b6   quay.io/minio/minio:RELEASE.2023-05-04T21-44-30Z   "/usr/bin/docker-ent…"   3 hours ago      Up 4 seconds (health: starting)   9000-9001/tcp                                         minio3
+49c3c658cb58   quay.io/minio/minio:RELEASE.2023-05-04T21-44-30Z   "/usr/bin/docker-ent…"   3 hours ago      Up 3 seconds (health: starting)   9000-9001/tcp                                         minio2
+c87202ba0847   quay.io/minio/minio:RELEASE.2023-05-04T21-44-30Z   "/usr/bin/docker-ent…"   3 hours ago      Up 3 seconds (health: starting)   9000-9001/tcp                                         minio4
+d6bfcb0156de   dpage/pgadmin4                                     "/entrypoint.sh"         3 hours ago      Up 3 seconds                      443/tcp, 0.0.0.0:8008->80/tcp, :::8008->80/tcp        pgadmin
+```
 ## Architecture
 Below is the current architecture for EpiSync Data Dictionary that addresses the following requirements:
 - Data Elements Stored in secure database, managed by existing tooling and best-practices
