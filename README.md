@@ -12,12 +12,17 @@ A CLI, components and services for:
 $ make build
 $ make up
 docker compose up -d
-[+] Running 5/5
- ⠿ Container episync-mvps-s3  Started                                                                                                                                                                                                                1.3s
- ⠿ Container episync-db       Started                                                                                                                                                                                                                1.2s
- ⠿ Container episync-dd       Started                                                                                                                                                                                                                1.3s
- ⠿ Container episync-test     Started                                                                                                                                                                                                                0.8s
- ⠿ Container episync-publish  Started                            
+[+] Running 10/10
+ ⠿ Container episync-dd       Running                                                                                                                                                         0.0s
+ ⠿ Container episync-cli      Running                                                                                                                                                         0.0s
+ ⠿ Container minio3           Running                                                                                                                                                         0.0s
+ ⠿ Container episync-publish  Started                                                                                                                                                         0.6s
+ ⠿ Container episync-test     Started                                                                                                                                                         0.6s
+ ⠿ Container pgadmin          Running                                                                                                                                                         0.0s
+ ⠿ Container minio2           Running                                                                                                                                                         0.0s
+ ⠿ Container minio1           Running                                                                                                                                                         0.0s
+ ⠿ Container minio4           Running                                                                                                                                                         0.0s
+ ⠿ Container episync-db       Running                              
 ```
 
 Then open browser to http://localhost:8014/docs for the `dictionary` and `validate` service Swagger UI's
@@ -26,12 +31,17 @@ To bring down the EpiSync stack:
 ```bash
 $ make stop
 docker compose stop
-[+] Running 5/5
- ⠿ Container episync-publish  Stopped                                                                                                                                                                                                               10.5s
- ⠿ Container episync-mvps-s3  Stopped                                                                                                                                                                                                                4.3s
- ⠿ Container episync-test     Stopped                                                                                                                                                                                                                0.0s
- ⠿ Container episync-db       Stopped                                                                                                                                                                                                                0.5s
- ⠿ Container episync-dd       Stopped                                                                                                                                                                                                                0.8s                                                                              0.3s
+[+] Running 9/10
+ ⠿ Container minio4           Stopped                                                                                                                                                         1.0s
+ ⠿ Container episync-db       Stopped                                                                                                                                                         0.4s
+ ⠿ Container minio1           Stopped                                                                                                                                                         1.3s
+ ⠿ Container minio3           Stopped                                                                                                                                                         1.4s
+ ⠿ Container episync-test     Stopped                                                                                                                                                         0.0s
+ ⠿ Container pgadmin          Stopped                                                                                                                                                         1.8s
+ ⠿ Container episync-publish  Stopped                                                                                                                                                         4.6s
+ ⠸ Container episync-cli      Stopping                                                                                                                                                        6.4s
+ ⠿ Container minio2           Stopped                                                                                                                                                         1.2s
+ ⠿ Container episync-dd       Stopped                                                                                                                                                                                                                               0.8s                                                                              0.3s
 ```
 ## EpiSync CLI
 The `episync` CLI is used to manage various aspects of the EpiSync services and eco-system such as data dictionary lifecycle, publishing data to S3 endpoints, etc.
