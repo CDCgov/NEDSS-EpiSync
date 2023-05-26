@@ -183,7 +183,7 @@ $ episync ddl show
 |         _jurisdiction          |          Jurisdiction          |                   |                      |             |                                             |
 |      episync_mmg_comment       |            Comment             |        text       |         None         |      N      |                     None                    |
 +--------------------------------+--------------------------------+-------------------+----------------------+-------------+---------------------------------------------+
-$ episync ddl show -j
+
 $ episync ddl show -j
 [
     {
