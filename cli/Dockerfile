@@ -19,4 +19,9 @@ ADD README.md /opt/episync/README.md
 
 RUN venv/bin/python3 setup.py install
 
-ENV PATH /opt/episync/venv/bin:$PATH
+RUN curl https://dl.min.io/client/mc/release/linux-amd64/mc --create-dirs -o /opt/episync/minio-binaries/mc
+RUN chmod +x /opt/episync/minio-binaries/mc
+RUN echo "/opt/episync/minio-binaries/mc alias set episync http://minio1:9000 minioadmin minioadmin" > /root/.bashrc
+ENV PATH /opt/episync/venv/bin:/opt/episync/minio-binaries/:$PATH
+
+CMD bash
