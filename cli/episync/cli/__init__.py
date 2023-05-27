@@ -185,7 +185,9 @@ def get_edd_json(session):
 
         with session:
             dd_rows = session.execute(
-                "select col, name, description,type, rule, cardinality  from episync_dd"
+                text(
+                "select col, name, description,type, rule, cardinality, xml  from episync_dd"
+                )
             )
 
             row_list = list(dd_rows)
@@ -197,6 +199,7 @@ def get_edd_json(session):
                     "rule": row[4].strip() if row[4] else "",
                     "cardinality": row[5].strip() if row[5] else "",
                     "description": row[2].strip() if row[2] else "",
+                    "xml": row[6].strip() if row[6] else "",
                 }
                 for row in row_list
             ]

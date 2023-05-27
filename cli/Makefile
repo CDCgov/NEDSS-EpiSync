@@ -11,6 +11,8 @@ init: depends
 	echo "Setting up virtual environment in venv/"
 	python3 -m venv venv
 	echo "Virtual environment complete."
+	echo "Downloading EpiSync MMG DD"
+	wget -O ~/episync-dd.xlsx https://raw.githubusercontent.com/CDCgov/NEDSS-EpiSync/main/mmg/episync-dd.xlsx
 
 .PHONY: format
 format:
