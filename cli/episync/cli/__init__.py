@@ -230,6 +230,7 @@ def start(context):
         type: str
         cardinality: str
         description: str
+        xml: str
 
     @app.get("/dictionary/", response_model=list[EpiSyncDataField], tags=["dictionary"])
     async def dictionary():
