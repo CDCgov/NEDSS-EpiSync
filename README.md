@@ -227,6 +227,27 @@ $ episync ddl show -j
 ...
 $ 
 ```
+## Converting HL7 data to CSV
+```bash
+$ episync convert --help
+Usage: episync convert [OPTIONS]
+
+  Convert an HL7 message to target formats
+
+Options:
+  --file TEXT           Source file of the message  [required]
+  --out TEXT            Output .csv filename
+  -t, --type [hl7|xml]  Is the file an HL7 or XML message
+  --help                Show this message and exit.
+
+$ cat cli/hl7.txt 
+MSH|^~\&|SendAppName^2.16.840.1.114222.TBD^ISO|Sending-Facility^2.16.840.1.114222.TBD^ISO|PHINCDS^2.16.840.1.114222.4.3.2.10^ISO|PHIN^2.16.840.1.114222^ISO|20140630120030.1234-0500||ORU^R01^ORU_R01|MESSAGE CONTROL ID|D|2.5.1|||||||||NOTF_ORU_v3.1^PHINProfileID^2.16.840.1.114222.4.10.3^ISO~Generic_MMG_V2.0^PHINMsgMapID^2.16.840.1.114222.4.10.4^ISO
+
+$ episync convert --file cli/hl7.txt --out out.csv -t hl7
+msh.field_separator.st.st,msh.encoding_characters.st.st,msh.sending_application.namespace_id.is,msh.sending_application.universal_id.st,msh.sending_application.universal_id_type.id,msh.sending_facility.namespace_id.is,msh.sending_facility.universal_id.st,msh.sending_facility.universal_id_type.id,msh.receiving_application.namespace_id.is,msh.receiving_application.universal_id.st,msh.receiving_application.universal_id_type.id,msh.receiving_facility.namespace_id.is,msh.receiving_facility.universal_id.st,msh.receiving_facility.universal_id_type.id,msh.date_time_of_message.time.dtm,msh.message_type.message_code.id,msh.message_type.trigger_event.id,msh.message_type.message_structure.id,msh.message_control_id.st.st,msh.processing_id.processing_id.id,msh.version_id.version_id.id,msh.message_profile_identifier.entity_identifier.st,msh.message_profile_identifier.namespace_id.is,msh.message_profile_identifier.universal_id.st,msh.message_profile_identifier.universal_id_type.id
+\F\,\S\\R\\E\\T\,SendAppName,2.16.840.1.114222.TBD,ISO,Sending-Facility,2.16.840.1.114222.TBD,ISO,PHINCDS,2.16.840.1.114222.4.3.2.10,ISO,PHIN,2.16.840.1.114222,ISO,20140630120030.1234-0500,ORU,R01,ORU_R01,MESSAGE CONTROL ID,D,2.5.1,NOTF_ORU_v3.1,PHINProfileID,2.16.840.1.114222.4.10.3,ISO
+\F\,\S\\R\\E\\T\,SendAppName,2.16.840.1.114222.TBD,ISO,Sending-Facility,2.16.840.1.114222.TBD,ISO,PHINCDS,2.16.840.1.114222.4.3.2.10,ISO,PHIN,2.16.840.1.114222,ISO,20140630120030.1234-0500,ORU,R01,ORU_R01,MESSAGE CONTROL ID,D,2.5.1,Generic_MMG_V2.0,PHINMsgMapID,2.16.840.1.114222.4.10.4,ISO
+```
 ## Publishing EpiSync .csv data to S3
 ```bash
 $ episync publish --help
