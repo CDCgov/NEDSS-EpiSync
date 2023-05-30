@@ -93,20 +93,10 @@ services:
     ports:
       - 8088:8088
 
-  mvps-s3:
-    image: adobe/s3mock
-    hostname: episync-mvps-s3
-    container_name: episync-mvps-s3
-    ports:
-     - 9090:9090
-    environment:
-      - initialBuckets=mvps-bucket
-
   episync-db:
     container_name: episync-db
     image: postgres:latest
     hostname: episync-db
-    #restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: episync

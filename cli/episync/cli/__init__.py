@@ -185,7 +185,9 @@ def get_edd_json(session):
 
         with session:
             dd_rows = session.execute(
-                "select col, name, description,type, rule, cardinality  from episync_dd"
+                text(
+                "select col, name, description,type, rule, cardinality, xml  from episync_dd"
+                )
             )
 
             row_list = list(dd_rows)
@@ -197,6 +199,7 @@ def get_edd_json(session):
                     "rule": row[4].strip() if row[4] else "",
                     "cardinality": row[5].strip() if row[5] else "",
                     "description": row[2].strip() if row[2] else "",
+                    "xml": row[6].strip() if row[6] else "",
                 }
                 for row in row_list
             ]
@@ -227,6 +230,7 @@ def start(context):
         type: str
         cardinality: str
         description: str
+        xml: str
 
     @app.get("/dictionary/", response_model=list[EpiSyncDataField], tags=["dictionary"])
     async def dictionary():
@@ -286,7 +290,7 @@ def show_ddl(context, jsonformat, desc):
     cols = ["Column", "Name"]
     if desc:
         cols.append("Description")
-    cols += ["Type", "Rule", "Cardinality"]
+    cols += ["Type", "Rule", "Cardinality", "XML"]
 
     x.field_names = cols
     x._max_width = {"Name": 30, "Column": 30, "Rule": 20, "Description": 120}
@@ -301,14 +305,14 @@ def show_ddl(context, jsonformat, desc):
         with context.obj["session"] as session:
             dd_rows = session.execute(
                 text(
-                    "select col, name, description,type, rule, cardinality  from episync_dd"
+                    "select col, name, description,type, rule, cardinality, xml  from episync_dd"
                 )
             )
 
             row_list = list(dd_rows)
             for row in row_list:
                 if not desc:
-                    _row = [row[0], row[1], row[3], row[4], row[5]]
+                    _row = [row[0], row[1], row[3], row[4], row[5], row[6]]
                 else:
                     _row = row
                 x.add_row(_row)
@@ -326,12 +330,40 @@ def show_ddl(context, jsonformat, desc):
                                 "rule": row[4].strip() if row[4] else "",
                                 "cardinality": row[5].strip() if row[5] else "",
                                 "description": row[2].strip() if row[2] else "",
+                                "xml": row[6].strip() if row[6] else "",
                             }
                             for row in row_list
                         ],
                         indent=4,
                     )
                 )
+
+
+@ddl.command(name="drop")
+@click.pass_context
+def drop_ddl(context):
+    """Drop the EpiSync DDL Data Dictionary schemas"""
+    db = CONFIG.get("database", "uri")
+
+    engine = create_engine(db, echo=True, isolation_level="REPEATABLE READ")
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+
+        with context.obj["session"] as session:
+            session.execute(
+                text("DROP TABLE phinvads_ethnicity")
+            )
+            session.execute(
+                text("DROP TABLE episync_dd")
+            )
+            session.execute(
+                text("DROP TABLE episync_mmg")
+            )
+            session.commit()
+        print("Table phinvads_ethnicity dropped.")
+        print("Table episync_dd dropped.")
+        print("Table episync_mmg dropped.")
 
 
 @ddl.command(name="create")
@@ -382,6 +414,7 @@ def create_ddl(context):
                 if isinstance(code, str)
             ]
 
+            epi_de_xml = mmg_des["XML Mapping"].tolist()
             epi_de_cols = mmg_des["EpiSync DE Name"].tolist()
             epi_de_types = mmg_des["EpiSync DE Type"].tolist()
             epi_de_rules = mmg_des["EpiSync DE Constraint"].tolist()
@@ -423,19 +456,20 @@ def create_ddl(context):
             print("Creating episync_dd table")
             session.execute(
                 text(
-                    "CREATE table episync_dd (col text, type text, rule text, description text, cardinality text, name text)"
+                    "CREATE table episync_dd (col text, type text, rule text, description text, cardinality text, name text, xml text)"
                 )
             )
 
             session.commit()
             print("Created episync_dd table.")
-            for col, type, rule, description, cardinality, name in zip(
+            for col, type, rule, description, cardinality, name, xml in zip(
                 epi_de_cols,
                 epi_de_types,
                 epi_de_rules,
                 epi_de_desc,
                 epi_de_card,
                 epi_de_names,
+                epi_de_xml
             ):
                 try:
                     float(type)
@@ -450,6 +484,7 @@ def create_ddl(context):
                     "name": name,
                     "description": description,
                     "cardinality": cardinality,
+                    "xml": xml
                 }
                 df = pd.DataFrame([metarow])
                 df.to_sql(
