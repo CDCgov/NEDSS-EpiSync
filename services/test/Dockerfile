@@ -18,6 +18,7 @@ RUN venv/bin/pip3 install -r requirements.txt
 RUN venv/bin/python3 setup.py install
 
 RUN pip install behave
+RUN pip install behave-html-formatter
 RUN pip install faker
 COPY services/test/episync_gen/* /app/
 WORKDIR /app/
