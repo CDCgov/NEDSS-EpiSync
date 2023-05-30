@@ -94,6 +94,8 @@ public class EpisyncFeedController {
         return ResponseEntity.ok(feedService.getEpisyncFeedBySubjectAge(age, maxAge, unit));
     }
 
+    @Operation(summary = "Upload CSV feed, validate and export to S3")
+    @PostMapping(value = "/upload/csv", consumes = "multipart/form-data")
     @GetMapping("/query/{profile}/{query}")
     public ResponseEntity<?> getFeedByProfiledQuery(
             @PathVariable String profile,
@@ -103,7 +105,8 @@ public class EpisyncFeedController {
         return ResponseEntity.ok(queryExecutor.execute(profile, query, params));
     }
 
-    @PostMapping(value = "/upload", consumes = "multipart/form-data")
+    @Operation(summary = "Upload CSV feed, validate and export to S3")
+    @PostMapping(value = "/upload/csv", consumes = "multipart/form-data")
     public ResponseEntity<?> postFeedFromCsvFile (@RequestParam("file") MultipartFile file) {
         ResponseEntity<String> validateResponse = apiService.validateFeed(file);
         HttpStatus status = validateResponse.getStatusCode();

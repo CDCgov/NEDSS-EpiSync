@@ -1,6 +1,54 @@
 version: '3.9'
 
+x-minio-common: &minio-common
+  image: quay.io/minio/minio:RELEASE.2023-05-04T21-44-30Z
+  command: server --console-address ":9001" http://minio{1...4}/data{1...2}
+  expose:
+    - "9000"
+    - "9001"
+  environment:
+    MINIO_ROOT_USER: minioadmin
+    MINIO_ROOT_PASSWORD: minioadmin
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+    interval: 30s
+    timeout: 20s
+    retries: 3
+
 services:
+  minio1:
+    <<: *minio-common
+    hostname: minio1
+    container_name: minio1
+    ports:
+      - "9000:9000"
+    volumes:
+      - data1-1:/data1
+      - data1-2:/data2
+
+  minio2:
+    <<: *minio-common
+    hostname: minio2
+    container_name: minio2
+    volumes:
+      - data2-1:/data1
+      - data2-2:/data2
+
+  minio3:
+    <<: *minio-common
+    hostname: minio3
+    container_name: minio3
+    volumes:
+      - data3-1:/data1
+      - data3-2:/data2
+
+  minio4:
+    <<: *minio-common
+    hostname: minio4
+    container_name: minio4
+    volumes:
+      - data4-1:/data1
+      - data4-2:/data2
 
   episync-cli:
     build:
@@ -45,20 +93,10 @@ services:
     ports:
       - 8088:8088
 
-  mvps-s3:
-    image: adobe/s3mock
-    hostname: episync-mvps-s3
-    container_name: episync-mvps-s3
-    ports:
-     - 9090:9090
-    environment:
-      - initialBuckets=mvps-bucket
-
   episync-db:
     container_name: episync-db
     image: postgres:latest
     hostname: episync-db
-    #restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: episync
@@ -86,3 +124,11 @@ services:
 
 volumes:
   pgdata:
+  data1-1:
+  data1-2:
+  data2-1:
+  data2-2:
+  data3-1:
+  data3-2:
+  data4-1:
+  data4-2:

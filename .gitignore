@@ -1,4 +1,7 @@
+.env
 /**/*/venv
+/**/__pycache__
+/**/out.csv
 deliverables/cli/*.db
 deliverables/cli/*.xlsx
 deliverables/cli/*.xlsx

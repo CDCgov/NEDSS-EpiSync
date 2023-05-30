@@ -122,6 +122,7 @@
                     <AdministrativeSex>F</AdministrativeSex>
                     <Race>
                         <HL7Identifier>U</HL7Identifier>
+                        <HL7Identifier>U</HL7Identifier>
                     </Race>
                     <PatientAddress>
                         <HL7StreetAddress>
