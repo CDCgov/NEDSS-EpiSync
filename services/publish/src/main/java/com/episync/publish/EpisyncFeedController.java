@@ -94,8 +94,7 @@ public class EpisyncFeedController {
         return ResponseEntity.ok(feedService.getEpisyncFeedBySubjectAge(age, maxAge, unit));
     }
 
-    @Operation(summary = "Upload CSV feed, validate and export to S3")
-    @PostMapping(value = "/upload/csv", consumes = "multipart/form-data")
+    @Operation(summary = "Execute a profiled query stored in config")
     @GetMapping("/query/{profile}/{query}")
     public ResponseEntity<?> getFeedByProfiledQuery(
             @PathVariable String profile,
