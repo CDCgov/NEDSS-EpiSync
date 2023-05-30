@@ -10,7 +10,7 @@ import java.util.Map;
 @Configuration
 @PropertySource("classpath:mmg-mapping.properties")
 @ConfigurationProperties
-public class XMLConfig {
+public class XMLConfigNL7 {
     private final Map<String, String> mmg = new HashMap<>();
     private final Map<String, String> xml = new HashMap<>();
 
