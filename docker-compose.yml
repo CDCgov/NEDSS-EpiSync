@@ -84,12 +84,15 @@ services:
     image: nedss/episync-publish:latest
     container_name: episync-publish
     environment:
-      - AWS_SECRET_ACCESS_KEY = ${AWS_SECRET_ACCESS_KEY}
-      - AWS_ACCESS_KEY = ${AWS_ACCESS_KEY}
-      - AWS_REGION = ${AWS_REGION}
-      - S3_HOST = episync-mvps-s3
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - S3_HOST=episync-mvps-s3
+      - DATA_SOURCE_URL=jdbc:postgresql://episync-db:5432/episync
+      - DB_USER_NAME=postgres
+      - DB_USER_PASSWORD=episync
     volumes:
-      - ./cli/episync.db:/opt/episync/episync.db
+        - ~/episync:/home/publish
     ports:
       - 8088:8088
 

@@ -8,12 +8,10 @@ Episync service to publish STLT tabular data to be consumed by CDC. Data is vali
 $ cd $PROJECT_ROOT
 $ docker build -t episync/docker-publish:1.0-SNAPSHOT -f services/publish/Dockerfile .
 $ docker run -d -p 8088:8088 \
-$       -v $PROJECT_ROOT/cli/episync.db:/opt/episync/episync.db \
 $       -v ~/.aws:/home/publish/.aws \
 $       episync/docker-publish:1.0-SNAPSHOT
 ```
 Define and set the path to project root directory in `$PROJECT_ROOT` variable or substitute when run.
-Use your path to `episync.db` file created by Episync `dictionary` service.
 
 Application is deployed as a microservice and can be accessed locally via the URL http://localhost:8088/api-docs
 
