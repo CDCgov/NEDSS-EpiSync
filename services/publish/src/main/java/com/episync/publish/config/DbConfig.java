@@ -60,6 +60,11 @@ public class DbConfig {
 }
 
 @Configuration
+@PropertySource("classpath:query.properties")
+class QueryConfiguration {
+}
+
+@Configuration
 @Profile("postgres")
 @PropertySource("classpath:persistence-postgres.properties")
 class PostgresConfig {

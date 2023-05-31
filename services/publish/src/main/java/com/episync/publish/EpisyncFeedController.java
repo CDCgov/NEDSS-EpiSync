@@ -3,6 +3,7 @@ package com.episync.publish;
 import com.episync.publish.entity.EpisyncMmg;
 import com.episync.publish.service.EpisyncExternalAPIService;
 import com.episync.publish.service.EpisyncFeedService;
+import com.episync.publish.service.QueryExecutor;
 import com.episync.publish.shared.SimpleResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,10 +34,14 @@ public class EpisyncFeedController {
     private final static String DESC_DATE_RANGE = "If present then date range applied to search";
     private final EpisyncFeedService feedService;
     private final EpisyncExternalAPIService apiService;
+    private final QueryExecutor queryExecutor;
 
-    public EpisyncFeedController(EpisyncFeedService feedService, EpisyncExternalAPIService apiService) {
+    public EpisyncFeedController(EpisyncFeedService feedService,
+                                 EpisyncExternalAPIService apiService,
+                                 QueryExecutor queryExecutor) {
         this.feedService = feedService;
         this.apiService = apiService;
+        this. queryExecutor = queryExecutor;
     }
 
     @Operation(summary = "Get all the feed records for reported date/range")
@@ -87,6 +92,16 @@ public class EpisyncFeedController {
             @RequestParam(required = false, defaultValue = "a") String unit,
             @RequestParam(required = false) boolean export) {
         return ResponseEntity.ok(feedService.getEpisyncFeedBySubjectAge(age, maxAge, unit));
+    }
+
+    @Operation(summary = "Execute a profiled query stored in config")
+    @GetMapping("/query/{profile}/{query}")
+    public ResponseEntity<?> getFeedByProfiledQuery(
+            @PathVariable String profile,
+            @PathVariable String query,
+            @RequestParam Optional<String> params
+            ) {
+        return ResponseEntity.ok(queryExecutor.execute(profile, query, params));
     }
 
     @Operation(summary = "Upload CSV feed, validate and export to S3")
