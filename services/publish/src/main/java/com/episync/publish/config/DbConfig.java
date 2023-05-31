@@ -60,7 +60,7 @@ public class DbConfig {
 }
 
 @Configuration
-@Profile("sqlite")
-@PropertySource("classpath:persistence-sqlite.properties")
-class SqliteConfig {
+@Profile("postgres")
+@PropertySource("classpath:persistence-postgres.properties")
+class PostgresConfig {
 }
