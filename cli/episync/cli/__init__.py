@@ -16,6 +16,7 @@ import click
 import pandas as pd
 import requests
 from fastapi import FastAPI, File, UploadFile
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
@@ -84,6 +85,22 @@ def cli(context, debug, ini):
         CONFIG.read(ini)
 
     db = CONFIG.get("database", "uri")
+    POSTGRES_ROOT = (
+            "/".join(db.rsplit("/")[:-1]) + "/"
+    )
+    try:
+        engine = create_engine(POSTGRES_ROOT + "postgres")
+        session = sessionmaker(bind=engine)()
+
+        session.connection().connection.set_isolation_level(0)
+        session.execute(text("CREATE DATABASE episync"))
+        session.connection().connection.set_isolation_level(1)
+        print("Database created")
+        session.commit()
+        session.close()
+    except Exception as ex:
+        logging.error(ex)
+
     logging.info("database %s", db)
     engine = create_engine(db, echo=False, isolation_level="REPEATABLE READ")
     session = Session(engine)
@@ -212,7 +229,6 @@ def start(context):
     import uvicorn
     from pydantic import BaseModel
 
-    engine = context.obj["engine"]
     app = FastAPI(
         title="EpiSync",
         description="EpiSync Data Dictionary API",
@@ -244,7 +260,6 @@ def start(context):
         print("DF", df)
         db = CONFIG.get("database", "uri")
         print(db)
-        engine = create_engine(db, echo=True, isolation_level="REPEATABLE READ")
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -297,7 +312,6 @@ def show_ddl(context, jsonformat, desc):
 
     db = CONFIG.get("database", "uri")
 
-    engine = create_engine(db, echo=True, isolation_level="REPEATABLE READ")
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -345,7 +359,6 @@ def drop_ddl(context):
     """Drop the EpiSync DDL Data Dictionary schemas"""
     db = CONFIG.get("database", "uri")
 
-    engine = create_engine(db, echo=True, isolation_level="REPEATABLE READ")
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -370,9 +383,8 @@ def drop_ddl(context):
 @click.pass_context
 def create_ddl(context):
     """Create the EpiSync DDL Data Dictionary"""
-    db = CONFIG.get("database", "uri")
 
-    engine = create_engine(db, echo=True, isolation_level="REPEATABLE READ")
+    db = CONFIG.get("database", "uri")
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
