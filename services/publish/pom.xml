@@ -20,7 +20,6 @@
         <springdoc.version>1.7.0</springdoc.version>
         <amazonaws.version>1.12.450</amazonaws.version>
         <lombok.version>1.18.26</lombok.version>
-        <sqlite.version>3.41.2.1</sqlite.version>
     </properties>
     <dependencies>
         <dependency>
@@ -69,14 +68,9 @@
             <version>${jjwt.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>${sqlite.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.zsoltfabok</groupId>
-            <artifactId>sqlite-dialect</artifactId>
-            <version>1.0</version>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
