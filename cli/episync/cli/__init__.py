@@ -16,6 +16,7 @@ import click
 import pandas as pd
 import requests
 from fastapi import FastAPI, File, UploadFile
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
@@ -84,6 +85,22 @@ def cli(context, debug, ini):
         CONFIG.read(ini)
 
     db = CONFIG.get("database", "uri")
+    POSTGRES_ROOT = (
+            "/".join(db.rsplit("/")[:-1]) + "/"
+    )
+    try:
+        engine = create_engine(POSTGRES_ROOT + "postgres")
+        session = sessionmaker(bind=engine)()
+
+        session.connection().connection.set_isolation_level(0)
+        session.execute(text("CREATE DATABASE episync"))
+        session.connection().connection.set_isolation_level(1)
+        print("Database created")
+        session.commit()
+        session.close()
+    except Exception as ex:
+        pass
+
     logging.info("database %s", db)
     engine = create_engine(db, echo=False, isolation_level="REPEATABLE READ")
     session = Session(engine)
@@ -212,7 +229,6 @@ def start(context):
     import uvicorn
     from pydantic import BaseModel
 
-    engine = context.obj["engine"]
     app = FastAPI(
         title="EpiSync",
         description="EpiSync Data Dictionary API",
@@ -244,7 +260,6 @@ def start(context):
         print("DF", df)
         db = CONFIG.get("database", "uri")
         print(db)
-        engine = create_engine(db, echo=True, isolation_level="REPEATABLE READ")
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -280,8 +295,11 @@ def start(context):
 @click.option(
     "-d", "--desc", is_flag=True, default=False, help="Add the field description"
 )
+@click.option(
+    "-x", "--xml", is_flag=True, default=False, help="Add the xml mapping"
+)
 @click.pass_context
-def show_ddl(context, jsonformat, desc):
+def show_ddl(context, jsonformat, desc, xml):
     """Show the current EpiSync DDL"""
     from prettytable import PrettyTable
 
@@ -290,14 +308,16 @@ def show_ddl(context, jsonformat, desc):
     cols = ["Column", "Name"]
     if desc:
         cols.append("Description")
-    cols += ["Type", "Rule", "Cardinality", "XML"]
+    cols += ["Type", "Rule", "Cardinality"]
+
+    if xml:
+        cols.append("XML")
 
     x.field_names = cols
     x._max_width = {"Name": 30, "Column": 30, "Rule": 20, "Description": 120}
 
     db = CONFIG.get("database", "uri")
 
-    engine = create_engine(db, echo=True, isolation_level="REPEATABLE READ")
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -311,10 +331,12 @@ def show_ddl(context, jsonformat, desc):
 
             row_list = list(dd_rows)
             for row in row_list:
-                if not desc:
-                    _row = [row[0], row[1], row[3], row[4], row[5], row[6]]
-                else:
-                    _row = row
+                _row = [row[0], row[1], row[3], row[4], row[5]]
+                if desc:
+                    _row.insert(2, row[2])
+                if xml:
+                    _row.append(row[6])
+
                 x.add_row(_row)
 
             if not jsonformat:
@@ -345,7 +367,6 @@ def drop_ddl(context):
     """Drop the EpiSync DDL Data Dictionary schemas"""
     db = CONFIG.get("database", "uri")
 
-    engine = create_engine(db, echo=True, isolation_level="REPEATABLE READ")
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -370,9 +391,8 @@ def drop_ddl(context):
 @click.pass_context
 def create_ddl(context):
     """Create the EpiSync DDL Data Dictionary"""
-    db = CONFIG.get("database", "uri")
 
-    engine = create_engine(db, echo=True, isolation_level="REPEATABLE READ")
+    db = CONFIG.get("database", "uri")
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
