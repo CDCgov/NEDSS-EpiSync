@@ -99,7 +99,7 @@ def cli(context, debug, ini):
         session.commit()
         session.close()
     except Exception as ex:
-        logging.error(ex)
+        pass
 
     logging.info("database %s", db)
     engine = create_engine(db, echo=False, isolation_level="REPEATABLE READ")
@@ -295,8 +295,11 @@ def start(context):
 @click.option(
     "-d", "--desc", is_flag=True, default=False, help="Add the field description"
 )
+@click.option(
+    "-x", "--xml", is_flag=True, default=False, help="Add the xml mapping"
+)
 @click.pass_context
-def show_ddl(context, jsonformat, desc):
+def show_ddl(context, jsonformat, desc, xml):
     """Show the current EpiSync DDL"""
     from prettytable import PrettyTable
 
@@ -305,7 +308,10 @@ def show_ddl(context, jsonformat, desc):
     cols = ["Column", "Name"]
     if desc:
         cols.append("Description")
-    cols += ["Type", "Rule", "Cardinality", "XML"]
+    cols += ["Type", "Rule", "Cardinality"]
+
+    if xml:
+        cols.append("XML")
 
     x.field_names = cols
     x._max_width = {"Name": 30, "Column": 30, "Rule": 20, "Description": 120}
@@ -325,10 +331,12 @@ def show_ddl(context, jsonformat, desc):
 
             row_list = list(dd_rows)
             for row in row_list:
-                if not desc:
-                    _row = [row[0], row[1], row[3], row[4], row[5], row[6]]
-                else:
-                    _row = row
+                _row = [row[0], row[1], row[3], row[4], row[5]]
+                if desc:
+                    _row.insert(2, row[2])
+                if xml:
+                    _row.append(row[6])
+
                 x.add_row(_row)
 
             if not jsonformat:
