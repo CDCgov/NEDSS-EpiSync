@@ -7,3 +7,4 @@ deliverables/cli/*.xlsx
 deliverables/cli/*.xlsx
 .idea
 
+.DS_Store
