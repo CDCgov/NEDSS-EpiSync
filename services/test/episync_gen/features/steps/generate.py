@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+import csv
 
 @given('I have url endpoint "{url}"')
 def step_impl(context, url):
@@ -61,3 +62,40 @@ def step_impl(context, method, file_path):
     response = requests.request("POST", context.url, headers=headers, data=payload, files=files)
     context.response = response
     print(response.text)
+
+@then(u'I read CSV')
+def step_impl(context):
+    location = context.response.headers['Location']
+    file_name = str(location).split("/")[-1]
+    # breakpoint()
+    with open("/Users/MansiShah/episync/"+file_name) as csvFile:
+        csvReader = csv.reader(csvFile, delimiter=',')
+        for row in csvReader:
+            print(row)
+
+@then(u'compare generated csv with expected csv')
+def step_impl(context):
+    with open('csvFile', 'r') as csv1, open('final expected location', 'r') as csv2:
+        actual = csv1.readlines()
+        expected = csv2.readlines()
+
+    # Create CSV file with differences
+    with open('data_diff.csv', 'w') as outFile:
+            for row in expected:
+                if row not in actual:
+                    outFile.write(row)
+                else:
+                    print("CSV is as expected")
+
+    # Compare columns of two csvs
+    # Expected columns in csv
+    headers_list = ['episync_mmg_message_profile_identifier', 'episync_mmg_race', 'episync_mmg_local_subject_id','episync_mmg_ethnic_group', 'episync_mmg_sex','episync_mmg_subject_address_zip','episync_mmg_subject_address_state', 'episync_mmg_birth_date']
+    import_headers = df.csvFile
+        print(import_headers)
+
+
+
+
+
+
+

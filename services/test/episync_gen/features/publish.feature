@@ -14,7 +14,9 @@ Feature: Verify token generation on publish REST API
       And I capture the auth token
 
       Given I have url endpoint "http://localhost:8088/feed/upload/xml"
-      And I make "POST" call with xml file "NBSXML.xml"
+      And I make "POST" call with xml file "Intermediate_NND_Message.xml"
 #      And I make "POST" call with xml file "/Users/PATH_TO_XML.xml"
       And the response code is "201"
       And message is "{"code":201,"message":"Transform to CSV: success"}"
+      Then I read CSV
+      And compare generated csv with expected csv
