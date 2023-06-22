@@ -1,5 +1,6 @@
 package com.episync.publish.service;
 
+import com.episync.publish.shared.CsvWriterBean;
 import com.episync.publish.shared.SimpleResponse;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.http.HttpStatus;
@@ -10,14 +11,22 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public abstract class AbstractXMLProcessor implements XMLProcessor{
+
+    private final CsvWriterBean writerBean;
+
+    public AbstractXMLProcessor(CsvWriterBean writerBean) {
+        this.writerBean = writerBean;
+    }
+
     @Override
     public ResponseEntity<?> xmlToCsv(InputStreamSource xmlFile) {
         try {
-            String csvContent = transform(xmlFile);
+            String[][] csvContent = transform(xmlFile);
             String fileName = "episync-" + System.currentTimeMillis() + ".csv";
             File newFile = new File(System.getProperty("user.home") + File.separator + fileName);
+
             try (FileOutputStream outputStream = new FileOutputStream(newFile)) {
-                outputStream.write(csvContent.getBytes());
+                writerBean.writeDataToStream(csvContent, outputStream);
             }
             return ResponseEntity.created(newFile.toURI()).body(new SimpleResponse(HttpStatus.CREATED.value(), "Transform to CSV: success"));
         } catch (Exception e) {
@@ -25,6 +34,6 @@ public abstract class AbstractXMLProcessor implements XMLProcessor{
         }
     }
 
-    abstract String transform(InputStreamSource xmlFeed) throws IOException;
+    abstract String[][] transform(InputStreamSource xmlFeed) throws IOException;
 
 }

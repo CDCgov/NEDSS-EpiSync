@@ -2,7 +2,7 @@ package com.episync.publish.service;
 
 import com.episync.publish.entity.EpisyncMmg;
 import com.episync.publish.entity.EpisyncRepository;
-import com.episync.publish.shared.CsvWriterBean;
+import com.episync.publish.shared.CsvWriterS3Bean;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.Optional;
 public class EpisyncFeedServiceImpl implements EpisyncFeedService {
 
     private final EpisyncRepository repository;
-    private final CsvWriterBean csvWriter;
+    private final CsvWriterS3Bean csvWriter;
 
     @Override
     public List<EpisyncMmg> getEpisyncFeed(LocalDate begin, Optional<LocalDate> end) {

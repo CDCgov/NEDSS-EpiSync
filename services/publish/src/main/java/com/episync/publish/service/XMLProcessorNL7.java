@@ -1,8 +1,7 @@
 package com.episync.publish.service;
 
 import com.episync.publish.config.XMLConfigNL7;
-import com.episync.publish.shared.SimpleResponse;
-import com.fasterxml.jackson.core.json.JsonWriteFeature;
+import com.episync.publish.shared.CsvWriterBean;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -12,16 +11,10 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.InputStreamSource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 @Service
@@ -30,33 +23,38 @@ public class XMLProcessorNL7 extends AbstractXMLProcessor {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final XMLConfigNL7 xmlConfig;
 
-    public XMLProcessorNL7(XMLConfigNL7 xmlConfig) {
+    public XMLProcessorNL7(XMLConfigNL7 xmlConfig, CsvWriterBean writerBean) {
+        super(writerBean);
         this.xmlConfig = xmlConfig;
-        objectMapper.disable(JsonWriteFeature.QUOTE_FIELD_NAMES.mappedFeature());
     }
 
     @Override
-    String transform(InputStreamSource xmlFeed) throws IOException {
+    String[][] transform(InputStreamSource xmlFeed) throws IOException {
         XmlMapper xmlMapper = new XmlMapper();
-        StringBuilder csvHead = new StringBuilder();
-        StringBuilder csvBody = new StringBuilder();
         Map<String, JsonNode> map = new HashMap<>();
         JsonNode root = xmlMapper.readTree(xmlFeed.getInputStream());
         traverseXml(root, map, StringUtils.EMPTY);
 
-        for (String mmgName: xmlConfig.getMmg().values()) {
-            csvHead.append(mmgName).append(",");
+        Collection<String> mmgNames = xmlConfig.getMmg().values();
+        String[][] csvContent = new String[2][mmgNames.size()];
+
+        int i = 0;
+        for (String mmgName: mmgNames) {
+            csvContent[0][i] = mmgName;
+
             JsonNode node = map.computeIfAbsent(mmgName, k-> NullNode.getInstance());
             if (node.isNull()) {
-                csvBody.append(",");
+                csvContent[1][i] = "";
+
             } else if (node.isValueNode()) {
-                csvBody.append(node).append(",");
+                csvContent[1][i] = node.textValue();
             } else {
-                csvBody.append("\"").append(objectMapper.writeValueAsString(node)).append("\",");
+                csvContent[1][i] = node.toString();
             }
+            i++;
         }
 
-        return csvHead.append("\n").append(csvBody).toString();
+        return csvContent;
     }
 
     private void traverseXml(JsonNode node, Map<String, JsonNode> map, String parent) {

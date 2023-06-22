@@ -16,9 +16,9 @@ import java.util.List;
 @Component
 public class ExportFeedAspect {
 
-    private final CsvWriterBean writerBean;
+    private final CsvWriterS3Bean writerBean;
 
-    public ExportFeedAspect(CsvWriterBean writerBean) {
+    public ExportFeedAspect(CsvWriterS3Bean writerBean) {
         this.writerBean = writerBean;
     }
 
