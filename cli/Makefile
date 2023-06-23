@@ -13,8 +13,8 @@ init: depends
 	echo "Virtual environment complete."
 	echo "Downloading EpiSync MMG DD"
 	wget -O ~/episync-dd.xlsx https://raw.githubusercontent.com/CDCgov/NEDSS-EpiSync/main/mmg/episync-dd.xlsx
-	echo "Copying PHINVADS Race spreadsheet to "$HOME
-	cp ../docs/2022_RaceAndEthnicityFinal_TablesforPub_Final.xlsx $HOME
+	echo "Copying PHINVADS Race spreadsheet to home directory"
+	cp ../docs/2022_RaceAndEthnicityFinal_TablesforPub_Final.xlsx ~
 
 .PHONY: format
 format:
