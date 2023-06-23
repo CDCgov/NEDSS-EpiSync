@@ -401,16 +401,10 @@ def create_ddl(context):
             mmg_dd = CONFIG.get("mmg", "file")
             mmg_des = pd.read_excel(mmg_dd, sheet_name="Data Elements")
 
-            r = requests.get(
-                "https://phinvads.cdc.gov/vads/DownloadHotTopicDetailFile.action?filename=29DF7191-76CC-E611-8E51-0017A477041A",
-                allow_redirects=True,
-            )
-            open("2022_RaceAndEthnicityFinal_TablesforPub_Final.xlsx", "wb").write(
-                r.content
-            )
+            phinvads_race = CONFIG.get("phinvads", "race")
 
             phinvads_race = pd.read_excel(
-                "2022_RaceAndEthnicityFinal_TablesforPub_Final.xlsx",
+                phinvads_race,
                 sheet_name="EthnicityMapping2022To2000",
             )
 
