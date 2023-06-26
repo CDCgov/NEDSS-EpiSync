@@ -16,7 +16,8 @@ ADD cli/Makefile /opt/episync/Makefile
 ADD cli/README.md /opt/episync/README.md
 ADD services/dictionary/episync.ini /opt/episync/episync.ini
 
-RUN make init
+RUN python3 -m venv venv
+#RUN make init
 RUN venv/bin/pip3 install -r requirements.txt
 RUN venv/bin/python3 setup.py install
 
