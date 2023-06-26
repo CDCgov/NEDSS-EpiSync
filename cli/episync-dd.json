@@ -1,0 +1,605 @@
+[
+    {
+        "col": "episync_mmg_message_profile_identifier",
+        "name": "Message Profile Identifier",
+        "type": "id",
+        "rule": "",
+        "cardinality": "Y/2",
+        "description": "Message Profile Identifiers provide a literal value to use for the references in MSH-21. MSH-21 will always contain a reference to the notification type in the \"PHINProfileID\" namespace and a reference to the implemented version of the Generic MMG in the \"PHINMsgMapID\" namespace. For conditions that have a condition-specific MMG, MSH-21 will also contain a reference to that MMG that is also in the \"PHINMsgMapID\" namespace.",
+        "xml": "HL7MSH.MessageProfileIdentifier"
+    },
+    {
+        "col": "episync_mmg_local_subject_id",
+        "name": "Local Subject ID",
+        "type": "id",
+        "rule": "",
+        "cardinality": "N",
+        "description": "The local ID of the subject/entity",
+        "xml": "PatientIdentification.PatientIdentifierList"
+    },
+    {
+        "col": "episync_mmg_birth_date",
+        "name": "Birth Date",
+        "type": "date",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Patient\u2019s date of birth",
+        "xml": "PatientIdentification.DateTimeOfBirth"
+    },
+    {
+        "col": "episync_mmg_sex",
+        "name": "Subject\u2019s Sex",
+        "type": "sex",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Subject\u2019s current sex",
+        "xml": "PatientIdentification.AdministrativeSex"
+    },
+    {
+        "col": "episync_mmg_race",
+        "name": "Race Category",
+        "type": "race",
+        "rule": "episync_mmg_race IN (PHINVADS_RACE)",
+        "cardinality": "Y",
+        "description": "Race category - Major OMB Race Categories. Detailed race information would be rolled up to these major OMB race categories.",
+        "xml": "PatientIdentification.Race"
+    },
+    {
+        "col": "episync_mmg_other_race",
+        "name": "Other Race Text",
+        "type": "race",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Other Race Text",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_ethnic_group",
+        "name": "Ethnic Group",
+        "type": "ethnicity",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Based on the self-identity of the subject as Hispanic or Latino",
+        "xml": "PatientIdentification.EthnicGroup"
+    },
+    {
+        "col": "episync_mmg_birth_country",
+        "name": "Country of Birth",
+        "type": "country",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Country of Birth",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_other_birth_place",
+        "name": "Other Birth Place",
+        "type": "city",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Other Birth Place",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_country_of_residence",
+        "name": "Country of Usual Residence",
+        "type": "country",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Where does the person usually live (defined as their residence).\n\nThis variable replaces the Foreign Resident variable mentioned in 11-SI-04 titled \"Revised Guidelines for Determining Residency for Disease Reporting\" located at http://c.ymcdn.com/sites/www.cste.org/resource/resmgr/PS/11-SI-04.pdf.\n\nCases with country of usual residence equal to the US, Puerto Rico, and US Virgin Islands as well as unknown and null responses will be included in the state-specific counts and rates.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_subject_address_county",
+        "name": "Subject Address County",
+        "type": "county",
+        "rule": "",
+        "cardinality": "N",
+        "description": "County of residence of the subject",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_subject_address_state",
+        "name": "Subject Address State",
+        "type": "state",
+        "rule": "",
+        "cardinality": "N",
+        "description": "State of residence of the subject",
+        "xml": "PatientAddress.HL7StateOrProvince"
+    },
+    {
+        "col": "episync_mmg_subject_address_zip",
+        "name": "Subject Address ZIP Code",
+        "type": "zip",
+        "rule": "",
+        "cardinality": "N",
+        "description": "ZIP Code of residence of the subject",
+        "xml": "PatientAddress.HL7ZipOrPostalCode"
+    },
+    {
+        "col": "episync_mmg_date_of_illness_onset",
+        "name": "Date of Illness Onset",
+        "type": "date",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Date of the beginning of the illness.  Reported date of the onset of symptoms of the condition being reported to the public health system.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_illness_end_date",
+        "name": "Illness End Date",
+        "type": "date",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Date at which the disease or condition ends.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_illness_duration",
+        "name": "Illness Duration",
+        "type": "duration",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Length of time this subject had this disease or condition.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_illness_duration_units",
+        "name": "Illness Duration Units",
+        "type": "time_unit",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Unit of time used to describe the length of the illness or condition.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_pregnancy_status",
+        "name": "Pregnancy Status",
+        "type": "yesnounk",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Indicates whether the subject was pregnant at the time of the event.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_diagnosis_date",
+        "name": "Diagnosis Date",
+        "type": "date",
+        "rule": "episync_mmg_diagnosis_date > episync_mmg_birth_date AND (episync_mmg_diagnosis_date < episync_mmg_deceased_date AND episync_mmg_diagnosis_date < episync_mmg_illness_end_date)",
+        "cardinality": "N",
+        "description": "Earliest date of diagnosis (clinical or laboratory) of condition being reported to public health system.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_hospitalized",
+        "name": "Hospitalized",
+        "type": "yesnounk",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Was subject hospitalized because of this event?",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_admission_date",
+        "name": "Admission Date",
+        "type": "date",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Subject\u2019s most recent admission date to the hospital for the condition covered by the investigation.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_discharge_date",
+        "name": "Discharge Date",
+        "type": "date",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Subject's most recent discharge date from the hospital for the condition covered by the investigation.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_duration_of_hospital_stay_in_days",
+        "name": "Duration of Hospital Stay in Days",
+        "type": "duration",
+        "rule": "episync_mmg_duration_of_hospital_stay_in_days > 0 and episync_mmg_duration_of_hospital_stay_in_days < 120",
+        "cardinality": "N",
+        "description": "Subject's duration of stay at the hospital for the condition covered by the investigation.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_subject_died",
+        "name": "Subject Died",
+        "type": "yesnounk",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Did the subject die from this illness or complications of this illness?",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_deceased_date",
+        "name": "Deceased Date",
+        "type": "date",
+        "rule": "",
+        "cardinality": "N",
+        "description": "If the subject died from this illness or complications associated with this illness, indicate the date of death.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_condition_code",
+        "name": "Condition Code",
+        "type": "condition_code",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Condition or event that constitutes the reason the notification is being sent.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_local_record_id",
+        "name": "Local Record ID",
+        "type": "id",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Sending system-assigned local ID of the case investigation with which the subject is associated.",
+        "xml": "ObservationRequest.FillerOrderNumber"
+    },
+    {
+        "col": "episync_mmg_state_case_identifier",
+        "name": "State Case Identifier",
+        "type": "id",
+        "rule": "",
+        "cardinality": "N",
+        "description": "States use this identifier to link NEDSS investigations back to their own state investigations.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_legacy_case_identifier",
+        "name": "Legacy Case Identifier",
+        "type": "id",
+        "rule": "",
+        "cardinality": "N",
+        "description": "CDC uses this identifier to link current case notifications to case notifications submitted by a previous system (NETSS, STD-MIS, etc.).  If migrating between systems, incorporate the original Local Record ID (INV168 in OBR-3) into the Legacy Case Identifier (77997-5) field in the new system.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_age_at_case_investigation",
+        "name": "Age at Case Investigation",
+        "type": "age",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Subject age at time of case investigation",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_age_unit_at_case_investigation",
+        "name": "Age Unit at Case Investigation",
+        "type": "years",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Subject age unit at time of case investigation",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_case_disease_imported_code",
+        "name": "Case Disease Imported Code",
+        "type": "code",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Indication of where the disease/condition was likely acquired.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_imported_country",
+        "name": "Imported Country",
+        "type": "country",
+        "rule": "",
+        "cardinality": "N",
+        "description": "If the disease or condition was imported, indicates the country in which the disease was likely acquired.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_imported_state",
+        "name": "Imported State",
+        "type": "state",
+        "rule": "",
+        "cardinality": "N",
+        "description": "If the disease or condition was imported, indicates the state in which the disease was likely acquired.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_imported_city",
+        "name": "Imported City",
+        "type": "city",
+        "rule": "",
+        "cardinality": "N",
+        "description": "If the disease or condition was imported, indicates the city in which the disease was likely acquired.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_imported_county",
+        "name": "Imported County",
+        "type": "country",
+        "rule": "",
+        "cardinality": "N",
+        "description": "If the disease or condition was imported, contains the county of origin of the disease or condition.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_country_of_exposure",
+        "name": "Country of Exposure",
+        "type": "country",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Indicates the country in which the disease was likely acquired.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_state_or_province_of_exposure",
+        "name": "State or Province of Exposure",
+        "type": "state/province",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Indicates the state (or Province) in which the disease was likely acquired.\n\nNote: If Country of exposure was US, populate with US State. If Country of exposure was Mexico, populate with Mexican State. If country of exposure was Canada, populated with Canadian Province. For all other countries, leave null.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_city_of_exposure",
+        "name": "City of Exposure",
+        "type": "city",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Indicates the city in which the disease was likely acquired\n\nNote: If country of exposure is US, populate with US city. For all other cities, can be populated but not required.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_county_of_exposure",
+        "name": "County of Exposure",
+        "type": "county",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Indicates the county in which the disease was likely acquired\n\nNote: If country of exposure is US, populate with US county.  Otherwise, leave null.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_transmission_mode",
+        "name": "Transmission Mode",
+        "type": "transmission_mode",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Code for the mechanism by which disease or condition was acquired by the subject of the investigation.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_case_class_status_code",
+        "name": "Case Class Status Code",
+        "type": "code",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Status of the case/event as suspect, probable, confirmed, or not a case per CSTE/CDC/ surveillance case definitions.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_immediate_national_notifiable_condition",
+        "name": "Immediate National Notifiable Condition",
+        "type": "condition_code",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Does this case meet the criteria for immediate (extremely urgent or urgent) notification to CDC? \n\nRefer to the Notifications Requirements for the relevant year to see the NNCs by notification timeliness category at the following link: https://ndc.services.cdc.gov/event-codes-other-surveillance-resources/",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_case_outbreak_indicator",
+        "name": "Case Outbreak Indicator",
+        "type": "string",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Denotes whether the reported case was associated with an identified outbreak.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_case_outbreak_name",
+        "name": "Case Outbreak Name",
+        "type": "string",
+        "rule": "",
+        "cardinality": "N",
+        "description": "A state-assigned name for an identified outbreak.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_notification_result_status",
+        "name": "Notification Result Status",
+        "type": "string",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Status of the notification",
+        "xml": "ObservationRequest.ResultStatus"
+    },
+    {
+        "col": "episync_mmg_jurisdiction_code",
+        "name": "Jurisdiction Code",
+        "type": "code",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Identifier for the physical site from which the notification is being submitted.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_reporting_source_type_code",
+        "name": "Reporting Source Type Code",
+        "type": "code",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Type of facility or provider associated with the source of information sent to Public Health.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_reporting_source_zip_code",
+        "name": "Reporting Source ZIP Code",
+        "type": "code",
+        "rule": "",
+        "cardinality": "N",
+        "description": "ZIP Code of the reporting source for this case.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_binational_reporting_criteria",
+        "name": "Binational Reporting Criteria",
+        "type": "string",
+        "rule": "",
+        "cardinality": "Y",
+        "description": "For cases meeting the binational criteria, select all the criteria which are met.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_person_reporting_to_cdc_name",
+        "name": "Person Reporting to CDC - Name",
+        "type": "string",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Name of the person who is reporting the case to the CDC.  This is the person that CDC should contact in a state if there are questions regarding this case notification.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_person_reporting_to_cdc_phone",
+        "name": "Person Reporting to CDC - Phone Number",
+        "type": "phone",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Phone Number of the person who is reporting the case to the CDC.  This is the person that CDC should contact in a state if there are questions regarding this case notification.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_person_reporting_to_cdc_email",
+        "name": "Person Reporting to CDC - Email",
+        "type": "email",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Email Address of the person reporting the case to the CDC. This is the person that CDC should contact in a state if there are questions regarding this case notification.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_case_investigation_start_date",
+        "name": "Case Investigation Start Date",
+        "type": "date",
+        "rule": "",
+        "cardinality": "N",
+        "description": "The date the case investigation was initiated.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_date_first_electronically_submitted",
+        "name": "Date First Electronically Submitted",
+        "type": "date",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Date/time the notification was first electronically sent to CDC.  This value does not change after the original notification.",
+        "xml": "ObservationRequest.ObservationDateTime"
+    },
+    {
+        "col": "episync_mmg_date_of_electronic_case_notification_to_cdc",
+        "name": "Date of Electronic Case Notification to CDC",
+        "type": "date",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Date/time this version of the electronic case notification was sent.  It will be the same value as NOT103 for the original notification.  For updates, this is the update/send date/time.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_date_reported",
+        "name": "Date Reported",
+        "type": "date",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Date that a health department first suspected the subject might have the condition.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_earliest_date_reported_to_county",
+        "name": "Earliest Date Reported to County",
+        "type": "date",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Earliest date reported to county public health system.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_earliest_date_reported_to_state",
+        "name": "Earliest Date Reported to State",
+        "type": "date",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Earliest date reported to state public health system.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_mmwr_week",
+        "name": "MMWR Week",
+        "type": "week",
+        "rule": "",
+        "cardinality": "N",
+        "description": "MMWR Week for which case information is to be counted for MMWR publication.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_mmwr_year",
+        "name": "MMWR Year",
+        "type": "year",
+        "rule": "",
+        "cardinality": "N",
+        "description": "MMWR Year (YYYY) for which case information is to be counted for MMWR publication.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_date_cdc_was_first_verbally_notified_of_this_case",
+        "name": "Date CDC Was First Verbally Notified of This Case",
+        "type": "date",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Date the case of an Immediately National Notifiable Condition was first verbally reported to the CDC Emergency Operation Center or the CDC Subject Matter Expert responsible for this condition.",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_date_first_reported_to_phd",
+        "name": "Date First Reported to PHD",
+        "type": "date",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Date the report was first sent to the public health department (local, county or state) by reporter (physician, lab, etc.).",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_reporting_state",
+        "name": "Reporting State",
+        "type": "state",
+        "rule": "",
+        "cardinality": "N",
+        "description": "State reporting the notification",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_reporting_county",
+        "name": "Reporting County",
+        "type": "county",
+        "rule": "",
+        "cardinality": "N",
+        "description": "County reporting the notification",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_national_reporting_jurisdiction",
+        "name": "National Reporting Jurisdiction",
+        "type": "jurisdiction",
+        "rule": "",
+        "cardinality": "N",
+        "description": "National jurisdiction reporting the notification to CDC",
+        "xml": ""
+    },
+    {
+        "col": "episync_mmg_comment",
+        "name": "Comment",
+        "type": "text",
+        "rule": "",
+        "cardinality": "N",
+        "description": "Use this field, if needed, to communicate anything unusual about this case, which is not already covered with the other data elements.  \n\nDo not send personally identifiable information to CDC in this field.",
+        "xml": ""
+    }
+]
