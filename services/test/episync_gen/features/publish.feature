@@ -20,3 +20,17 @@ Feature: Verify token generation on publish REST API
       And message is "{"code":201,"message":"Transform to CSV: success"}"
       Then I read CSV
       And compare generated csv with expected csv
+
+    Scenario: Make a POST call to with Lab xml
+      Given I have url endpoint "http://localhost:8088/oauth/token"
+      And I make "POST" call with body "{"username": "episync", "password": "secret"}"
+      And the response code is "200"
+      And I capture the auth token
+
+      Given I have url endpoint "http://localhost:8088/feed/upload/xml"
+      And I make "POST" call with xml file "NBSXML.xml"
+#      And I make "POST" call with xml file "/Users/PATH_TO_XML.xml"
+      And the response code is "201"
+      And message is "{"code":201,"message":"Transform to CSV: success"}"
+      Then I read CSV
+      And compare generated csv with expected csv

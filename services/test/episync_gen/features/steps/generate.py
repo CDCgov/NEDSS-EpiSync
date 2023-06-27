@@ -84,18 +84,16 @@ def step_impl(context):
 
     # Create CSV file with differences
     with open('data_diff.csv', 'w') as outFile:
-            for row in expected:
-                if row not in actual:
-                    outFile.write(row)
-                else:
-                    print("CSV is as expected")
+        for row in expected:
+            if row not in actual:
+                outFile.write(row)
+                assert False, "CSV is not as expected"
+                # print("CSV is not as expected")
 
-    # # Compare columns of two csv
-    #
-    # # Expected columns in csv
-    # headers_list = ['episync_mmg_message_profile_identifier', 'episync_mmg_race', 'episync_mmg_local_subject_id','episync_mmg_ethnic_group', 'episync_mmg_sex','episync_mmg_subject_address_zip','episync_mmg_subject_address_state', 'episync_mmg_birth_date']
-    
-    #  print("List of column names : ", list_of_column_names[0])
+            else:
+                print("CSV is as expected")
+
+
 
 
 
