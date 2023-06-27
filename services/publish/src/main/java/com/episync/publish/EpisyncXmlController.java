@@ -1,6 +1,6 @@
 package com.episync.publish;
 
-import com.episync.publish.service.XMLProcessor;
+import com.episync.publish.service.XmlProcessor;
 import com.episync.publish.shared.SimpleResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -24,9 +24,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/feed")
 public class EpisyncXmlController {
-    private final XMLProcessor xmlProcessor;
+    private final XmlProcessor xmlProcessor;
 
-    public EpisyncXmlController(@Qualifier("NNDProcessor") XMLProcessor xmlProcessor) {
+    public EpisyncXmlController(@Qualifier("ProcessorNnd") XmlProcessor xmlProcessor) {
         this.xmlProcessor = xmlProcessor;
     }
 
