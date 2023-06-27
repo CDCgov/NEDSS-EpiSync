@@ -44,6 +44,7 @@ sqltypes = {
     "number": "int",
     "age": "int",
     "duration": "int",
+    "timestamp": "timestamp",
 }
 
 
@@ -203,7 +204,7 @@ def get_edd_json(session):
         with session:
             dd_rows = session.execute(
                 text(
-                "select col, name, description,type, rule, cardinality, xml  from episync_dd"
+                "select col, name, description,type, rule, cardinality, xmlc, xmld  from episync_dd"
                 )
             )
 
@@ -216,7 +217,8 @@ def get_edd_json(session):
                     "rule": row[4].strip() if row[4] else "",
                     "cardinality": row[5].strip() if row[5] else "",
                     "description": row[2].strip() if row[2] else "",
-                    "xml": row[6].strip() if row[6] else "",
+                    "xmlc": row[6].strip() if row[6] else "",
+                    "xmld": row[7].strip() if row[7] else "",
                 }
                 for row in row_list
             ]
@@ -246,7 +248,8 @@ def start(context):
         type: str
         cardinality: str
         description: str
-        xml: str
+        xmlc: str
+        xmld: str
 
     @app.get("/dictionary/", response_model=list[EpiSyncDataField], tags=["dictionary"])
     async def dictionary():
@@ -311,7 +314,8 @@ def show_ddl(context, jsonformat, desc, xml):
     cols += ["Type", "Rule", "Cardinality"]
 
     if xml:
-        cols.append("XML")
+        cols.append("XML Column")
+        cols.append("XML Data")
 
     x.field_names = cols
     x._max_width = {"Name": 30, "Column": 30, "Rule": 20, "Description": 120}
@@ -325,7 +329,7 @@ def show_ddl(context, jsonformat, desc, xml):
         with context.obj["session"] as session:
             dd_rows = session.execute(
                 text(
-                    "select col, name, description,type, rule, cardinality, xml  from episync_dd"
+                    "select col, name, description,type, rule, cardinality, xmlc, xmld  from episync_dd"
                 )
             )
 
@@ -336,6 +340,7 @@ def show_ddl(context, jsonformat, desc, xml):
                     _row.insert(2, row[2])
                 if xml:
                     _row.append(row[6])
+                    _row.append(row[7])
 
                 x.add_row(_row)
 
@@ -352,7 +357,8 @@ def show_ddl(context, jsonformat, desc, xml):
                                 "rule": row[4].strip() if row[4] else "",
                                 "cardinality": row[5].strip() if row[5] else "",
                                 "description": row[2].strip() if row[2] else "",
-                                "xml": row[6].strip() if row[6] else "",
+                                "xmlc": row[6].strip() if row[6] else "",
+                                "xmld": row[7].strip() if row[7] else "",
                             }
                             for row in row_list
                         ],
@@ -428,7 +434,8 @@ def create_ddl(context):
                 if isinstance(code, str)
             ]
 
-            epi_de_xml = mmg_des["XML Mapping"].tolist()
+            epi_de_xmlc = mmg_des["XML Column Mapping"].tolist()
+            epi_de_xmld = mmg_des["XML Data Mapping"].tolist()
             epi_de_cols = mmg_des["EpiSync DE Name"].tolist()
             epi_de_types = mmg_des["EpiSync DE Type"].tolist()
             epi_de_rules = mmg_des["EpiSync DE Constraint"].tolist()
@@ -470,20 +477,21 @@ def create_ddl(context):
             print("Creating episync_dd table")
             session.execute(
                 text(
-                    "CREATE table episync_dd (col text, type text, rule text, description text, cardinality text, name text, xml text)"
+                    "CREATE table episync_dd (col text, type text, rule text, description text, cardinality text, name text, xmlc text, xmld text)"
                 )
             )
 
             session.commit()
             print("Created episync_dd table.")
-            for col, type, rule, description, cardinality, name, xml in zip(
+            for col, type, rule, description, cardinality, name, xmlc, xmld in zip(
                 epi_de_cols,
                 epi_de_types,
                 epi_de_rules,
                 epi_de_desc,
                 epi_de_card,
                 epi_de_names,
-                epi_de_xml
+                epi_de_xmlc,
+                epi_de_xmld
             ):
                 try:
                     float(type)
@@ -498,7 +506,8 @@ def create_ddl(context):
                     "name": name,
                     "description": description,
                     "cardinality": cardinality,
-                    "xml": xml
+                    "xmlc": xmlc,
+                    "xmld": xmld
                 }
                 df = pd.DataFrame([metarow])
                 df.to_sql(
