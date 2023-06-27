@@ -488,7 +488,7 @@
     {
         "col": "episync_mmg_date_first_electronically_submitted",
         "name": "Date First Electronically Submitted",
-        "type": "date",
+        "type": "timestamp",
         "rule": "",
         "cardinality": "N",
         "description": "Date/time the notification was first electronically sent to CDC.  This value does not change after the original notification.",
@@ -497,7 +497,7 @@
     {
         "col": "episync_mmg_date_of_electronic_case_notification_to_cdc",
         "name": "Date of Electronic Case Notification to CDC",
-        "type": "date",
+        "type": "timestamp",
         "rule": "",
         "cardinality": "N",
         "description": "Date/time this version of the electronic case notification was sent.  It will be the same value as NOT103 for the original notification.  For updates, this is the update/send date/time.",
