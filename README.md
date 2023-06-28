@@ -332,6 +332,23 @@ a2bc7ffe39a0   nedss/episync-publish:latest                       "java -jar -Du
 c87202ba0847   quay.io/minio/minio:RELEASE.2023-05-04T21-44-30Z   "/usr/bin/docker-ent…"   3 hours ago      Up 3 seconds (health: starting)   9000-9001/tcp                                         minio4
 d6bfcb0156de   dpage/pgadmin4                                     "/entrypoint.sh"         3 hours ago      Up 3 seconds                      443/tcp, 0.0.0.0:8008->80/tcp, :::8008->80/tcp        pgadmin
 ```
+## BDD Testing 
+
+## Generate test data CSV from DDL
+```shell
+$ cd $PROJECT_ROOT
+$ docker build -t mansi-python-app -f services/test/Dockerfile .
+$ docker run -it --rm -v $PROJECT_ROOT/services/test/episync_gen/docker_vol_shared:/docker_vol_shared --name my-running-app mansi-python-app
+```
+Convertor scenarios to be run from services/test/episync
+## XML to CSV convertor validation
+```shell
+$ behave features/publish.feature -f plain --no-capture
+```
+## html report for BDD test run
+````shell
+$ behave features/publish.feature -f html -o report.html
+````
 ## Architecture
 Below is the current architecture for EpiSync Data Dictionary that addresses the following requirements:
 - Data Elements Stored in secure database, managed by existing tooling and best-practices

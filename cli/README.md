@@ -21,3 +21,11 @@ Now run the episync create ddl create command
 $ source venv/bin/activate
 (venv) $ episync ddl create
 ```
+Command to run BDD test from services-->test-->episync_gen folder
+```
+behave features/publish.feature -f plain --no-capture
+```
+Command to run html report for BDD test from same folder
+````
+behave features/publish.feature -f html -o report.html
+````
