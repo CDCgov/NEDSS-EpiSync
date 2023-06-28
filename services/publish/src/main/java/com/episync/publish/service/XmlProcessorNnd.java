@@ -1,6 +1,5 @@
 package com.episync.publish.service;
 
-import com.episync.publish.config.XMLConfigNND;
 import com.episync.publish.shared.CsvWriterBean;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,14 +19,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@Qualifier("NNDProcessor")
-public class XMLProcessorNND extends AbstractXMLProcessor {
+@Qualifier("ProcessorNnd")
+public class XmlProcessorNnd extends AbstractXmlProcessor {
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final XMLConfigNND xmlConfig;
 
-    public XMLProcessorNND(XMLConfigNND xmlConfig, CsvWriterBean writerBean) {
-        super(writerBean);
-        this.xmlConfig = xmlConfig;
+    public XmlProcessorNnd(CsvWriterBean writerBean, @Qualifier("MappingNnd") XmlMapService mapService) {
+        super(writerBean, mapService);
     }
 
     @Value("${xml.groupId}")
@@ -40,7 +37,7 @@ public class XMLProcessorNND extends AbstractXMLProcessor {
         JsonNode root = xmlMapper.readTree(xmlFeed.getInputStream());
         traverseXml(root, StringUtils.EMPTY, map);
 
-        List<String> mmgNames = xmlConfig.getMmgNames();
+        Set<String> mmgNames = mapService.getMmgNames();
         String[][] csvContent = new String[2][mmgNames.size()];
 
         int i = 0;
@@ -52,7 +49,7 @@ public class XMLProcessorNND extends AbstractXMLProcessor {
             } else {
                 Map<String, List<ColData>> hl7Map = colData.stream().collect(Collectors.groupingBy(ColData::getName));
                 if (hl7Map.size() > 1) { // many-to-one mapping
-                    if (xmlConfig.mayRepeat(mmgName)) {
+                    if (mapService.mayRepeat(mmgName)) {
                         Map<Integer, List<ColData>> groupMap = hl7Map.entrySet().stream().flatMap(e -> e.getValue().stream()).collect(Collectors.groupingBy(ColData::getGroupId));
                         ArrayNode arrayNode = objectMapper.createArrayNode();
                         groupMap.values().forEach(lst -> {
@@ -130,7 +127,7 @@ public class XMLProcessorNND extends AbstractXMLProcessor {
                     key.ifPresent(s -> {
                         JsonNode orderNode = arrayItem.findValue(groupId);
                         int group = orderNode.asInt();
-                        processNode(arrayItem, name, xmlConfig.getDataName(s), s, group, map);
+                        processNode(arrayItem, name, mapService.getDataName(s), s, group, map);
                     });
                 }
             } else if (!child.isValueNode()) {
@@ -138,11 +135,11 @@ public class XMLProcessorNND extends AbstractXMLProcessor {
                 key.ifPresent(s -> {
                     JsonNode orderNode = child.findValue(groupId);
                     int group = orderNode.asInt();
-                    processNode(child, name, xmlConfig.getDataName(s), s, group, map);
+                    processNode(child, name, mapService.getDataName(s), s, group, map);
                 });
             } else {
                 String path = parent + "." + name + "." + child.textValue();
-                if (xmlConfig.hasNndProperty(path)) {
+                if (mapService.hasNndProperty(path)) {
                     return Optional.of(path);
                 }
             }
@@ -161,7 +158,7 @@ public class XMLProcessorNND extends AbstractXMLProcessor {
             String path = parent + "." + name;
             if (path.equals(dataPath)) {
                 String hl7Seg = colPath.substring(StringUtils.ordinalIndexOf(colPath, ".", 2)+1);
-                String mmgCol = xmlConfig.getMmgName(colPath);
+                String mmgCol = mapService.getMmgName(colPath);
                 map.computeIfAbsent(mmgCol, mc -> new ArrayList<>()).add(new ColData(hl7Seg, child, groupId));
                 return;
             }

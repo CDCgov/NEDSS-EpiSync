@@ -13,10 +13,26 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class EpisyncExternalAPIServiceImpl implements EpisyncExternalAPIService{
-    @Value("${es.validate.api}")
+    @Value("${episync.dd.url}/validate")
     private String validateUri;
 
+    @Value("${episync.dd.url}/dictionary")
+    private String ddUri;
+
     private final RestTemplate restTemplate = new RestTemplate();
+
+    public ResponseEntity<String> getDataDictionary() {
+        try {
+
+            ResponseEntity<String> response = restTemplate.getForEntity(ddUri, String.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                return ResponseEntity.ok(response.getBody());
+            }
+            return response;
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @Override
     public ResponseEntity<String> validateFeed(MultipartFile file) {

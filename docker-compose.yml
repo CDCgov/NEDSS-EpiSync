@@ -91,6 +91,7 @@ services:
       - DATA_SOURCE_URL=jdbc:postgresql://episync-db:5432/episync
       - DB_USER_NAME=postgres
       - DB_USER_PASSWORD=episync
+      - EPISYNC_DD_URL=http://episync-dd:8014
     volumes:
         - ~/episync:/home/publish
     ports:
