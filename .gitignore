@@ -2,9 +2,7 @@
 /**/*/venv
 /**/__pycache__
 /**/out.csv
-deliverables/cli/*.db
-deliverables/cli/*.xlsx
-deliverables/cli/*.xlsx
+/services/publish/*.iml
+/services/publish/target/
 .idea
-
 .DS_Store

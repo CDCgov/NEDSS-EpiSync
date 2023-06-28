@@ -10,12 +10,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public abstract class AbstractXMLProcessor implements XMLProcessor{
+public abstract class AbstractXmlProcessor implements XmlProcessor {
 
     private final CsvWriterBean writerBean;
+    protected final XmlMapService mapService;
 
-    public AbstractXMLProcessor(CsvWriterBean writerBean) {
+    public AbstractXmlProcessor(CsvWriterBean writerBean, XmlMapService mapService) {
         this.writerBean = writerBean;
+        this.mapService = mapService;
     }
 
     @Override
