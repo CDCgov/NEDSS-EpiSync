@@ -1,6 +1,6 @@
 # PHINVADS Cheat Sheet
 
-At the primitive type level, health data is very simple.  Everything is a number, a string, a date, an ID, a valueset, and a smattering of other types.
+At the primitive type level, health data is very simple.  Everything is a number, a string, a date, an ID, a valueset (ok, and probably a smattering of other types).
 
 This document is my attempt to understand how CDC's PHINVADS stores Value Sets (aka enumerations), which are the crucial common language of all of health care.
 
