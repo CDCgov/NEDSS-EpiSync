@@ -1,12 +1,14 @@
 # PHINVADS Cheat Sheet
 
-At the primitive type level, health data is very simple.  Everything is a number, a string, a date, an ID, a valueset (ok, and probably a smattering of other types).
+At the primitive type level, health data is very simple.  Everything is a number, a string, a date, an ID, or a Value Set (aka an enumeration)! (ok, ok, and probably a smattering of other types)
 
-This document is my attempt to understand how CDC's PHINVADS stores Value Sets (aka enumerations), which are the crucial common language of all of health care.
+Unlike the other types, Value Sets are the crucial common primitive language across of all of health care, and as such they are incredibly important.  This document is my attempt to understand how CDC's PHINVADS tool managed Value Sets.
 
 I pull this info mostly from this pdf --- scroll way down to page 88(page 94 in the pdf) and you'll find an explanation of the PHINVADS data model:   https://phinvads.cdc.gov/vads/downloads/PHINVADS_Guide.pdf
 
-This is Jim's cheat sheet summary of what I found there
+This is Jim's cheat sheet summary of what I found there, for use by the EpiSync team as we work on protyping Question Templates.
+
+_Please note that this is done as a learning exercise, and might have mistakes in it!!_
 
 There are six kinds of objects in PHINVADS.
 
@@ -17,11 +19,11 @@ There are six kinds of objects in PHINVADS.
 5. Groups.
 6. Views (Message Guides)
 
-Here are quick descriptions of each, followed by some further notes at the bottom:
+Here are quick descriptions of each, followed by some further notes at the bottom.  Versioning is a really big deal with these vocabularies.  So for each kind of ojbect, I try to note whether its versioned or not.
 
 ## Code System
 
-A `Code System` is a collection of Code System Concepts.  Many Code Systems are from other organizations.  Example Code Systems are: HL7, ICD-9, ICD-9 CM, SNOMED CT, LOINC, and CPT.
+A `Code System` is a collection of Code System Concepts.  Many Code Systems are from other organizations called Standards Determing Organizations (SDO).  Sometimes we play a bit loose, and  mix the SDO name with the Code System name: eg, HL7, ICD-9 CM, SNOMED CT, LOINC, and CPT.
 
 ??? Is a Code System versioned?  It seems not?
 
@@ -33,13 +35,13 @@ A code system is a managed collection of concept identifiers, usually codes, but
 
 ## Code System Concept
 
-A `Code System Concept` is a Code System's code and description for a single concept - an atomic unit of thought.
+A `Code System Concept` is a Code System's code and description for a _single concept_ - an atomic unit of thought.
 
-Example:  In ICD-9 487.0 is Influenza
+Example:  In ICD-9 487.0 is `Influenza`.
 
-Code System Concepts are used to develop Value Sets.
+Code System Concepts can be grabbed used as Value Set Concepts, in one or more Value Sets.
 
-??? Its not clear if Code SYstem Concepts are versioned.  Maybe not. If you need to change a Code System Concept, maybe you just create a new one and stop using the old one.
+??? Its not clear if Code System Concepts are versioned.  Maybe not. If you need to change a Code System Concept, maybe you just create a new one and stop using the old one.
 
 #### Fancy HL7 Version 3 Core Principles Definition for Concept:
 
