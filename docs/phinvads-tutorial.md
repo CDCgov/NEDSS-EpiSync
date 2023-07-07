@@ -6,9 +6,9 @@ PHIN VADS is CDC's system for managing Value Sets - sets of enumerated names for
 
 At the primitive type level, health data is very simple.  Everything is a number, a string, a date, an ID, or a Value Set (aka an enumeration)! (ok, ok, and probably a smattering of other types)
 
-Value Sets are the crucial common primitive language across of all of health care, and as such they are incredibly important.  This document is my attempt to understand how CDC's PHIN VADS models Value Sets.  
+Of those, Value Sets are the crucial common primitive language across of all of health care, and as such they are incredibly important.  This document is my attempt to understand how CDC's PHIN VADS models Value Sets.  
 
-(I pulled this info mostly from this pdf)[https://phinvads.cdc.gov/vads/downloads/PHINVADS_Guide.pdf] --- scroll way down to page 88(page 94 in the pdf) and you'll find an explanation of the PHIN VADS data model:   
+[I pulled this info mostly from this pdf](https://phinvads.cdc.gov/vads/downloads/PHINVADS_Guide.pdf) --- scroll way down to page 94 in the pdf (page 88 in the doc) and you'll find an explanation of the PHIN VADS data model:   
 
 This is Jim's summary of what I found there, for use by the EpiSync team as we work on protyping Question Templates.   _Please note that this is done as a learning exercise, and might have mistakes in it!!_
 
@@ -61,7 +61,7 @@ I think this might be a _compositional_ example: "Leg" is a body part, but at th
 
 
 
-## ValueSet
+## 3. ValueSet
 
 A `Value Set` is a versioned collection of Value Set Concepts, grouped together for a purpose.  The Value Set concepts can be pulled from multiple Code Systems - that is, a Value Set does not "belong" to a Code System!
 
@@ -75,21 +75,21 @@ A Value Set represents a uniquely identifiable set of valid concept representati
 
 
 
-## Value Set Concept
+## 4. Value Set Concept
 
 A Value Set Concept is the code and name for a Code System Concept ***as used in a Value Set*** (e.g. Arm, Leg).
 
-The only difference between a Value Set Concept and a Code System Concept is that Value Set Concepts are allowed to have a new Preferred Name (aka "Synonym",  or "Display name")
+The only difference in the attributes of a Value Set Concept and a Code System Concept is that Value Set Concepts are allowed to have a new/different Preferred Name (aka "Synonym",  or "Display name")
 
 One Value Set Concept can be in many Value Sets.   So, obviously therefore one Code System Concept can be used in many Value Sets.
 
-Both Value Set Concepts and Code System Concepts have *concept codes* (eg `MSG114`, `INV165`).   NBS Note: These *concept codes* are useful: they show up as the `QuestionIdentifier` in the NBS Template XML.  I _think_ they act like a primary key for the concept.
+NBS Note: Both Value Set Concepts and Code System Concepts have *concept codes* (eg `MSG114`, `INV165`). These *concept codes* are useful: they show up as the `QuestionIdentifier` in the NBS Template XML.  In NBS, I _think_ they act like a primary key for the concept.
 
 Like Code System Concept, Value Set Concepts are not versioned.  They are immutable.
 
 
 
-## Group
+## 5. Group
 
 A Group is a collection of like Value Sets categorized by a subject or a theme.   Example Groups:
 - _Demographics_: contains Value Sets like Country, County, City, etc.
@@ -103,11 +103,11 @@ Per the diagram on p92(pdf page 98), it appears that Groups are NOT versioned.  
 The Group feature is not widely utilized at this time.
 
 
-## View
+## 6. View
 
-A View is a _versioned_ collection of versioned Value Sets.
+A View is a _versioned_ collection of _versioned_ Value Sets.
 
-Views are useful ways of keeping track of a set of Value Sets.  For example, a useful View would be the collection of Value Sets used by a particular implementation guide (MMG), like Tuberculosis or HAI (Healthcare Associated Infection).
+Views are a useful way of keeping track of a set of Value Sets.  For example, a useful View would be the collection of Value Sets used by a particular implementation guide (MMG), like Tuberculosis or HAI (Healthcare Associated Infection).
 
 One ValueSet can belong to many Views.
 One View contains many Value Sets.
@@ -119,20 +119,16 @@ Note:  In the various ER diagrams a `View` is called a `VocabularyView`.
 
 ### Software Development and Code System updates
 
-Software updates are note here: [PHIN VADS Release Notes pdf](https://phinvads.cdc.gov/vads/downloads/4_0_6_6_Release_Notes.pdf)
+You can see the pace of software updates listed here: [PHIN VADS Release Notes pdf](https://phinvads.cdc.gov/vads/downloads/4_0_6_6_Release_Notes.pdf)
 
 PHIN VADS tends to pull in updates from other Code Systems a few times a year: [PHIN VADS Update Schedule pdf](https://phinvads.cdc.gov/vads/downloads/4_0_6_6_Release_Notes.pdf)
 
-In a Covid-like crisis situation, PHIN VADS can do such Code System pulls/updates apart from the schedule.    Also, new or updated Value Sets can be created and added to PHIN VADS very quickly - a few hours turnaround time, in some cases.
+In a Covid-like crisis situation, PHIN VADS _can_ do such Code System pulls/updates apart from the schedule.    Also, new or updated Value Sets can be created and added to PHIN VADS very quickly - a few hours turnaround time, in some cases.
 
 
 ### Combining Code Systems
 
-The Code Systems come from `Standards Determining Organizations`.
-
-Each Code System (eg, LOINC, SNOMED) has its own way of describing its code objects.  So PHIN VADS has the tricky job of glomming these all together into a coherent Value Set idea, which takes some thought and work.   Here's the PHIN VADS description of how that's done:
-
-[Code System Representation pdf](https://phinvads.cdc.gov/vads/DownloadCodeSystemRepresentation.action)
+Each Code System (eg, LOINC, SNOMED) has its own way of describing its code objects.  So PHIN VADS has the tricky job of glomming these all together into a coherent Value Set idea, which takes some thought and work.   Here's the PHIN VADS description of how that's done:  [Code System Representation pdf](https://phinvads.cdc.gov/vads/DownloadCodeSystemRepresentation.action)
 
 ### Question Bank
 
