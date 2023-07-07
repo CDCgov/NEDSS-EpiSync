@@ -138,18 +138,16 @@ Each Code System (eg, LOINC, SNOMED) has its own way of describing its code obje
 
 Its interesting to note that PHIN VADS also plays the role of a Question Bank, inside of a Value Set called PHIN Questions, and similar value sets.
 
-There is a Code System and a Value Set both (mildly confusingly) with the same name, `PHIN Questions`.
-
-The individual Value Set Concepts inside `PHIN Questions` are the questions.
+There is a Code System and a Value Set both (mildly confusingly) with the same name, `PHIN Questions`.  The individual Value Set Concepts inside `PHIN Questions` are the questions.
 
 This is a bit counter-intuitive, because you kinda expect the Value Set to be a Question, then the Value Set Concepts to be possible answers to the question.  But that's not how its organized.
 
-For example, The Value Set Concept with concept code `INV169` is `Condition Code`, that is, the name of your disease or health condition. [Link to Condition Code value set concept](https://phinvads.cdc.gov/vads/ViewValueSetConcept.action?id=BBB085CA-4611-418D-9122-36B3A9C76983)  Of course, there are thousands of conditions/diseases, so you would expect `Condition Code` to be a Value Set - but its not!  Its a Value Set Concept.
+For example, there is a Value Set Concept called `Condition Code`, that is, the name of your disease or health condition. ([See Condition Code value set concept here](https://phinvads.cdc.gov/vads/ViewValueSetConcept.action?id=BBB085CA-4611-418D-9122-36B3A9C76983))  Of course, there are thousands of conditions/diseases, so you would expect `Condition Code` to be a Value Set - but its not!  Its a Value Set Concept.
 
 So where is the actual list of diseases and conditions stored? If you [drill down into the Condition Code concept on the website](https://phinvads.cdc.gov/vads/ViewCodeSystemConcept.action?oid=2.16.840.1.114222.4.5.232&code=INV169), you'll see the list associated in an  _Other Relationships_ link.
 
-To summarize, the Questions themselves show up as low level objects ("concepts") in PHIN VADS inside various Question Value Sets.  And the answers to those questions show up as the value set concepts in a different Value Sets, and they appear to be linked using the `Other Relationships`.
+To summarize, the questions themselves show up as low level objects ("concepts") in PHIN VADS inside various Question Value Sets.  And the answers to those questions show up as the value set concepts in a different Value Sets, and they appear to be linked using the `Other Relationships`.
 
-Interestingly there is a Value Set called  `Data Elements (NND Gen V2)` (which ironically is on version 1) that has 66 Value Set Concepts in it - and those Value Set Concepts are in this case _Questions_, not answers to questions!!
+Example: **Gen V2**'s questions are stored this way.  There is a Value Set called  `Data Elements (NND Gen V2)` (which ironically is on version 1) that has 66 Value Set Concepts in it - and those Value Set Concepts are the set of generic _questions_ that make up the Generic V2 MMG.
 
 
