@@ -1,4 +1,4 @@
-# The PHINVADS Data Model
+# The PHIN VADS Data Model
 
 PHIN VADS stands for Public Health Information Network Vocabulary Access and Distribution System.
 
