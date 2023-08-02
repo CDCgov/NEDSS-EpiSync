@@ -346,3 +346,8 @@ Below is the current architecture for EpiSync Data Dictionary that addresses the
 - Cloud neutral
 
 ![Architecture](docs/arch.png "EpiSync Architecture")
+
+
+## Framework
+The Episync Framework is currently in development and is designed to be a conversion framework between different messages, documents and formats that want to publish Episync Data to various destinations within the CDC.
+![Framework Design](https://lucid.app/publicSegments/view/345f804e-f875-4301-bd34-81ef6499c34b/image.png)
