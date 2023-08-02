@@ -367,6 +367,6 @@ Below is the current architecture for EpiSync Data Dictionary that addresses the
 
 ## Framework
 The Episync Framework is currently in development and is designed to be a conversion framework between different messages, documents and formats that want to publish Episync Data to various destinations within the CDC.
-![Framework Design](https://lucid.app/publicSegments/view/46fc716d-7fc5-49e2-ac74-5b0867e6a74c/image.png)
+![Framework Design](docs/framework.png)
 
 https://lucid.app/documents/view/2e69559c-4418-41bd-9d74-53941bccfcb0
