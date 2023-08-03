@@ -19,7 +19,7 @@
         <jjwt.version>0.9.1</jjwt.version>
         <springdoc.version>1.7.0</springdoc.version>
         <amazonaws.version>1.12.450</amazonaws.version>
-        <lombok.version>1.18.26</lombok.version>
+        <questionbank.verison>0.0.1-SNAPSHOT</questionbank.verison>
     </properties>
     <dependencies>
         <dependency>
@@ -90,8 +90,13 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>gov.cdc.nbs</groupId>
+            <artifactId>questionbank</artifactId>
+            <version>${questionbank.verison}</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
