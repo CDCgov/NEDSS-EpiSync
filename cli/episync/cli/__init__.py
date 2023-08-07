@@ -144,8 +144,6 @@ def mmg(mmg):
             logging.error(f"ERROR: {result.status_code}")
 
 
-
-
 @publish.command()
 @click.option("--file", default=None, required=True, help="Source file of the data")
 @click.option("--path", default='/data.csv', required=True, help="S3 key path for the object")
