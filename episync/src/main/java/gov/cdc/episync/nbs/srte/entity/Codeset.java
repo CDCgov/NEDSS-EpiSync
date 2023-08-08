@@ -29,7 +29,7 @@ public class Codeset {
     private LocalDateTime effectiveToTime;
 
     @Column(name = "is_modifiable_ind")
-    private null isModifiableInd;
+    private char isModifiableInd;
 
     @Column(name = "nbs_uid")
     private Integer nbsUid;
@@ -56,7 +56,7 @@ public class Codeset {
     private String valueSetNm;
 
     @Column(name = "ldf_picklist_ind_cd")
-    private null ldfPicklistIndCd;
+    private char ldfPicklistIndCd;
 
     @Column(name = "value_set_code")
     private String valueSetCode;
@@ -138,11 +138,11 @@ public class Codeset {
         this.effectiveToTime = effectiveToTime;
     }
 
-    public null getIsModifiableInd() {
+    public char getIsModifiableInd() {
         return this.isModifiableInd;
     }
 
-    public void setIsModifiableInd(null isModifiableInd) {
+    public void setIsModifiableInd(char isModifiableInd) {
         this.isModifiableInd = isModifiableInd;
     }
 
@@ -210,11 +210,11 @@ public class Codeset {
         this.valueSetNm = valueSetNm;
     }
 
-    public null getLdfPicklistIndCd() {
+    public char getLdfPicklistIndCd() {
         return this.ldfPicklistIndCd;
     }
 
-    public void setLdfPicklistIndCd(null ldfPicklistIndCd) {
+    public void setLdfPicklistIndCd(char ldfPicklistIndCd) {
         this.ldfPicklistIndCd = ldfPicklistIndCd;
     }
 

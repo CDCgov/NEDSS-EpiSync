@@ -70,7 +70,7 @@ public class WaUiMetadata {
     private String fieldSize;
 
     @Column(name = "future_date_ind_cd")
-    private null futureDateIndCd;
+    private char futureDateIndCd;
 
     @Column(name = "local_id")
     private String localId;
@@ -112,7 +112,7 @@ public class WaUiMetadata {
     private String questionUnitIdentifier;
 
     @Column(name = "repeats_ind_cd")
-    private null repeatsIndCd;
+    private char repeatsIndCd;
 
     @Column(name = "unit_parent_identifier")
     private String unitParentIdentifier;
@@ -136,7 +136,7 @@ public class WaUiMetadata {
     private String questionType;
 
     @Column(name = "publish_ind_cd")
-    private null publishIndCd;
+    private char publishIndCd;
 
     @Column(name = "min_value")
     private Long minValue;
@@ -145,10 +145,10 @@ public class WaUiMetadata {
     private Long maxValue;
 
     @Column(name = "standard_question_ind_cd")
-    private null standardQuestionIndCd;
+    private char standardQuestionIndCd;
 
     @Column(name = "standard_nnd_ind_cd")
-    private null standardNndIndCd;
+    private char standardNndIndCd;
 
     @Column(name = "question_nm")
     private String questionNm;
@@ -160,10 +160,10 @@ public class WaUiMetadata {
     private String unitValue;
 
     @Column(name = "other_value_ind_cd")
-    private null otherValueIndCd;
+    private char otherValueIndCd;
 
     @Column(name = "batch_table_appear_ind_cd")
-    private null batchTableAppearIndCd;
+    private char batchTableAppearIndCd;
 
     @Column(name = "batch_table_header")
     private String batchTableHeader;
@@ -172,7 +172,7 @@ public class WaUiMetadata {
     private Integer batchTableColumnWidth;
 
     @Column(name = "coinfection_ind_cd")
-    private null coinfectionIndCd;
+    private char coinfectionIndCd;
 
     @Column(name = "block_nm")
     private String blockNm;
@@ -345,11 +345,11 @@ public class WaUiMetadata {
         this.fieldSize = fieldSize;
     }
 
-    public null getFutureDateIndCd() {
+    public char getFutureDateIndCd() {
         return this.futureDateIndCd;
     }
 
-    public void setFutureDateIndCd(null futureDateIndCd) {
+    public void setFutureDateIndCd(char futureDateIndCd) {
         this.futureDateIndCd = futureDateIndCd;
     }
 
@@ -457,11 +457,11 @@ public class WaUiMetadata {
         this.questionUnitIdentifier = questionUnitIdentifier;
     }
 
-    public null getRepeatsIndCd() {
+    public char getRepeatsIndCd() {
         return this.repeatsIndCd;
     }
 
-    public void setRepeatsIndCd(null repeatsIndCd) {
+    public void setRepeatsIndCd(char repeatsIndCd) {
         this.repeatsIndCd = repeatsIndCd;
     }
 
@@ -521,11 +521,11 @@ public class WaUiMetadata {
         this.questionType = questionType;
     }
 
-    public null getPublishIndCd() {
+    public char getPublishIndCd() {
         return this.publishIndCd;
     }
 
-    public void setPublishIndCd(null publishIndCd) {
+    public void setPublishIndCd(char publishIndCd) {
         this.publishIndCd = publishIndCd;
     }
 
@@ -545,19 +545,19 @@ public class WaUiMetadata {
         this.maxValue = maxValue;
     }
 
-    public null getStandardQuestionIndCd() {
+    public char getStandardQuestionIndCd() {
         return this.standardQuestionIndCd;
     }
 
-    public void setStandardQuestionIndCd(null standardQuestionIndCd) {
+    public void setStandardQuestionIndCd(char standardQuestionIndCd) {
         this.standardQuestionIndCd = standardQuestionIndCd;
     }
 
-    public null getStandardNndIndCd() {
+    public char getStandardNndIndCd() {
         return this.standardNndIndCd;
     }
 
-    public void setStandardNndIndCd(null standardNndIndCd) {
+    public void setStandardNndIndCd(char standardNndIndCd) {
         this.standardNndIndCd = standardNndIndCd;
     }
 
@@ -585,19 +585,19 @@ public class WaUiMetadata {
         this.unitValue = unitValue;
     }
 
-    public null getOtherValueIndCd() {
+    public char getOtherValueIndCd() {
         return this.otherValueIndCd;
     }
 
-    public void setOtherValueIndCd(null otherValueIndCd) {
+    public void setOtherValueIndCd(char otherValueIndCd) {
         this.otherValueIndCd = otherValueIndCd;
     }
 
-    public null getBatchTableAppearIndCd() {
+    public char getBatchTableAppearIndCd() {
         return this.batchTableAppearIndCd;
     }
 
-    public void setBatchTableAppearIndCd(null batchTableAppearIndCd) {
+    public void setBatchTableAppearIndCd(char batchTableAppearIndCd) {
         this.batchTableAppearIndCd = batchTableAppearIndCd;
     }
 
@@ -617,11 +617,11 @@ public class WaUiMetadata {
         this.batchTableColumnWidth = batchTableColumnWidth;
     }
 
-    public null getCoinfectionIndCd() {
+    public char getCoinfectionIndCd() {
         return this.coinfectionIndCd;
     }
 
-    public void setCoinfectionIndCd(null coinfectionIndCd) {
+    public void setCoinfectionIndCd(char coinfectionIndCd) {
         this.coinfectionIndCd = coinfectionIndCd;
     }
 

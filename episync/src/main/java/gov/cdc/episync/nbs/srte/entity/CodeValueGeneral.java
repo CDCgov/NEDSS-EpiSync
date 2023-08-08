@@ -32,10 +32,10 @@ public class CodeValueGeneral {
     private LocalDateTime effectiveToTime;
 
     @Column(name = "indent_level_nbr")
-    private null indentLevelNbr;
+    private char indentLevelNbr;
 
     @Column(name = "is_modifiable_ind")
-    private null isModifiableInd;
+    private char isModifiableInd;
 
     @Column(name = "nbs_uid")
     private Integer nbsUid;
@@ -53,7 +53,7 @@ public class CodeValueGeneral {
     private String superCode;
 
     @Column(name = "status_cd")
-    private null statusCd;
+    private char statusCd;
 
     @Column(name = "status_time")
     private LocalDateTime statusTime;
@@ -155,19 +155,19 @@ public class CodeValueGeneral {
         this.effectiveToTime = effectiveToTime;
     }
 
-    public null getIndentLevelNbr() {
+    public char getIndentLevelNbr() {
         return this.indentLevelNbr;
     }
 
-    public void setIndentLevelNbr(null indentLevelNbr) {
+    public void setIndentLevelNbr(char indentLevelNbr) {
         this.indentLevelNbr = indentLevelNbr;
     }
 
-    public null getIsModifiableInd() {
+    public char getIsModifiableInd() {
         return this.isModifiableInd;
     }
 
-    public void setIsModifiableInd(null isModifiableInd) {
+    public void setIsModifiableInd(char isModifiableInd) {
         this.isModifiableInd = isModifiableInd;
     }
 
@@ -211,11 +211,11 @@ public class CodeValueGeneral {
         this.superCode = superCode;
     }
 
-    public null getStatusCd() {
+    public char getStatusCd() {
         return this.statusCd;
     }
 
-    public void setStatusCd(null statusCd) {
+    public void setStatusCd(char statusCd) {
         this.statusCd = statusCd;
     }
 

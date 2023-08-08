@@ -22,10 +22,10 @@ public class CodesetGroupMetadata {
     private String codeSetShortDescTxt;
 
     @Column(name = "ldf_picklist_ind_cd")
-    private null ldfPicklistIndCd;
+    private char ldfPicklistIndCd;
 
     @Column(name = "phin_std_val_ind")
-    private null phinStdValInd;
+    private char phinStdValInd;
 
     public String getCodeSetNm() {
         return this.codeSetNm;
@@ -67,19 +67,19 @@ public class CodesetGroupMetadata {
         this.codeSetShortDescTxt = codeSetShortDescTxt;
     }
 
-    public null getLdfPicklistIndCd() {
+    public char getLdfPicklistIndCd() {
         return this.ldfPicklistIndCd;
     }
 
-    public void setLdfPicklistIndCd(null ldfPicklistIndCd) {
+    public void setLdfPicklistIndCd(char ldfPicklistIndCd) {
         this.ldfPicklistIndCd = ldfPicklistIndCd;
     }
 
-    public null getPhinStdValInd() {
+    public char getPhinStdValInd() {
         return this.phinStdValInd;
     }
 
-    public void setPhinStdValInd(null phinStdValInd) {
+    public void setPhinStdValInd(char phinStdValInd) {
         this.phinStdValInd = phinStdValInd;
     }
 }

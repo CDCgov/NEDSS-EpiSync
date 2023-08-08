@@ -19,7 +19,7 @@ public class WaNndMetadata {
     private String questionLabelNnd;
 
     @Column(name = "question_required_nnd")
-    private null questionRequiredNnd;
+    private char questionRequiredNnd;
 
     @Column(name = "question_data_type_nnd")
     private String questionDataTypeNnd;
@@ -116,11 +116,11 @@ public class WaNndMetadata {
         this.questionLabelNnd = questionLabelNnd;
     }
 
-    public null getQuestionRequiredNnd() {
+    public char getQuestionRequiredNnd() {
         return this.questionRequiredNnd;
     }
 
-    public void setQuestionRequiredNnd(null questionRequiredNnd) {
+    public void setQuestionRequiredNnd(char questionRequiredNnd) {
         this.questionRequiredNnd = questionRequiredNnd;
     }
 

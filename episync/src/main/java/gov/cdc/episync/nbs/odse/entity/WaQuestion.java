@@ -61,13 +61,13 @@ public class WaQuestion {
     private Integer questionGroupSeqNbr;
 
     @Column(name = "future_date_ind_cd")
-    private null futureDateIndCd;
+    private char futureDateIndCd;
 
     @Column(name = "legacy_data_location")
     private String legacyDataLocation;
 
     @Column(name = "repeats_ind_cd")
-    private null repeatsIndCd;
+    private char repeatsIndCd;
 
     @Column(name = "add_user_id")
     private Long addUserId;
@@ -106,7 +106,7 @@ public class WaQuestion {
     private String rptAdminColumnNm;
 
     @Column(name = "nnd_msg_ind")
-    private null nndMsgInd;
+    private char nndMsgInd;
 
     @Column(name = "question_identifier_nnd")
     private String questionIdentifierNnd;
@@ -115,7 +115,7 @@ public class WaQuestion {
     private String questionLabelNnd;
 
     @Column(name = "question_required_nnd")
-    private null questionRequiredNnd;
+    private char questionRequiredNnd;
 
     @Column(name = "question_data_type_nnd")
     private String questionDataTypeNnd;
@@ -136,7 +136,7 @@ public class WaQuestion {
     private Long nbsUiComponentUid;
 
     @Column(name = "standard_question_ind_cd")
-    private null standardQuestionIndCd;
+    private char standardQuestionIndCd;
 
     @Column(name = "entry_method")
     private String entryMethod;
@@ -160,7 +160,7 @@ public class WaQuestion {
     private Long maxValue;
 
     @Column(name = "standard_nnd_ind_cd")
-    private null standardNndIndCd;
+    private char standardNndIndCd;
 
     @Column(name = "legacy_question_identifier")
     private String legacyQuestionIdentifier;
@@ -172,13 +172,13 @@ public class WaQuestion {
     private String unitValue;
 
     @Column(name = "other_value_ind_cd")
-    private null otherValueIndCd;
+    private char otherValueIndCd;
 
     @Column(name = "source_nm")
     private String sourceNm;
 
     @Column(name = "coinfection_ind_cd")
-    private null coinfectionIndCd;
+    private char coinfectionIndCd;
 
     public Long getWaQuestionUid() {
         return this.waQuestionUid;
@@ -324,11 +324,11 @@ public class WaQuestion {
         this.questionGroupSeqNbr = questionGroupSeqNbr;
     }
 
-    public null getFutureDateIndCd() {
+    public char getFutureDateIndCd() {
         return this.futureDateIndCd;
     }
 
-    public void setFutureDateIndCd(null futureDateIndCd) {
+    public void setFutureDateIndCd(char futureDateIndCd) {
         this.futureDateIndCd = futureDateIndCd;
     }
 
@@ -340,11 +340,11 @@ public class WaQuestion {
         this.legacyDataLocation = legacyDataLocation;
     }
 
-    public null getRepeatsIndCd() {
+    public char getRepeatsIndCd() {
         return this.repeatsIndCd;
     }
 
-    public void setRepeatsIndCd(null repeatsIndCd) {
+    public void setRepeatsIndCd(char repeatsIndCd) {
         this.repeatsIndCd = repeatsIndCd;
     }
 
@@ -444,11 +444,11 @@ public class WaQuestion {
         this.rptAdminColumnNm = rptAdminColumnNm;
     }
 
-    public null getNndMsgInd() {
+    public char getNndMsgInd() {
         return this.nndMsgInd;
     }
 
-    public void setNndMsgInd(null nndMsgInd) {
+    public void setNndMsgInd(char nndMsgInd) {
         this.nndMsgInd = nndMsgInd;
     }
 
@@ -468,11 +468,11 @@ public class WaQuestion {
         this.questionLabelNnd = questionLabelNnd;
     }
 
-    public null getQuestionRequiredNnd() {
+    public char getQuestionRequiredNnd() {
         return this.questionRequiredNnd;
     }
 
-    public void setQuestionRequiredNnd(null questionRequiredNnd) {
+    public void setQuestionRequiredNnd(char questionRequiredNnd) {
         this.questionRequiredNnd = questionRequiredNnd;
     }
 
@@ -524,11 +524,11 @@ public class WaQuestion {
         this.nbsUiComponentUid = nbsUiComponentUid;
     }
 
-    public null getStandardQuestionIndCd() {
+    public char getStandardQuestionIndCd() {
         return this.standardQuestionIndCd;
     }
 
-    public void setStandardQuestionIndCd(null standardQuestionIndCd) {
+    public void setStandardQuestionIndCd(char standardQuestionIndCd) {
         this.standardQuestionIndCd = standardQuestionIndCd;
     }
 
@@ -588,11 +588,11 @@ public class WaQuestion {
         this.maxValue = maxValue;
     }
 
-    public null getStandardNndIndCd() {
+    public char getStandardNndIndCd() {
         return this.standardNndIndCd;
     }
 
-    public void setStandardNndIndCd(null standardNndIndCd) {
+    public void setStandardNndIndCd(char standardNndIndCd) {
         this.standardNndIndCd = standardNndIndCd;
     }
 
@@ -620,11 +620,11 @@ public class WaQuestion {
         this.unitValue = unitValue;
     }
 
-    public null getOtherValueIndCd() {
+    public char getOtherValueIndCd() {
         return this.otherValueIndCd;
     }
 
-    public void setOtherValueIndCd(null otherValueIndCd) {
+    public void setOtherValueIndCd(char otherValueIndCd) {
         this.otherValueIndCd = otherValueIndCd;
     }
 
@@ -636,11 +636,11 @@ public class WaQuestion {
         this.sourceNm = sourceNm;
     }
 
-    public null getCoinfectionIndCd() {
+    public char getCoinfectionIndCd() {
         return this.coinfectionIndCd;
     }
 
-    public void setCoinfectionIndCd(null coinfectionIndCd) {
+    public void setCoinfectionIndCd(char coinfectionIndCd) {
         this.coinfectionIndCd = coinfectionIndCd;
     }
 }

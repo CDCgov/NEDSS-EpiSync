@@ -49,7 +49,7 @@ public class WaRuleMetadata {
     private String ruleDescTxt;
 
     @Column(name = "javascript_function")
-    private null javascriptFunction;
+    private char javascriptFunction;
 
     @Column(name = "javascript_function_nm")
     private String javascriptFunctionNm;
@@ -178,11 +178,11 @@ public class WaRuleMetadata {
         this.ruleDescTxt = ruleDescTxt;
     }
 
-    public null getJavascriptFunction() {
+    public char getJavascriptFunction() {
         return this.javascriptFunction;
     }
 
-    public void setJavascriptFunction(null javascriptFunction) {
+    public void setJavascriptFunction(char javascriptFunction) {
         this.javascriptFunction = javascriptFunction;
     }
 

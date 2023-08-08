@@ -13,7 +13,7 @@ public class WaTemplate {
     private String templateType;
 
     @Column(name = "xml_payload")
-    private null xmlPayload;
+    private char xmlPayload;
 
     @Column(name = "publish_version_nbr")
     private Integer publishVersionNbr;
@@ -52,7 +52,7 @@ public class WaTemplate {
     private String templateNm;
 
     @Column(name = "publish_ind_cd")
-    private null publishIndCd;
+    private char publishIndCd;
 
     @Column(name = "add_time")
     private LocalDateTime addTime;
@@ -91,11 +91,11 @@ public class WaTemplate {
         this.templateType = templateType;
     }
 
-    public null getXmlPayload() {
+    public char getXmlPayload() {
         return this.xmlPayload;
     }
 
-    public void setXmlPayload(null xmlPayload) {
+    public void setXmlPayload(char xmlPayload) {
         this.xmlPayload = xmlPayload;
     }
 
@@ -195,11 +195,11 @@ public class WaTemplate {
         this.templateNm = templateNm;
     }
 
-    public null getPublishIndCd() {
+    public char getPublishIndCd() {
         return this.publishIndCd;
     }
 
-    public void setPublishIndCd(null publishIndCd) {
+    public void setPublishIndCd(char publishIndCd) {
         this.publishIndCd = publishIndCd;
     }
 
