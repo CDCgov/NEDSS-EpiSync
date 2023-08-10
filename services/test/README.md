@@ -28,6 +28,6 @@ $ docker build -t karate-test .
 ````
 ## Run docker test image 
 ````shell
-$ docker run -it --rm -v "$(pwd)/question_bank/src":/src -w /src karate-test java -jar /karate.jar .
+$ docker run -it --rm -v "$(pwd)/episync_qb/src":/src -w /src karate-test java -jar /karate.jar .
 ````
 
