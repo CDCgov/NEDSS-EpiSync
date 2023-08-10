@@ -6,3 +6,4 @@
 /services/publish/target/
 .idea
 .DS_Store
+/services/test/question_bank/src/target/

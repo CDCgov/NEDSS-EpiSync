@@ -19,3 +19,15 @@ $ behave features/publish.feature -f plain --no-capture
 ````shell
 $ behave features/publish.feature -f html -o report.html
 ````
+
+## Run karate tests in docker
+
+## Docker Build test image 
+````shell
+$ docker build -t karate-test .
+````
+## Run docker test image 
+````shell
+$ docker run -it --rm -v "$(pwd)/question_bank/src":/src -w /src karate-test java -jar /karate.jar .
+````
+
