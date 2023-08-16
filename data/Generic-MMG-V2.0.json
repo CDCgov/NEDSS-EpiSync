@@ -48,7 +48,7 @@
           "mayRepeat": "Y/2",
           "valueSetCode": "",
           "mappings": {
-            "": {
+            "hl7v251": {
               "legacyIdentifier": "NOT115",
               "identifier": "N/A: MSH-21",
               "messageContext": "MSH-21 Message Profile ID",
@@ -60,7 +60,7 @@
               "usage": "R",
               "cardinality": "[2..2]",
               "literalFieldValues": {},
-              "rephl7v251eatingGroupElementType": "NO",
+              "repeatingGroupElementType": "NO",
               "implementationNotes": "CONFORMANCE STATEMENT: Message Profile ID (MSH-21) for this version of the MMG SHALL contain the literal value: ‘NOTF_ORU_v3.x^PHINProfileID^2.16.840.1.114222.4.10.3^ISO~Generic_MMG_V2.0^PHINMsgMapID^2.16.840.1.114222.4.10.4^ISO'\n\nRefer to Conformance Statement CN-009 and CN-010 in the PHIN Messaging Guide for Case Notification Reporting, Version 3 series, Release 1.",
               "sampleSegment": "MSH|^~\\&|SendAppName^2.16.840.1.114222.TBD^ISO|Sending-Facility^2.16.840.1.114222.TBD^ISO|PHINCDS^2.16.840.1.114222.4.3.2.10^ISO|PHIN^2.16.840.1.114222^ISO|20140630120030.1234-0500||ORU^R01^ORU_R01|MESSAGE CONTROL ID|D|2.5.1|||||||||NOTF_ORU_v3.x^PHINProfileID^2.16.840.1.114222.4.10.3^ISO~Generic_MMG_V2.0^PHINMsgMapID^2.16.840.1.114222.4.10.4^ISO"
             }
@@ -3056,9 +3056,7 @@
         "5ba813c4-3c27-451d-83af-d8881953588a": {
           "instances": [
             {
-              {
-
-
+              "2e8bec8d-942e-4c78-affb-f5fe720f068c": {
                 "values": [
                   {
                     "value": "NOTF_ORU_v3.0^PHINProfileID^2.16.840.1.114222.4.10.3^ISO"
