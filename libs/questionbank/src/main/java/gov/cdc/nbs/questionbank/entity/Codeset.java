@@ -1,33 +1,37 @@
 package gov.cdc.nbs.questionbank.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.io.Serializable;
 import java.time.Instant;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
+@Data
 @Entity
-@Builder
-@Table(name = "codeset")
-public class Codeset {
-    @EmbeddedId
-    private CodesetId id;
+@Table(name = "Codeset")
+public class Codeset implements Serializable {
 
-    @Column(name = "assigning_authority_cd", length = 199)
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @Column(name = "code_set_nm", nullable = false)
+    private String codeSetNm;
+
+    @Column(name = "assigning_authority_cd")
     private String assigningAuthorityCd;
 
-    @Column(name = "assigning_authority_desc_txt", length = 100)
+    @Column(name = "assigning_authority_desc_txt")
     private String assigningAuthorityDescTxt;
 
-    @Column(name = "code_set_desc_txt", length = 2000)
+    @Column(name = "code_set_desc_txt")
     private String codeSetDescTxt;
+
+    @Id
+    @Column(name = "class_cd", nullable = false)
+    private String classCd;
 
     @Column(name = "effective_from_time")
     private Instant effectiveFromTime;
@@ -36,46 +40,45 @@ public class Codeset {
     private Instant effectiveToTime;
 
     @Column(name = "is_modifiable_ind")
-    private Character isModifiableInd;
+    private Boolean modifiableInd;
 
     @Column(name = "nbs_uid")
     private Integer nbsUid;
 
-    @Column(name = "source_version_txt", length = 20)
+    @Column(name = "source_version_txt")
     private String sourceVersionTxt;
 
-    @Column(name = "source_domain_nm", length = 50)
+    @Column(name = "source_domain_nm")
     private String sourceDomainNm;
 
-    @Column(name = "status_cd", length = 1)
+    @Column(name = "status_cd")
     private String statusCd;
 
     @Column(name = "status_to_time")
     private Instant statusToTime;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "code_set_group_id")
-    private CodeSetGroupMetadatum codeSetGroup;
+    @Column(name = "code_set_group_id")
+    private Long codeSetGroupId;
 
-    @Column(name = "admin_comments", length = 2000)
+    @Column(name = "admin_comments")
     private String adminComments;
 
-    @Column(name = "value_set_nm", length = 256)
+    @Column(name = "value_set_nm")
     private String valueSetNm;
 
     @Column(name = "ldf_picklist_ind_cd")
-    private Character ldfPicklistIndCd;
+    private String ldfPicklistIndCd;
 
-    @Column(name = "value_set_code", length = 256)
+    @Column(name = "value_set_code")
     private String valueSetCode;
 
-    @Column(name = "value_set_type_cd", length = 20)
+    @Column(name = "value_set_type_cd")
     private String valueSetTypeCd;
 
-    @Column(name = "value_set_oid", length = 256)
+    @Column(name = "value_set_oid")
     private String valueSetOid;
 
-    @Column(name = "value_set_status_cd", length = 256)
+    @Column(name = "value_set_status_cd")
     private String valueSetStatusCd;
 
     @Column(name = "value_set_status_time")
@@ -89,4 +92,5 @@ public class Codeset {
 
     @Column(name = "add_user_id")
     private Long addUserId;
+
 }
