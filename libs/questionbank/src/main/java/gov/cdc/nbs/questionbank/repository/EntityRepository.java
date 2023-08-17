@@ -1,4 +1,4 @@
-package gov.cdc.nbs.questionbank.entity;
+package gov.cdc.nbs.questionbank.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
