@@ -106,9 +106,13 @@ def cli(context, debug, ini):
     engine = create_engine(db, echo=False, isolation_level="REPEATABLE READ")
     session = Session(engine)
     context.obj = {"session": session, "engine": engine}
-    raw = engine.raw_connection()
-    context.obj["raw"] = raw
-    context.obj["connect"] = engine.connect()
+
+    try:
+        raw = engine.raw_connection()
+        context.obj["raw"] = raw
+        context.obj["connect"] = engine.connect()
+    except:
+        logging.warn("Database not connected")
 
 
 @cli.group()
@@ -117,12 +121,35 @@ def ddl():
     pass
 
 
-@cli.command()
+@cli.group()
+def publish():
+    """Commands to publish data to episync"""
+    pass
+
+
+@publish.command()
+@click.option("--mmg", "-m", default=None, required=True, help="MMG v2.0 JSON file")
+def mmg(mmg):
+    """Publish MMG JSON to Episync framework"""
+    import requests
+
+    publish_service = CONFIG.get("publish", "url")
+
+    with open(mmg, "r") as mmg_file:
+        mmg_json = mmg_file.read()
+        result = requests.post(publish_service, data=mmg_json)
+        if result.status_code == 200:
+            print("MMG JSON publish succeeded!")
+        else:
+            logging.error(f"ERROR: {result.status_code}")
+
+
+@publish.command()
 @click.option("--file", default=None, required=True, help="Source file of the data")
 @click.option("--path", default='/data.csv', required=True, help="S3 key path for the object")
 @click.option("--s3", default='http://127.0.0.1:9000', required=True, help="Target S3 endpoint")
 @click.option("-b", "--bucket", default='mvps', required=True, help="Target S3 bucket")
-def publish(file, path, s3, bucket):
+def s3(file, path, s3, bucket):
     """Publish EpiSync CSV data to S3 bucket"""
     import boto3
 
@@ -258,11 +285,7 @@ def start(context):
     @app.post("/validate/", response_model=EpiSyncValidation, tags=["validate"])
     async def validate(file: UploadFile = File(...)) -> EpiSyncValidation:
         df = pd.read_csv(file.file)
-        print(df.iloc[[0]])
-
-        print("DF", df)
         db = CONFIG.get("database", "uri")
-        print(db)
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -278,7 +301,7 @@ def start(context):
                     validates=True, message="All rows validate"
                 )
             except Exception as ex:
-                print(ex)
+                logging.error(ex)
                 response = EpiSyncValidation(validates=False, message=str(ex))
 
         return response
@@ -321,7 +344,6 @@ def show_ddl(context, jsonformat, desc, xml):
     x._max_width = {"Name": 30, "Column": 30, "Rule": 20, "Description": 120}
 
     db = CONFIG.get("database", "uri")
-
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")

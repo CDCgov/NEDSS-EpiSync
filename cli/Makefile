@@ -15,6 +15,7 @@ init: depends
 	wget -O ~/episync-dd.xlsx https://raw.githubusercontent.com/CDCgov/NEDSS-EpiSync/main/mmg/episync-dd.xlsx
 	echo "Copying PHINVADS Race spreadsheet to home directory"
 	cp ../docs/2022_RaceAndEthnicityFinal_TablesforPub_Final.xlsx ~
+	cp ../data/Generic-MMG-V2.0.json ~
 
 .PHONY: format
 format:
