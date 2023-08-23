@@ -1,4 +1,4 @@
-package gov.cdc.episync.mmg.routers;
+package gov.cdc.episync.framework.routers;
 
 import gov.cdc.episync.framework.EpisyncRouter;
 
