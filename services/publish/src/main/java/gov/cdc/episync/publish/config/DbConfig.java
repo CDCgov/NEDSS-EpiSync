@@ -15,7 +15,7 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 @Configuration
-@EnableJpaRepositories(basePackages = "gov.cdc.episync.publish.entity")
+@EnableJpaRepositories(basePackages = {"gov.cdc.episync.publish.entity", "gov.cdc.nbs.questionbank.repository"})
 public class DbConfig {
     private final Environment env;
 
@@ -38,7 +38,7 @@ public class DbConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        em.setPackagesToScan("gov.cdc.episync.publish.entity");
+        em.setPackagesToScan("gov.cdc.episync.publish.entity", "gov.cdc.nbs.questionbank.entity");
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         em.setJpaProperties(additionalProperties());
         return em;
@@ -55,6 +55,9 @@ public class DbConfig {
         if (env.getProperty("hibernate.show_sql") != null) {
             hibernateProperties.setProperty("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
         }
+        if (env.getProperty("hibernate.show_sql") != null) {
+            //hibernateProperties.setProperty();
+        }
         return hibernateProperties;
     }
 }
@@ -68,4 +71,10 @@ class QueryConfiguration {
 @Profile("postgres")
 @PropertySource("classpath:persistence-postgres.properties")
 class PostgresConfig {
+}
+
+@Configuration
+@Profile("mssql")
+@PropertySource("classpath:persistence-mssql.properties")
+class MsSqlConfig {
 }
