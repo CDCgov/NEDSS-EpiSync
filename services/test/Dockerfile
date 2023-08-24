@@ -2,7 +2,7 @@
 
 # RUN curl -L -o karate.jar https://github.com/karatelabs/karate/releases/download/v1.4.0/karate-1.4.0.jar
 
-FROM maven:latest 
+FROM maven:3-jdk-11 
 COPY episync/episync_qb/pom.xml .
 RUN mvn clean install
 
