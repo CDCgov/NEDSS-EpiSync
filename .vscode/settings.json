@@ -1,0 +1,5 @@
+{
+    "dataworkspace.excludedProjects": [
+        "Pagebuilder/Pagebuilder.sqlproj"
+    ]
+}

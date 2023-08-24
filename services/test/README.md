@@ -31,8 +31,8 @@ $ docker build -t karate-test .
 <!-- ````shell
 $ docker run -it --rm -v "$(pwd)/episync_qb/src":/src -w /src karate-test java -jar /karate.jar .
 ```` -->
-````shell
-cd NEDSS-EpiSync/services/test/episync/episync_qb
 
+cd NEDSS-EpiSync/services/test/episync/episync_qb
+````shell
 $ docker run -it --rm -v "$PWD":/src -w /src karate-test mvn test
 ```
