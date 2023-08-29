@@ -14,5 +14,3 @@ Feature: sample karate test script
     * def reqJson = read("data/Generic-MMG-V2.0.json")
     * print 'the value of dateofbirth is:', reqJson["testScenarios"][0]['testBlocks']['64c5e4c8-2dee-4ec1-b3f2-141db90e15bf']['instances'][0]['827d2f8f-eec9-49f0-9265-0fc681f120b5']['values'][0]['value']
     
-
- 
