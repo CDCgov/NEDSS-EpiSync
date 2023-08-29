@@ -1,56 +1,45 @@
 package gov.cdc.nbs.questionbank.entity;
 
-import java.time.Instant;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
+import javax.persistence.*;
+import java.io.Serializable;
+import java.time.Instant;
+
+@Data
 @Entity
 @Table(name = "WA_template")
-public class WaTemplate {
+public class WaTemplate implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "wa_template_uid", nullable = false)
-    private Long id;
+    private Long waTemplateUid;
 
-    @Column(name = "template_type", nullable = false, length = 50)
+    @Column(name = "template_type", nullable = false)
     private String templateType;
 
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "xml_payload", columnDefinition = "TEXT")
+    @Column(name = "xml_payload")
     private String xmlPayload;
 
     @Column(name = "publish_version_nbr")
     private Integer publishVersionNbr;
 
-    @Column(name = "form_cd", length = 50)
+    @Column(name = "form_cd")
     private String formCd;
 
-    @Column(name = "condition_cd", length = 20)
+    @Column(name = "condition_cd")
     private String conditionCd;
 
-    @Column(name = "bus_obj_type", nullable = false, length = 50)
+    @Column(name = "bus_obj_type", nullable = false)
     private String busObjType;
 
-    @Column(name = "datamart_nm", length = 21)
+    @Column(name = "datamart_nm")
     private String datamartNm;
 
-    @Column(name = "record_status_cd", nullable = false, length = 20)
+    @Column(name = "record_status_cd", nullable = false)
     private String recordStatusCd;
 
     @Column(name = "record_status_time", nullable = false)
@@ -62,17 +51,17 @@ public class WaTemplate {
     @Column(name = "last_chg_user_id", nullable = false)
     private Long lastChgUserId;
 
-    @Column(name = "local_id", length = 50)
+    @Column(name = "local_id")
     private String localId;
 
-    @Column(name = "desc_txt", length = 2000)
+    @Column(name = "desc_txt")
     private String descTxt;
 
-    @Column(name = "template_nm", length = 50)
+    @Column(name = "template_nm")
     private String templateNm;
 
     @Column(name = "publish_ind_cd")
-    private Character publishIndCd;
+    private String publishIndCd;
 
     @Column(name = "add_time", nullable = false)
     private Instant addTime;
@@ -80,19 +69,19 @@ public class WaTemplate {
     @Column(name = "add_user_id", nullable = false)
     private Long addUserId;
 
-    @Column(name = "nnd_entity_identifier", length = 200)
+    @Column(name = "nnd_entity_identifier")
     private String nndEntityIdentifier;
 
     @Column(name = "parent_template_uid")
     private Long parentTemplateUid;
 
-    @Column(name = "source_nm", length = 250)
+    @Column(name = "source_nm")
     private String sourceNm;
 
     @Column(name = "template_version_nbr")
     private Integer templateVersionNbr;
 
-    @Column(name = "version_note", length = 2000)
+    @Column(name = "version_note")
     private String versionNote;
 
 }
