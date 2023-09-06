@@ -24,12 +24,13 @@
         </dependency>	
         <!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
         <dependency>
-             <groupId>com.microsoft.sqlserver</groupId>
-             <artifactId>mssql-jdbc</artifactId>
-             <version>12.3.0.jre20-preview</version>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>11.2.1.jre11</version>
         </dependency>
 
-<!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
@@ -37,7 +38,7 @@
         </dependency>	
     </dependencies>
 
-    <build>
+<build>
         <testResources>
             <testResource>
                 <directory>src/test/java</directory>
@@ -64,21 +65,20 @@
                 <configuration>
                     <argLine>-Dfile.encoding=UTF-8</argLine>
                 </configuration>
-            </plugin>          
-        </plugins>  
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <configuration>
-                <archive>
-                    <manifest>
-                        <mainClass>json_upload.users</mainClass>
-                    </manifest>
-                </archive>
-            </configuration>
-        </plugin>
-    </plugins>
-    
-    </build>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>json_upload.users</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+
+   </build>
     
 </project>

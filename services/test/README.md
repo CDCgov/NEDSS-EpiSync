@@ -34,5 +34,5 @@ $ docker run -it --rm -v "$(pwd)/episync_qb/src":/src -w /src karate-test java -
 
 cd NEDSS-EpiSync/services/test/episync/episync_qb
 ````shell
-$ docker run -it --rm -v "$PWD":/src -w /src karate-test mvn test
-```
+$ docker run -it --rm --network=nbs -v "$PWD":/src -w /src karate-test mvn test
+````
