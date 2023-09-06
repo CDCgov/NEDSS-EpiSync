@@ -1,4 +1,4 @@
-package gov.cdc.nbs.questionbank.entity;
+package gov.cdc.nbs.questionbank.entity.srte;
 
 import lombok.Data;
 

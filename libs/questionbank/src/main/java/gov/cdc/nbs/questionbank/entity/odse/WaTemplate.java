@@ -1,4 +1,4 @@
-package gov.cdc.nbs.questionbank.entity;
+package gov.cdc.nbs.questionbank.entity.odse;
 
 import lombok.Data;
 
@@ -61,7 +61,7 @@ public class WaTemplate implements Serializable {
     private String templateNm;
 
     @Column(name = "publish_ind_cd")
-    private String publishIndCd;
+    private Character publishIndCd;
 
     @Column(name = "add_time", nullable = false)
     private Instant addTime;

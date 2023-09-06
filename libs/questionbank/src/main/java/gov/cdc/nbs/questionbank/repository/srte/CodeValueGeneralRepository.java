@@ -1,7 +1,7 @@
-package gov.cdc.nbs.questionbank.repository;
+package gov.cdc.nbs.questionbank.repository.srte;
 
-import gov.cdc.nbs.questionbank.entity.CodeValueGeneral;
-import gov.cdc.nbs.questionbank.entity.CodeValueGeneralId;
+import gov.cdc.nbs.questionbank.entity.srte.CodeValueGeneral;
+import gov.cdc.nbs.questionbank.entity.srte.CodeValueGeneralId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

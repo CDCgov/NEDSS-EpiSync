@@ -1,6 +1,6 @@
-package gov.cdc.nbs.questionbank.repository;
+package gov.cdc.nbs.questionbank.repository.srte;
 
-import gov.cdc.nbs.questionbank.entity.CodesetGroupMetadata;
+import gov.cdc.nbs.questionbank.entity.srte.CodesetGroupMetadata;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
