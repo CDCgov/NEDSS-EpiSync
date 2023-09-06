@@ -58,6 +58,8 @@ services:
     image: nedss/episync-cli:latest
     container_name: episync-cli
     command: tail -f requirements.txt
+    networks:
+      - episync
 
   episync-dd:
     build:
@@ -66,6 +68,8 @@ services:
     hostname: episync-dd
     image: nedss/episync-dd:latest
     container_name: episync-dd
+    networks:
+      - episync
     ports:
       - 8014:8014
 
@@ -75,6 +79,8 @@ services:
       dockerfile: services/test/Dockerfile
     image: nedss/episync-test:latest
     container_name: episync-test
+    networks:
+      - nbs
 
   episync-publish:
     build:
@@ -83,6 +89,9 @@ services:
     hostname: episync-publish
     image: nedss/episync-publish:latest
     container_name: episync-publish
+    networks:
+      - nbs
+      - episync
     environment:
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
@@ -92,6 +101,10 @@ services:
       - DB_USER_NAME=postgres
       - DB_USER_PASSWORD=episync
       - EPISYNC_DD_URL=http://episync-dd:8014
+      - PB_ODSE_URL=jdbc:sqlserver://nbs-mssql:1433;database=nbs_odse;encrypt=true;trustServerCertificate=true
+      - PB_SRTE_URL=jdbc:sqlserver://nbs-mssql:1433;database=nbs_srte;encrypt=true;trustServerCertificate=true
+      - PB_USER_NAME=sa
+      - PB_USER_PASSWORD=fake.fake.fake.1234
     volumes:
         - ~/episync:/home/publish
     ports:
@@ -101,6 +114,8 @@ services:
     container_name: episync-db
     image: postgres:latest
     hostname: episync-db
+    networks:
+      - episync
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: episync
@@ -120,11 +135,20 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
+    networks:
+      - episync
     environment:
       - PGADMIN_DEFAULT_EMAIL=user@domain.com
       - PGADMIN_DEFAULT_PASSWORD=SuperSecret
     ports:
       - "8008:80"
+
+networks:
+  nbs:
+    name: nbs
+    external: true
+  episync:
+    driver: bridge
 
 volumes:
   pgdata:
