@@ -29,9 +29,9 @@ public class ExportFeedAspect {
             try {
                 List<EpisyncMmg> data = ((ResponseEntity<List<EpisyncMmg>>) returnVal).getBody();
                 URI uri = writerBean.writeDataToS3(data);
-                return ResponseEntity.created(uri).body(new SimpleResponse(HttpStatus.CREATED.value(), "Export to S3: success"));
+                return ResponseEntity.created(uri).body(SimpleResponse.of(HttpStatus.CREATED.value(), "Export to S3: success"));
             } catch (Exception e) {
-                return ResponseEntity.internalServerError().body(new SimpleResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Export to S3 failed: " + e.getMessage()));
+                return ResponseEntity.internalServerError().body(SimpleResponse.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Export to S3 failed: " + e.getMessage()));
             }
         }
 

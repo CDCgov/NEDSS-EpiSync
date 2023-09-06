@@ -33,7 +33,7 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
             response.setContentType("application/json");
             PrintWriter writer = response.getWriter();
             writer.write(new ObjectMapper().writeValueAsString(
-                    new SimpleResponse(HttpStatus.UNAUTHORIZED.value(), "Unauthorized")));
+                    SimpleResponse.of(HttpStatus.UNAUTHORIZED.value(), "Unauthorized")));
             writer.flush();
             return false; // Abort request processing
         }

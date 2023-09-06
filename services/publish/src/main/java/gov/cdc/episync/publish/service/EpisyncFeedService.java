@@ -17,8 +17,6 @@ public interface EpisyncFeedService {
 
     List<EpisyncMmg> getEpisyncFeedByResidenceInfo(String country, Optional<String> state, Optional<String> zip);
 
-    List<EpisyncMmg> getEpisyncFeedByAdmissionDateRange(LocalDate begin, Optional<LocalDate> end);
-
     List<EpisyncMmg> getEpisyncFeedBySubjectAge(Integer min, Optional<Integer> max, String unit);
 
     URI postEpisyncFeedCsv(InputStreamSource csvFeed, long size) throws IOException;

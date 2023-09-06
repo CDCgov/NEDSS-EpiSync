@@ -1,4 +1,7 @@
 package gov.cdc.episync.framework;
 
-public interface EpisyncData {
+import java.util.Dictionary;
+
+public interface EpisyncData<K, V> {
+    Dictionary<K, V> data();
 }

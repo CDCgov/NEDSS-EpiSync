@@ -41,7 +41,7 @@ public class AuthController {
         // Validate user credentials and generate JWT token - must be actual in future!!! - TODO
         if (!StringUtils.hasLength(request.getUsername())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new SimpleResponse(HttpStatus.UNAUTHORIZED.value(), "Bad credentials"));
+                .body(SimpleResponse.of(HttpStatus.UNAUTHORIZED.value(), "Bad credentials"));
         }
 
         try {
@@ -50,7 +50,7 @@ public class AuthController {
             return ResponseEntity.ok(new AuthenticationResponse(token, "Success"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new SimpleResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
+                .body(SimpleResponse.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
         }
     }
 }

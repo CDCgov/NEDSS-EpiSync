@@ -74,16 +74,6 @@ public class EpisyncFeedController {
         return ResponseEntity.ok(feedService.getEpisyncFeedByResidenceInfo(country, state, zip));
     }
 
-    @Operation(summary = "Filter by admission date/range")
-    @Parameter(name = "end", description = DESC_DATE_RANGE)
-    @GetMapping("/filter/date/admission")
-    public ResponseEntity<?> getFeedByAdmissionDateRange(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Optional<LocalDate> end,
-            @RequestParam(required = false) boolean export) {
-        return ResponseEntity.ok(feedService.getEpisyncFeedByAdmissionDateRange(date, end));
-    }
-
     @Operation(summary = "Filter by age at case date")
     @GetMapping("/filter/age")
     public ResponseEntity<?> getFeedByAgeAtCaseInvestigation(
@@ -110,12 +100,12 @@ public class EpisyncFeedController {
         ResponseEntity<String> validateResponse = apiService.validateFeed(file);
         HttpStatus status = validateResponse.getStatusCode();
         if (status != HttpStatus.OK) {
-            return ResponseEntity.status(status).body(new SimpleResponse(status.value(), validateResponse.getBody()));
+            return ResponseEntity.status(status).body(SimpleResponse.of(status.value(), validateResponse.getBody()));
         }
         try {
-            return ResponseEntity.created(feedService.postEpisyncFeedCsv(file, file.getSize())).body(new SimpleResponse(HttpStatus.CREATED.value(), "Export to S3: success"));
+            return ResponseEntity.created(feedService.postEpisyncFeedCsv(file, file.getSize())).body(SimpleResponse.of(HttpStatus.CREATED.value(), "Export to S3: success"));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new SimpleResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Export to S3 failed: " + e.getMessage()));
+            return ResponseEntity.internalServerError().body(SimpleResponse.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Export to S3 failed: " + e.getMessage()));
         }
     }
 }

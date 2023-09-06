@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.11</version>
+        <version>2.7.15</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>gov.cdc.episync</groupId>
@@ -15,17 +15,15 @@
     <description>episync publish service</description>
     <properties>
         <java.version>11</java.version>
+        <snakeyaml.version>2.2</snakeyaml.version>
         <commons-csv.version>1.8</commons-csv.version>
         <jjwt.version>0.9.1</jjwt.version>
         <springdoc.version>1.7.0</springdoc.version>
         <amazonaws.version>1.12.450</amazonaws.version>
-        <questionbank.verison>0.0.1-SNAPSHOT</questionbank.verison>
+        <questionbank.version>0.0.1-SNAPSHOT</questionbank.version>
+        <episync.version>1.0-SNAPSHOT</episync.version>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-rest</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -33,20 +31,20 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jetty</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -59,7 +57,7 @@
             <version>${commons-csv.version}</version>
         </dependency>
         <dependency>
-        <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-xml</artifactId>
         </dependency>
         <dependency>
@@ -100,7 +98,13 @@
         <dependency>
             <groupId>gov.cdc.nbs</groupId>
             <artifactId>questionbank</artifactId>
-            <version>${questionbank.verison}</version>
+            <version>${questionbank.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>gov.cdc.episync</groupId>
+            <artifactId>episync</artifactId>
+            <version>${episync.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

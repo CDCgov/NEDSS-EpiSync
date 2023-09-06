@@ -2,9 +2,7 @@ package gov.cdc.episync.publish.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,10 +12,10 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
 
+@Data
 @Entity
 @Table(name = "episync_mmg")
 @IdClass(EpisyncMmgId.class)
-@Getter @Setter @NoArgsConstructor
 public class EpisyncMmg {
 
     @Id
