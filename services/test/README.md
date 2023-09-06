@@ -19,3 +19,20 @@ $ behave features/publish.feature -f plain --no-capture
 ````shell
 $ behave features/publish.feature -f html -o report.html
 ````
+
+## Run karate tests in docker
+
+## Docker Build test image 
+cd NEDSS-EpiSync/services/test
+````shell
+$ docker build -t karate-test .
+````
+## Run docker test image 
+<!-- ````shell
+$ docker run -it --rm -v "$(pwd)/episync_qb/src":/src -w /src karate-test java -jar /karate.jar .
+```` -->
+
+cd NEDSS-EpiSync/services/test/episync/episync_qb
+````shell
+$ docker run -it --rm --network=nbs -v "$PWD":/src -w /src karate-test mvn test
+````

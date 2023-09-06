@@ -1,0 +1,6 @@
+{
+    "dataworkspace.excludedProjects": [
+        "Pagebuilder/Pagebuilder.sqlproj"
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
+}

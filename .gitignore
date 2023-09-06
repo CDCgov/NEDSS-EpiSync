@@ -6,3 +6,6 @@
 /services/publish/target/
 .idea
 .DS_Store
+/services/test/episync_qb/src/target/
+services/test/episync/episync_qb/src/target/
+target/
