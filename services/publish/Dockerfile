@@ -1,11 +1,18 @@
 FROM maven:3.8.3-openjdk-11 AS maven-build
 
 WORKDIR /build
-
 COPY libs/questionbank/pom.xml /build/libs/pom.xml
 WORKDIR /build/libs
 RUN mvn dependency:go-offline
 COPY libs/questionbank/src /build/libs/src
+RUN mvn package -DskipTests
+RUN mvn install
+
+WORKDIR /build
+COPY episync/pom.xml /build/episync/pom.xml
+WORKDIR /build/episync
+RUN mvn dependency:go-offline
+COPY episync/src /build/episync/src
 RUN mvn package -DskipTests
 RUN mvn install
 

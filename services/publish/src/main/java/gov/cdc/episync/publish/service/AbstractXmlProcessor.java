@@ -30,9 +30,9 @@ public abstract class AbstractXmlProcessor implements XmlProcessor {
             try (FileOutputStream outputStream = new FileOutputStream(newFile)) {
                 writerBean.writeDataToStream(csvContent, outputStream);
             }
-            return ResponseEntity.created(newFile.toURI()).body(new SimpleResponse(HttpStatus.CREATED.value(), "Transform to CSV: success"));
+            return ResponseEntity.created(newFile.toURI()).body(SimpleResponse.of(HttpStatus.CREATED.value(), "Transform to CSV: success"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new SimpleResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(), "Transform to CSV failed: " + e.getMessage()));
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(SimpleResponse.of(HttpStatus.UNPROCESSABLE_ENTITY.value(), "Transform to CSV failed: " + e.getMessage()));
         }
     }
 

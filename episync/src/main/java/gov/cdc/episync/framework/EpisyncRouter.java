@@ -1,6 +1,6 @@
 package gov.cdc.episync.framework;
 
-public interface EpisyncRouter {
+public interface EpisyncRouter<K, V> {
 
-    EpisyncRouteResult routeData(EpisyncData data) throws EpisyncRouterException;
+    EpisyncRouteResult routeData(EpisyncData<K, V> data) throws EpisyncRouterException;
 }

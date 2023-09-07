@@ -1,6 +1,6 @@
 package gov.cdc.episync.framework;
 
-public interface EpisyncPublisher {
+public interface EpisyncPublisher<T extends EpisyncDocument> {
 
-    EpisyncPublishResult publishDocument(EpisyncDocument document) throws EpisyncPublishException;
+    EpisyncPublishResult publishDocument(T document) throws EpisyncPublishException;
 }

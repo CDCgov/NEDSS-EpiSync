@@ -18,8 +18,6 @@ public interface EpisyncRepository extends JpaRepository<EpisyncMmg, EpisyncMmgI
     List<EpisyncMmg> findEpisyncMmgByCountryOfResidenceAndSubjectZip(String country, String zip);
     List<EpisyncMmg> findEpisyncMmgByCountryOfResidenceAndSubjectStateAndSubjectZip(String country, String state, String zip);
 
-    List<EpisyncMmg> findEpisyncMmgByAdmissionDateBetween(LocalDate begin, LocalDate end);
-
     List<EpisyncMmg> findEpisyncMmgByAgeAtCaseInvestigationBetweenAndAgeUnitAtCaseInvestigation(Integer min, Integer max, String unit);
     List<EpisyncMmg> findEpisyncMmgByDateReportedBetween(LocalDate begin, LocalDate end);
 

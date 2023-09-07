@@ -46,10 +46,6 @@ public class EpisyncFeedServiceImpl implements EpisyncFeedService {
     }
 
     @Override
-    public List<EpisyncMmg> getEpisyncFeedByAdmissionDateRange(LocalDate begin, Optional<LocalDate> end) {
-        return repository.findEpisyncMmgByAdmissionDateBetween(begin, end.orElse(begin));
-    }
-    @Override
     public List<EpisyncMmg> getEpisyncFeedBySubjectAge(Integer age, Optional<Integer> max, String unit) {
         return repository.findEpisyncMmgByAgeAtCaseInvestigationBetweenAndAgeUnitAtCaseInvestigation(age, max.orElse(age), unit);
     }
