@@ -1,14 +1,24 @@
 Feature: sample karate test script
 
   Background:
-    * url 'http://172.19.0.3:8088/feed/upload'
+    * url 'http://172.19.0.4:8088/mmg/publish?type=MMG&url=http%3A%2F%2Fnedds.gov.us'
+    * def config = { username: 'sa', password: 'fake.fake.fake.1234', url: 'jdbc:sqlserver://nbs-mssql:1433;Database=NBS_ODSE;Encrypt=True;TrustServerCertificate=True', driverClassName: 'com.microsoft.sqlserver.jdbc.SQLServerDriver' }
+    * def DbUtils = Java.type('json_upload.users.DbUtils')
+    * def db = new DbUtils(config)
+
 
   Scenario: get valid response for Generic V2 json
-    Given path 'mmgat'
+    And header Accept = 'application/json'
     Given multipart file file = { read: 'data/Generic-MMG-V2.0.json', filename: 'Generic-MMG-V2.0.json', contentType: 'application/json'}
     When method post
     Then status 200
-    Then match response contains "File upload success"
+    * print response.message
+    And match response.code == 'SUCCESS'
+    * def respMessage = response.message.split('template_id:')[1].split(' ')[0]
+    * print respMessage
+    * def template = db.readRows("select * from dbo.WA_template where wa_template_uid = " + respMessage)
+    Then print 'template--',template
+
 
   Scenario: Read Json and parse the json
     * def reqJson = read("data/Generic-MMG-V2.0.json")
