@@ -10,8 +10,28 @@ public class MmgElement {
     private String id;
     private int ordinal;
     private String name;
+    private String shortName;
     private String description;
     private String dataType;
     private String priority;
     private boolean isRepeat;
+    private String valueSetCode;
+
+    private Mappings mappings;
+
+    @Getter @Setter
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Mappings {
+        private Hl7 hl7v251;
+    }
+
+    @Getter @Setter
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Hl7 {
+        private String legacyIdentifier;
+        private String identifier;
+        private String dataType;
+        private String segmentType;
+        private String usage;
+    }
 }

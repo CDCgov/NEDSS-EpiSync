@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 @Service @RequiredArgsConstructor
@@ -26,8 +27,10 @@ public class Episync {
             EpisyncPublisher<? extends EpisyncDocument> publisher = publisherFactory.getPublisherForType(document);
             Method method = publisher.getClass().getMethod("publishDocument", EpisyncDocument.class);
             return  (EpisyncPublishResult) method.invoke(publisher, document);
+        } catch (InvocationTargetException t) {
+            return new EpisyncPublishResult(PublishResultCode.FAILED, t.getTargetException().getMessage());
         } catch (Exception e) {
-            return new EpisyncPublishResult(PublishResultCode.FAILED);
+            return new EpisyncPublishResult(PublishResultCode.FAILED, e.getMessage());
         }
     }
 }

@@ -13,6 +13,6 @@ public class MMGDocument extends EpisyncDocument {
 
     public MMGDocument(InputStream stream) {
         this.json = stream;
-        setDocumentType(new EpisyncDocumentType(EpisyncDocumentType.Type.MMG));
+        setDocumentType(EpisyncDocumentType.of(EpisyncDocumentType.Type.MMG));
     }
 }

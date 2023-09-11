@@ -4,7 +4,6 @@ import gov.cdc.episync.framework.Episync;
 import gov.cdc.episync.framework.EpisyncDocument;
 import gov.cdc.episync.framework.EpisyncDocumentType.Type;
 import gov.cdc.episync.framework.EpisyncPublishResult;
-import gov.cdc.episync.framework.EpisyncPublishResult.PublishResultCode;
 import gov.cdc.episync.mmg.MMGDocument;
 import gov.cdc.episync.nnd.NndDocument;
 import gov.cdc.episync.publish.shared.SimpleResponse;
@@ -28,10 +27,10 @@ public class EpisyncMmgServiceImpl implements EpisyncMmgService {
             document.setOrigin(new URL(params[0]));
 
             EpisyncPublishResult result = episync.publishDocument(document);
-            String message = result.getResultMessage().isEmpty() ? result.getResultCode().getDescription() : result.getResultMessage();
-            SimpleResponse<PublishResultCode, String> response = SimpleResponse.of(result.getResultCode(), message);
+            String message = result.getResultMessage().isEmpty() ?
+                    result.getResultCode().getDescription() : result.getResultMessage();
 
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(SimpleResponse.of(result.getResultCode(), message));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(SimpleResponse.of(HttpStatus.UNPROCESSABLE_ENTITY.value(), "Publishing failed: " + e.getMessage()));
         }

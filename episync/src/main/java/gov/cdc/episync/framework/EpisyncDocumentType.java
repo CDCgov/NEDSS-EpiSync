@@ -30,5 +30,9 @@ public class EpisyncDocumentType {
         this.type = type;
     }
 
+    public static EpisyncDocumentType of(Type type) {
+        return new EpisyncDocumentType(type);
+    }
+
     private Type type;
 }
