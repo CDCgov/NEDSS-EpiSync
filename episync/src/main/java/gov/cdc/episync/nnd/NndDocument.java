@@ -2,6 +2,7 @@ package gov.cdc.episync.nnd;
 
 import gov.cdc.episync.framework.EpisyncDocument;
 import gov.cdc.episync.framework.EpisyncDocumentType;
+import gov.cdc.episync.framework.EpisyncDocumentType.Type;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -13,6 +14,6 @@ public class NndDocument extends EpisyncDocument {
 
     public NndDocument(InputStream stream) {
         this.xml = stream;
-        setDocumentType(new EpisyncDocumentType(EpisyncDocumentType.Type.NND));
+        setDocumentType(EpisyncDocumentType.of(Type.NND));
     }
 }

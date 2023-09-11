@@ -9,11 +9,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
-import java.util.Dictionary;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service("mmg") @RequiredArgsConstructor
 public class MMGPageBuilderPublisher extends MMGPublisher {
     private final MMGPageBuilderRouter router;
+
+    private static final String QUESTION_OID = "2.16.840.1.114222.4.5.232";
+    private static final String QUESTION_OID_SYSTEM = "PHIN Questions";
+
 
     @Override
     public EpisyncPublishResult publishDocument(MMGDocument document) throws EpisyncPublishException {
@@ -23,7 +28,7 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
             EpisyncRouteResult routeResult = router.routeData(buildData(template));
             return new EpisyncPublishResult(PublishResultCode.SUCCESS, routeResult.getResultMessage());
         } catch (EpisyncRouterException e) {
-            return new EpisyncPublishResult(PublishResultCode.FAILED);
+            throw new EpisyncPublishException(e.getMessage());
         }
     }
 
@@ -35,17 +40,44 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
         }
     }
 
-    private EpisyncData<String, String> buildData(MmgTemplate template) {
-        MmgData<String, String> episyncData = new MmgData<>();
-        Dictionary<String, String> data = episyncData.getData();
+    private EpisyncData<String, List<Dictionary<String, String>>> buildData(MmgTemplate template) {
+        MmgData<String, List<Dictionary<String, String>>> episyncData = new MmgData<>();
+        Dictionary<String, List<Dictionary<String, String>>> data = episyncData.getData();
 
-        data.put("type", template.getType());
-        data.put("name", template.getName());
-        data.put("shortName", template.getShortName());
-        data.put("description", template.getDescription());
-        data.put("profileIdentifier", template.getProfileIdentifier());
+        Dictionary<String, String> tmpData = new Hashtable<>();
+        tmpData.put("type", template.getType());
+        tmpData.put("name", template.getName());
+        tmpData.put("shortName", template.getShortName());
+        tmpData.put("description", template.getDescription());
+        tmpData.put("profileIdentifier", template.getProfileIdentifier());
 
+        data.put("template", Collections.singletonList(tmpData));
+
+        List<MmgElement> elements = template.getBlocks().stream().flatMap(b -> b.getElements().stream()).collect(Collectors.toList());
+        List<Dictionary<String, String>> questions = new ArrayList<>(elements.size());
+        for (MmgElement e: elements) {
+            questions.add(buildQuestionData(e));
+        }
+
+        data.put("questions", questions);
         return episyncData;
+    }
 
+    private Dictionary<String, String> buildQuestionData(MmgElement e) {
+        Dictionary<String, String> qmData = new Hashtable<>();
+        qmData.put("identifier", e.getMappings().getHl7v251().getLegacyIdentifier());
+        qmData.put("question_oid", QUESTION_OID);
+        qmData.put("question_oid_system", QUESTION_OID_SYSTEM);
+        qmData.put("data_type", e.getDataType());
+        qmData.put("name", e.getName());
+        qmData.put("short_name", e.getShortName());
+        qmData.put("desc_txt", e.getDescription());
+
+        qmData.put("value_set_code", e.getValueSetCode() == null ? "" : e.getValueSetCode());
+        qmData.put("identifier_nnd", e.getMappings().getHl7v251().getIdentifier());
+        qmData.put("required_nnd", e.getMappings().getHl7v251().getUsage().equals("R") ? "R" : "O");
+        qmData.put("data_type_nnd", e.getMappings().getHl7v251().getDataType());
+        qmData.put("hl7_segment_field", e.getMappings().getHl7v251().getSegmentType());
+        return qmData;
     }
 }
