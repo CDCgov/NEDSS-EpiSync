@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service("mmg") @RequiredArgsConstructor
 public class MMGPageBuilderPublisher extends MMGPublisher {
@@ -45,6 +44,7 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
         Dictionary<String, List<Dictionary<String, String>>> data = episyncData.getData();
 
         Dictionary<String, String> tmpData = new Hashtable<>();
+        tmpData.put("id", template.getId());
         tmpData.put("type", template.getType());
         tmpData.put("name", template.getName());
         tmpData.put("shortName", template.getShortName());
@@ -53,14 +53,35 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
 
         data.put("template", Collections.singletonList(tmpData));
 
-        List<MmgElement> elements = template.getBlocks().stream().flatMap(b -> b.getElements().stream()).collect(Collectors.toList());
+        List<Dictionary<String, String>> blocks = new ArrayList<>();
+        for (MmgBlock b: template.getBlocks()) {
+            List<MmgElement> elements = b.getElements();
+            blocks.add(buildBlockData(b));
+
+            List<Dictionary<String, String>> questions = new ArrayList<>(elements.size());
+            for (MmgElement e: elements) {
+                questions.add(buildQuestionData(e));
+            }
+            data.put(b.getId(), questions);
+            data.put(b.getGuideId(), blocks);
+        }
+
+        /*List<MmgElement> elements = template.getBlocks().stream().flatMap(b -> b.getElements().stream()).collect(Collectors.toList());
         List<Dictionary<String, String>> questions = new ArrayList<>(elements.size());
         for (MmgElement e: elements) {
             questions.add(buildQuestionData(e));
         }
 
-        data.put("questions", questions);
+        data.put("questions", questions);*/
         return episyncData;
+    }
+
+    private Dictionary<String, String> buildBlockData(MmgBlock b) {
+        Dictionary<String, String> blockData = new Hashtable<>();
+        blockData.put("id", b.getId());
+        blockData.put("name", b.getName());
+        blockData.put("type", b.getType());
+        return blockData;
     }
 
     private Dictionary<String, String> buildQuestionData(MmgElement e) {
