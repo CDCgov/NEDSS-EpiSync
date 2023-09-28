@@ -38,7 +38,7 @@ public class Codeset implements Serializable {
     private Instant effectiveToTime;
 
     @Column(name = "is_modifiable_ind")
-    private Boolean modifiableInd;
+    private String modifiableInd;
 
     @Column(name = "nbs_uid")
     private Integer nbsUid;

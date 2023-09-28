@@ -44,7 +44,7 @@ public class CodeValueGeneral implements Serializable {
     private Integer indentLevelNbr;
 
     @Column(name = "is_modifiable_ind")
-    private Boolean modifiableInd;
+    private String modifiableInd;
 
     @Column(name = "nbs_uid")
     private Integer nbsUid;

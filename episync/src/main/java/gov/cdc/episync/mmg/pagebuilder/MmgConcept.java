@@ -1,6 +1,7 @@
 package gov.cdc.episync.mmg.pagebuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +10,11 @@ import lombok.Setter;
 public class MmgConcept {
     private String valueSetConceptId;
     private String codeSystemConceptName;
+    private String valueSetConceptStatusDate;
     private String valueSetConceptDefinitionText;
+    private String cdcPreferredDesignation;
     private String codeSystemOid;
     private String conceptCode;
+    @JsonProperty("hL70396Identifier")
+    private String hL70396Identifier;
 }
