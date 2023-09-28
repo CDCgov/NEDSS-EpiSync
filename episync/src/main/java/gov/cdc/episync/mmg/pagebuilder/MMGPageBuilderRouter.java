@@ -1,31 +1,57 @@
 package gov.cdc.episync.mmg.pagebuilder;
 
 import gov.cdc.episync.framework.*;
-import gov.cdc.nbs.questionbank.entity.odse.WaNndMetadata;
 import gov.cdc.nbs.questionbank.entity.odse.WaQuestion;
 import gov.cdc.nbs.questionbank.entity.odse.WaTemplate;
 import gov.cdc.nbs.questionbank.entity.odse.WaUiMetadata;
+import gov.cdc.nbs.questionbank.entity.srte.CodeValueGeneral;
+import gov.cdc.nbs.questionbank.entity.srte.Codeset;
+import gov.cdc.nbs.questionbank.entity.srte.CodesetGroupMetadata;
 import gov.cdc.nbs.questionbank.repository.odse.WaQuestionRepository;
 import gov.cdc.nbs.questionbank.repository.odse.WaTemplateRepository;
 import gov.cdc.nbs.questionbank.repository.odse.WaUiMetadataRepository;
+import gov.cdc.nbs.questionbank.repository.srte.CodeValueGeneralRepository;
+import gov.cdc.nbs.questionbank.repository.srte.CodesetGroupMetadataRepository;
+import gov.cdc.nbs.questionbank.repository.srte.CodesetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.function.Function;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Handles the routing of data from Episync to PageBuilder.
+ * <p>
+ * Accepts {@link EpisyncData} in the form of dictionary lists and persists it to the
+ * PageBuilder database.
+ * </p>
+ *
+ * @see EpisyncRouter
+ */
 @Service @RequiredArgsConstructor
 public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictionary<String, String>>> {
     private final WaTemplateRepository repository;
+    private final CodesetGroupMetadataRepository groupRepository;
+    private final CodesetRepository codesetRepository;
+    private final CodeValueGeneralRepository valueRepository;
     private final WaQuestionRepository questionRepository;
     private final WaUiMetadataRepository uiRepository;
 
     private static final Long PB_USER = 10000000L;
 
+    private static final String BUS_OBJ_TYPE = "INV";
+
+    public static final String CREATE_CLASS_CD= "code_value_general";
+    public static final String SOURCE_DOMAIN= "VADS";
+    public static final String VALUESET_TYPE= "PHIN";
+    public static final String VALUESET_STATUS= "Published";
+
+    private static final String DATA_LOCATION = "NBS_CASE_ANSWER.ANSWER_TXT";
     private static final String ACTIVE = "Active";
     private static final String ENTRY_METHOD = "USER";
     private static final String QUESTION_TYPE = "PHIN";
@@ -40,14 +66,45 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
     private static final Long INPUT = 1008L;
     private static final Long TEXTAREA = 1009L;
 
+    /**
+     * Routes the provided data to the PageBuilder system. The data is saved
+     * in the PageBuilder database.
+     *
+     * @param data The data to be routed and persisted, represented as an
+     *             implementation of {@link EpisyncData}.
+     * @return The result of data routing.
+     */
     @Override
     public EpisyncRouteResult routeData(EpisyncData<String, List<Dictionary<String, String>>> data) throws EpisyncRouterException {
 
+        List<String> codes = data.get("values").stream()
+                .map(v -> v.get("code")).collect(Collectors.toList());
+
+        List<CodesetGroupMetadata> existingGroups = groupRepository.findAllByVadsValueSetCode(codes);
+        Set<String> existingCodes = existingGroups.stream()
+                .map(CodesetGroupMetadata::getVadsValueSetCode).collect(Collectors.toSet());
+        List<String> newCodes = codes.stream()
+                .filter(code -> !existingCodes.contains(code)).collect(Collectors.toList());
+
+        List<CodesetGroupMetadata> newGroups = convert(data, newCodes, groupRepository.getMaxCodesetGroupId());
+        if (!newGroups.isEmpty()) {
+            Map<String, Long> groupMap = newGroups.stream()
+                    .collect(Collectors.toMap(CodesetGroupMetadata::getVadsValueSetCode, CodesetGroupMetadata::getCodeSetGroupId, Math::max));
+
+            List<Codeset> codeSets = convert(data, groupMap);
+            List<CodeValueGeneral> values = convert(data, codeSets);
+
+            List<CodesetGroupMetadata> savedGroups = groupRepository.saveAll(newGroups);
+            List<Codeset> savedCodes = codesetRepository.saveAll(codeSets);
+            List<CodeValueGeneral> savedValues = valueRepository.saveAll(values);
+        }
+
+        Map<String, Long> groupMap = Stream.concat(newGroups.stream(), existingGroups.stream())
+                .collect(Collectors.toMap(CodesetGroupMetadata::getVadsValueSetCode, CodesetGroupMetadata::getCodeSetGroupId, Math::max));
+
         WaTemplate template = convert(data);
-        WaTemplate saved = repository.save(template);
 
-        List<WaQuestion> questions = convert(data, template.getLocalId());
-
+        List<WaQuestion> questions = convert(data, groupMap, template.getLocalId());
         List<WaQuestion> existingQuestions = questionRepository.findByIdentifiers(
                 questions.stream().map(WaQuestion::getQuestionIdentifier).collect(Collectors.toList()));
         Set<String> existingIdentifiers = existingQuestions.stream()
@@ -58,18 +115,12 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
 
         Map<String, WaQuestion> questionMap = Stream.concat(newQuestions.stream(), existingQuestions.stream())
                 .collect(Collectors.toMap(WaQuestion::getQuestionIdentifier, Function.identity()));
+        groupMap = questions.stream().filter(q -> q.getCodeSetGroupId() != null).collect(Collectors.toMap(WaQuestion::getQuestionIdentifier, WaQuestion::getCodeSetGroupId));
 
-        List<WaUiMetadata> uiMetadata = convert(data, saved, questionMap);
-
+        WaTemplate saved = repository.save(template);
+        List<WaUiMetadata> uiMetadata = convert(data, saved, questionMap, groupMap);
         List<WaQuestion> savedQ = questionRepository.saveAll(newQuestions);
         List<WaUiMetadata> savedUi = uiRepository.saveAll(uiMetadata);
-
-
-        Map<Long, WaQuestion> uiMap = savedUi.stream().filter(ui -> ui.getDataType() != null)
-                .collect(Collectors.toMap(WaUiMetadata::getWaUiMetadataUid, ui -> questionMap.get(ui.getQuestionIdentifier())));
-        List<WaNndMetadata> nndMetadata = convert(saved.getWaTemplateUid(), uiMap);
-
-        //List<WaNndMetadata> savedNnd = nndRepository.saveAll(nndMetadata);
 
         String msg = "template_id:" + saved.getWaTemplateUid() + " template_name:" + saved.getTemplateNm() + " questions:" + questionMap.size();
 
@@ -79,12 +130,12 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
     private WaTemplate convert(EpisyncData<String, List<Dictionary<String, String>>> data) {
         WaTemplate result = new WaTemplate();
 
-        Dictionary<String, String> tmpData = data.data().get("template").listIterator().next();
+        Dictionary<String, String> tmpData = data.get("template").listIterator().next();
 
         result.setTemplateType(tmpData.get("type"));
         result.setXmlPayload("XML Payload");
         result.setFormCd("PG_" + tmpData.get("name"));
-        result.setBusObjType("IXS");
+        result.setBusObjType(BUS_OBJ_TYPE);
         result.setDatamartNm(tmpData.get("shortName"));
         result.setRecordStatusCd(ACTIVE);
         result.setRecordStatusTime(Instant.now());
@@ -101,15 +152,121 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
         return result;
     }
 
-    private List<WaQuestion> convert(EpisyncData<String, List<Dictionary<String, String>>> data, String localId) {
+    private List<CodesetGroupMetadata> convert(EpisyncData<String, List<Dictionary<String, String>>> data,
+                                               List<String> codes, Long groupId) {
+        List<CodesetGroupMetadata> groups = new ArrayList<>();
+        List<Dictionary<String, String>> values = data.get("values");
+        for (Dictionary<String, String> vs: values) {
+            String valueSetCode = vs.get("code");
+            if (codes.contains(valueSetCode)) {
+                CodesetGroupMetadata group = new CodesetGroupMetadata();
+                groupId += 10;
+                group.setCodeSetNm(valueSetCode);
+                group.setCodeSetGroupId(groupId);
+                group.setVadsValueSetCode(valueSetCode);
+                group.setCodeSetDescTxt(vs.get("definition"));
+                group.setCodeSetShortDescTxt(vs.get("name"));
+                group.setLdfPicklistIndCd("Y");
+                group.setPhinStdValInd("Y");
+
+                groups.add(group);
+            }
+        }
+
+        return groups;
+    }
+
+    private List<Codeset> convert(EpisyncData<String, List<Dictionary<String, String>>> data,
+                                  Map<String, Long> groupMap) {
+        List<Codeset> codesets = new ArrayList<>();
+
+        List<Dictionary<String, String>> values = data.get("values");
+        for (Dictionary<String, String> vs: values) {
+            String valueSetCode = vs.get("code");
+
+            if (groupMap.containsKey(valueSetCode)) {
+
+                Codeset c = new Codeset();
+
+                c.setCodeSetNm(valueSetCode);
+                c.setAssigningAuthorityCd("2.16.840.1.114222");
+                c.setAssigningAuthorityDescTxt("Centers for Disease Control and Prevention");
+                c.setCodeSetDescTxt(vs.get("definition"));
+                c.setClassCd(CREATE_CLASS_CD);
+                c.setEffectiveFromTime(LocalDateTime.parse(vs.get("status_date")).toInstant(ZoneOffset.UTC));
+                c.setModifiableInd("Y");
+                c.setSourceDomainNm(SOURCE_DOMAIN);
+                c.setStatusCd("A");
+                c.setStatusToTime(c.getEffectiveFromTime());
+                c.setCodeSetGroupId(groupMap.get(valueSetCode));
+                c.setValueSetNm(vs.get("name"));
+                c.setLdfPicklistIndCd("Y");
+                c.setValueSetCode(valueSetCode);
+                c.setValueSetTypeCd(VALUESET_TYPE);
+                c.setValueSetOid(vs.get("oid"));
+                c.setValueSetStatusCd(VALUESET_STATUS);
+                c.setValueSetStatusTime(c.getStatusToTime());
+                c.setAddTime(Instant.now());
+                c.setAddUserId(PB_USER);
+
+                codesets.add(c);
+            }
+        }
+
+        return codesets;
+    }
+
+    private List<CodeValueGeneral> convert(EpisyncData<String, List<Dictionary<String, String>>> data, List<Codeset> codesets) {
+        List<CodeValueGeneral> values = new ArrayList<>();
+        for (Codeset codeset : codesets) {
+            List<Dictionary<String, String>> concepts = data.get(codeset.getValueSetCode());
+            for (Dictionary<String, String> concept : concepts) {
+                CodeValueGeneral value = new CodeValueGeneral();
+
+                value.setCodeSetNm(codeset.getCodeSetNm());
+                value.setCode(concept.get("code"));
+                value.setCodeDescTxt(concept.get("name"));
+                value.setCodeShortDescTxt(concept.get("name"));
+
+                value.setCodeSystemCd(concept.get("oid"));
+                value.setCodeSystemDescTxt(concept.get("identifier"));
+                value.setEffectiveFromTime(LocalDateTime.parse(concept.get("status_date")).toInstant(ZoneOffset.UTC));
+
+                value.setIndentLevelNbr(1);
+                value.setModifiableInd("Y");
+                value.setStatusCd("A");
+                value.setStatusTime(value.getEffectiveFromTime());
+                value.setConceptTypeCd(VALUESET_TYPE);
+
+                value.setConceptCode(concept.get("code"));
+                value.setConceptNm(concept.get("name"));
+                value.setConceptPreferredNm(concept.get("preferred"));
+
+                value.setConceptStatusCd(VALUESET_STATUS);
+                value.setConceptStatusTime(value.getEffectiveFromTime());
+                value.setAddTime(Instant.now());
+                value.setAddUserId(PB_USER);
+
+                values.add(value);
+            }
+        }
+        return values;
+    }
+
+    private List<WaQuestion> convert(EpisyncData<String, List<Dictionary<String, String>>> data,
+                                     Map<String, Long> groupMap, String localId) {
         List<WaQuestion> questions = new ArrayList<>();
-        List<Dictionary<String, String>> blocks = data.data().get(localId);
+        List<Dictionary<String, String>> blocks = data.get(localId);
 
         for (Dictionary<String, String> blockData: blocks) {
-            List<Dictionary<String, String>> elements = data.data().get(blockData.get("id"));
+            List<Dictionary<String, String>> elements = data.get(blockData.get("id"));
             for (Dictionary<String, String> qmData : elements) {
                 WaQuestion q = new WaQuestion();
 
+                String valueSetCode = qmData.get("value_set_code");
+
+                q.setCodeSetGroupId(groupMap.computeIfAbsent(valueSetCode, k -> null));
+                q.setDataLocation(DATA_LOCATION);
                 q.setQuestionIdentifier(qmData.get("identifier"));
                 q.setQuestionOid(qmData.get("question_oid"));
                 q.setQuestionOidSystemTxt(qmData.get("question_oid_system"));
@@ -147,7 +304,7 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
     }
 
     private List<WaUiMetadata> convert(EpisyncData<String, List<Dictionary<String, String>>> data, WaTemplate template,
-                         Map<String, WaQuestion> questions) {
+                         Map<String, WaQuestion> questions, Map<String, Long> groupMap) {
 
         List<WaUiMetadata> uiMetadata = new ArrayList<>();
 
@@ -165,12 +322,12 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
         WaUiMetadata sec = getMetaData(templateId, SECTION, "Blocks", ++order, ++uiNum);
         uiMetadata.add(sec);
 
-        List<Dictionary<String, String>> blocks = data.data().get(template.getLocalId());
+        List<Dictionary<String, String>> blocks = data.get(template.getLocalId());
 
         int blk = 0;
         for (Dictionary<String, String> blockData: blocks) {
 
-            List<Dictionary<String, String>> elements = data.data().get(blockData.get("id"));
+            List<Dictionary<String, String>> elements = data.get(blockData.get("id"));
             boolean blockRepeat = blockData.get("type").equalsIgnoreCase("repeat");
             int batchWidth = 0;
 
@@ -188,6 +345,7 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
 
                     String identifier = qmData.get("identifier");
                     WaQuestion q = questions.get(identifier);
+                    Long groupId = groupMap.get(identifier);
 
                     ui.setWaTemplateUid(templateId);
 
@@ -197,7 +355,7 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
                     long componentUid = q.getNbsUiComponentUid();
                     String dataType = q.getDataType();
 
-                    if (componentUid == CODED && q.getCodeSetGroupId() == null) {
+                    if (componentUid == CODED && groupId == null) {
                         componentUid = fieldSize.length() > 2 ? TEXTAREA : INPUT;
                         dataType = "TEXT";
                     }
@@ -212,7 +370,7 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
 
                     ui.setMask(q.getMask());
                     ui.setEntryMethod(q.getEntryMethod());
-                    ui.setCodeSetGroupId(q.getCodeSetGroupId());
+                    ui.setCodeSetGroupId(groupId);
 
                     ui.setAddTime(Instant.now());
                     ui.setAddUserId(PB_USER);
@@ -251,33 +409,6 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
         }
 
         return uiMetadata;
-    }
-
-    private List<WaNndMetadata> convert(Long templateId, Map<Long, WaQuestion> uiMap) {
-        List<WaNndMetadata> nndMetadata = new ArrayList<>();
-
-        for (Entry<Long, WaQuestion> e : uiMap.entrySet()) {
-            WaQuestion question = e.getValue();
-            WaNndMetadata nnd = new WaNndMetadata();
-
-            nnd.setWaTemplateUid(templateId);
-            nnd.setQuestionIdentifierNnd(question.getQuestionIdentifier());
-            nnd.setQuestionLabelNnd(question.getQuestionLabel());
-            nnd.setQuestionRequiredNnd(question.getQuestionRequiredNnd());
-            nnd.setQuestionDataTypeNnd(question.getQuestionDataTypeNnd());
-            nnd.setHl7SegmentField(question.getHl7SegmentField());
-            nnd.setAddUserId(PB_USER);
-            nnd.setAddTime(Instant.now());
-            nnd.setLastChgUserId(PB_USER);
-            nnd.setLastChgTime(Instant.now());
-            nnd.setRecordStatusCd(ACTIVE);
-            nnd.setRecordStatusTime(Instant.now());
-            nnd.setQuestionIdentifier(question.getQuestionIdentifier());
-            nnd.setWaUiMetadataUid(e.getKey());
-
-            nndMetadata.add(nnd);
-        }
-        return nndMetadata;
     }
 
     private WaUiMetadata getMetaData(Long templateId, Long componentUid, String label, int order, int uiNum) {

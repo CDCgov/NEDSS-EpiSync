@@ -28,7 +28,7 @@ public class Episync {
             Method method = publisher.getClass().getMethod("publishDocument", EpisyncDocument.class);
             return  (EpisyncPublishResult) method.invoke(publisher, document);
         } catch (InvocationTargetException t) {
-            return new EpisyncPublishResult(PublishResultCode.FAILED, t.getTargetException().getMessage());
+            return new EpisyncPublishResult(PublishResultCode.FAILED, t.getTargetException().toString());
         } catch (Exception e) {
             return new EpisyncPublishResult(PublishResultCode.FAILED, e.getMessage());
         }

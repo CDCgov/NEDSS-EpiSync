@@ -14,4 +14,14 @@ public class MmgData<K, V> implements EpisyncData<K, V> {
     public Dictionary<K, V> data() {
         return data;
     }
+
+    @Override
+    public V get(K key) {
+        return data.get(key);
+    }
+
+    @Override
+    public V put(K key, V value) {
+        return data.put(key, value);
+    }
 }

@@ -11,6 +11,7 @@ import java.util.List;
 public class MmgValueSet {
 
     private MmgValueSetInfo valueSet;
+    private MmgValueSetVersion valueSetVersion;
     private int conceptsCount;
 
     private List<MmgConcept> concepts;
@@ -22,6 +23,14 @@ public class MmgValueSet {
         private String valueSetOid;
         private String valueSetName;
         private String valueSetCode;
+        private String statusDate;
         private String definitionText;
+        private String assigningAuthorityId;
+    }
+
+    @Getter @Setter
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class MmgValueSetVersion {
+        private String valueSetVersionId;
     }
 }

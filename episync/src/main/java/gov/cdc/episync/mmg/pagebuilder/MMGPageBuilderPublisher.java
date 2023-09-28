@@ -24,7 +24,7 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
         MmgTemplate template = getTemplate(document.getJson());
 
         try {
-            EpisyncRouteResult routeResult = router.routeData(buildData(template));
+            EpisyncRouteResult routeResult = router.routeData(build(template));
             return new EpisyncPublishResult(PublishResultCode.SUCCESS, routeResult.getResultMessage());
         } catch (EpisyncRouterException e) {
             throw new EpisyncPublishException(e.getMessage());
@@ -39,9 +39,8 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
         }
     }
 
-    private EpisyncData<String, List<Dictionary<String, String>>> buildData(MmgTemplate template) {
+    private EpisyncData<String, List<Dictionary<String, String>>> build(MmgTemplate template) {
         MmgData<String, List<Dictionary<String, String>>> episyncData = new MmgData<>();
-        Dictionary<String, List<Dictionary<String, String>>> data = episyncData.getData();
 
         Dictionary<String, String> tmpData = new Hashtable<>();
         tmpData.put("id", template.getId());
@@ -51,32 +50,38 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
         tmpData.put("description", template.getDescription());
         tmpData.put("profileIdentifier", template.getProfileIdentifier());
 
-        data.put("template", Collections.singletonList(tmpData));
+        episyncData.put("template", Collections.singletonList(tmpData));
 
         List<Dictionary<String, String>> blocks = new ArrayList<>();
         for (MmgBlock b: template.getBlocks()) {
             List<MmgElement> elements = b.getElements();
-            blocks.add(buildBlockData(b));
+            blocks.add(build(b));
 
             List<Dictionary<String, String>> questions = new ArrayList<>(elements.size());
             for (MmgElement e: elements) {
-                questions.add(buildQuestionData(e));
+                questions.add(build(e));
             }
-            data.put(b.getId(), questions);
-            data.put(b.getGuideId(), blocks);
+            episyncData.put(b.getId(), questions);
         }
+        episyncData.put(template.getId(), blocks);
 
-        /*List<MmgElement> elements = template.getBlocks().stream().flatMap(b -> b.getElements().stream()).collect(Collectors.toList());
-        List<Dictionary<String, String>> questions = new ArrayList<>(elements.size());
-        for (MmgElement e: elements) {
-            questions.add(buildQuestionData(e));
+        List<Dictionary<String, String>> vsets = new ArrayList<>();
+        for (MmgValueSet vs: template.getValueSets()) {
+            vsets.add(build(vs));
+
+            List<MmgConcept> concepts = vs.getConcepts();
+            List<Dictionary<String, String>> values = new ArrayList<>(concepts.size());
+            for (MmgConcept c: concepts) {
+                values.add(build(c));
+            }
+            episyncData.put(vs.getValueSet().getValueSetCode().toUpperCase(), values);
         }
+        episyncData.put("values", vsets);
 
-        data.put("questions", questions);*/
         return episyncData;
     }
 
-    private Dictionary<String, String> buildBlockData(MmgBlock b) {
+    private Dictionary<String, String> build(MmgBlock b) {
         Dictionary<String, String> blockData = new Hashtable<>();
         blockData.put("id", b.getId());
         blockData.put("name", b.getName());
@@ -84,7 +89,7 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
         return blockData;
     }
 
-    private Dictionary<String, String> buildQuestionData(MmgElement e) {
+    private Dictionary<String, String> build(MmgElement e) {
         Dictionary<String, String> qmData = new Hashtable<>();
         qmData.put("identifier", e.getMappings().getHl7v251().getLegacyIdentifier());
         qmData.put("question_oid", QUESTION_OID);
@@ -94,11 +99,38 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
         qmData.put("short_name", e.getShortName());
         qmData.put("desc_txt", e.getDescription());
 
-        qmData.put("value_set_code", e.getValueSetCode() == null ? "" : e.getValueSetCode());
+        qmData.put("value_set_code", Optional.ofNullable(e.getValueSetCode()).orElse("").toUpperCase());
         qmData.put("identifier_nnd", e.getMappings().getHl7v251().getIdentifier());
         qmData.put("required_nnd", e.getMappings().getHl7v251().getUsage().equals("R") ? "R" : "O");
         qmData.put("data_type_nnd", e.getMappings().getHl7v251().getDataType());
         qmData.put("hl7_segment_field", e.getMappings().getHl7v251().getSegmentType());
         return qmData;
+    }
+
+    private Dictionary<String, String> build(MmgValueSet vset) {
+        MmgValueSet.MmgValueSetInfo vs = vset.getValueSet();
+        Dictionary<String, String> vsData = new Hashtable<>();
+        vsData.put("id", vs.getValueSetId());
+        vsData.put("oid", vs.getValueSetOid());
+        vsData.put("name", vs.getValueSetName());
+        vsData.put("code", vs.getValueSetCode().toUpperCase());
+        vsData.put("status_date", vs.getStatusDate());
+        vsData.put("definition", vs.getDefinitionText());
+        vsData.put("authority", vs.getAssigningAuthorityId());
+        return vsData;
+    }
+
+    private Dictionary<String, String> build(MmgConcept c) {
+        Dictionary<String, String> cData = new Hashtable<>();
+        cData.put("id", c.getValueSetConceptId());
+        cData.put("name", c.getCodeSystemConceptName());
+        cData.put("status_date", c.getValueSetConceptStatusDate());
+        cData.put("def_text", Optional.ofNullable(c.getValueSetConceptDefinitionText()).orElse(""));
+        cData.put("preferred", c.getCdcPreferredDesignation());
+        cData.put("oid", c.getCodeSystemOid());
+        cData.put("code", c.getConceptCode());
+        cData.put("identifier", c.getHL70396Identifier());
+
+        return cData;
     }
 }
