@@ -2,7 +2,7 @@
   "id": "88e35837-86b3-4166-ade9-ee4bc2b9bee3",
   "type": "Template",
   "templateStatus": "L",
-  "name": "Generic Version 2.0.1 - Sergei",
+  "name": "Generic Version 2.0.1",
   "shortName": "Genv2",
   "description": "The generic individual case notification message mapping guide v2.0.1 describes the content and message mapping specifications for the set of data elements used to communicate information to meet the requirements for generic case notifications to the Centers for Disease Control and Prevention (CDC).  \n\nThis generic v2.0.1 guide needs to be used in conjunction with disease-specific message mapping guides to construct a complete case notification message for nationally notifiable diseases and conditions with disease-specific data elements.  \n\nThe intended audiences for this document are the state/local and CDC programs and other public health-related organizations interested in using the HL7 V2.5.1 case notification message specification for transmitting their data elements to CDC. \n",
   "isActive": true,
