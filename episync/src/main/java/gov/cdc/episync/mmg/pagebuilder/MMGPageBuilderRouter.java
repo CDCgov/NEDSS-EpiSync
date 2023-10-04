@@ -49,9 +49,11 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
     public static final String CREATE_CLASS_CD= "code_value_general";
     public static final String SOURCE_DOMAIN= "VADS";
     public static final String VALUESET_TYPE= "PHIN";
-    public static final String VALUESET_STATUS= "Published";
+    public static final String VALUESET_STATUS= "Active";
 
     private static final String DATA_LOCATION = "NBS_CASE_ANSWER.ANSWER_TXT";
+    private static final String GROUP_NM = "GROUP_INV";
+    private static final String SUB_GROUP_NM = "INV";
     private static final String ACTIVE = "Active";
     private static final String ENTRY_METHOD = "USER";
     private static final String QUESTION_TYPE = "PHIN";
@@ -193,11 +195,13 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
                 c.setAssigningAuthorityDescTxt("Centers for Disease Control and Prevention");
                 c.setCodeSetDescTxt(vs.get("definition"));
                 c.setClassCd(CREATE_CLASS_CD);
-                c.setEffectiveFromTime(LocalDateTime.parse(vs.get("status_date")).toInstant(ZoneOffset.UTC));
+                c.setEffectiveFromTime(Instant.now());
+                c.setEffectiveToTime(Instant.now());
                 c.setModifiableInd("Y");
+                c.setSourceVersionTxt("1");
                 c.setSourceDomainNm(SOURCE_DOMAIN);
                 c.setStatusCd("A");
-                c.setStatusToTime(c.getEffectiveFromTime());
+                c.setStatusToTime(LocalDateTime.parse(vs.get("status_date")).toInstant(ZoneOffset.UTC));
                 c.setCodeSetGroupId(groupMap.get(valueSetCode));
                 c.setValueSetNm(vs.get("name"));
                 c.setLdfPicklistIndCd("Y");
@@ -230,12 +234,13 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
 
                 value.setCodeSystemCd(concept.get("oid"));
                 value.setCodeSystemDescTxt(concept.get("identifier"));
-                value.setEffectiveFromTime(LocalDateTime.parse(concept.get("status_date")).toInstant(ZoneOffset.UTC));
+                value.setEffectiveFromTime(Instant.now());
+                value.setEffectiveToTime(Instant.now());
 
                 value.setIndentLevelNbr(1);
                 value.setModifiableInd("Y");
                 value.setStatusCd("A");
-                value.setStatusTime(value.getEffectiveFromTime());
+                value.setStatusTime(LocalDateTime.parse(concept.get("status_date")).toInstant(ZoneOffset.UTC));
                 value.setConceptTypeCd(VALUESET_TYPE);
 
                 value.setConceptCode(concept.get("code"));
@@ -243,7 +248,7 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
                 value.setConceptPreferredNm(concept.get("preferred"));
 
                 value.setConceptStatusCd(VALUESET_STATUS);
-                value.setConceptStatusTime(value.getEffectiveFromTime());
+                value.setConceptStatusTime(value.getStatusTime());
                 value.setAddTime(Instant.now());
                 value.setAddUserId(PB_USER);
 
@@ -273,14 +278,21 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
                 q.setDataType(qmData.get("data_type").toUpperCase());
                 q.setQuestionLabel(trunkEncode(qmData.get("name")));
                 q.setQuestionToolTip(trunkEncode(qmData.get("desc_txt")));
+
+                q.setDefaultValue(qmData.get("default"));
                 q.setVersionCtrlNbr(1);
                 q.setAddUserId(PB_USER);
                 q.setAddTime(Instant.now());
                 q.setLastChgUserId(PB_USER);
                 q.setLastChgTime(Instant.now());
                 q.setQuestionNm(qmData.get("name"));
+
+                q.setGroupNm(GROUP_NM);
+                q.setSubGroupNm(SUB_GROUP_NM);
+
                 q.setDescTxt(qmData.get("desc_txt"));
                 q.setRptAdminColumnNm(qmData.get("name"));
+                q.setNndMsgInd("T");
                 q.setQuestionIdentifierNnd(qmData.get("identifier_nnd"));
                 q.setQuestionLabelNnd(qmData.get("name"));
                 q.setQuestionRequiredNnd(qmData.get("required_nnd"));
