@@ -90,8 +90,10 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
     }
 
     private Dictionary<String, String> build(MmgElement e) {
+        MmgElement.Hl7 hl7map = e.getMappings().getHl7v251();
         Dictionary<String, String> qmData = new Hashtable<>();
-        qmData.put("identifier", e.getMappings().getHl7v251().getLegacyIdentifier());
+
+        qmData.put("identifier", hl7map.getLegacyIdentifier());
         qmData.put("question_oid", QUESTION_OID);
         qmData.put("question_oid_system", QUESTION_OID_SYSTEM);
         qmData.put("data_type", e.getDataType());
@@ -100,10 +102,14 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
         qmData.put("desc_txt", e.getDescription());
 
         qmData.put("value_set_code", Optional.ofNullable(e.getValueSetCode()).orElse("").toUpperCase());
-        qmData.put("identifier_nnd", e.getMappings().getHl7v251().getIdentifier());
-        qmData.put("required_nnd", e.getMappings().getHl7v251().getUsage().equals("R") ? "R" : "O");
-        qmData.put("data_type_nnd", e.getMappings().getHl7v251().getDataType());
-        qmData.put("hl7_segment_field", e.getMappings().getHl7v251().getSegmentType());
+        qmData.put("identifier_nnd", (hl7map.getIdentifier().startsWith("N/A") ? hl7map.getLegacyIdentifier() : hl7map.getIdentifier()));
+        qmData.put("required_nnd", hl7map.getUsage().equals("R") ? "R" : "O");
+        qmData.put("data_type_nnd", hl7map.getDataType());
+        qmData.put("hl7_segment_field", hl7map.getSegmentType() + "-" + hl7map.getFieldPosition() + "." +
+                (hl7map.getComponentPosition() > 0 ? hl7map.getComponentPosition() : "0"));
+
+        Optional<MmgElement.DefaultValue> defaultVal = Optional.ofNullable(e.getDefaultValue());
+        defaultVal.ifPresent(val -> qmData.put("default", val.getValue()));
         return qmData;
     }
 
