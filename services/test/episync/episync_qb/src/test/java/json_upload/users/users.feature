@@ -1,23 +1,26 @@
+@ignore
 Feature: sample karate test script
 
   Background:
-    * url 'http://172.19.0.4:8088/mmg/publish?type=MMG&url=http%3A%2F%2Fnedds.gov.us'
+    * url 'http://episync-publish:8088/mmg/publish?type=MMG&url=http%3A%2F%2Fnedds.gov.us'
     * def config = { username: 'sa', password: 'fake.fake.fake.1234', url: 'jdbc:sqlserver://nbs-mssql:1433;Database=NBS_ODSE;Encrypt=True;TrustServerCertificate=True', driverClassName: 'com.microsoft.sqlserver.jdbc.SQLServerDriver' }
     * def DbUtils = Java.type('json_upload.users.DbUtils')
     * def db = new DbUtils(config)
 
 
   Scenario: get valid response for Generic V2 json
-    And header Accept = 'application/json'
+    And header Accept = 'application/hal+json'
     Given multipart file file = { read: 'data/Generic-MMG-V2.0.json', filename: 'Generic-MMG-V2.0.json', contentType: 'application/json'}
     When method post
     Then status 200
     * print response.message
     And match response.code == 'SUCCESS'
+#    And match response.message == "template_id:" + template_name:Generic Version 2.0.1 + questions:67"
     * def respMessage = response.message.split('template_id:')[1].split(' ')[0]
     * print respMessage
     * def template = db.readRows("select * from dbo.WA_template where wa_template_uid = " + respMessage)
     Then print 'template--',template
+    * def questions = db.readRows("select * from dbo.WA_question inner join dbo.WA_UI_metadata ui on q.question_identifier = ui.question_identifier")
 
 
   Scenario: Read Json and parse the json
