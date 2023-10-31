@@ -32,5 +32,6 @@ public class MmgValueSet {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class MmgValueSetVersion {
         private String valueSetVersionId;
+        private int valueSetVersionNumber;
     }
 }
