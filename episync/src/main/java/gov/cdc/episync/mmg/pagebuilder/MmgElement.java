@@ -13,9 +13,12 @@ public class MmgElement {
     private String shortName;
     private String description;
     private String dataType;
+    private String legacyCodeSystem;
+    private String codeSystem;
     private String priority;
     private boolean isRepeat;
     private String valueSetCode;
+    private int valueSetVersionNumber;
 
     private Mappings mappings;
     private DefaultValue defaultValue;

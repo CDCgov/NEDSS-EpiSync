@@ -6,6 +6,8 @@ import gov.cdc.episync.mmg.MMGDocument;
 import gov.cdc.episync.mmg.MMGPublisher;
 import gov.cdc.episync.mmg.MmgData;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -16,8 +18,14 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
     private final MMGPageBuilderRouter router;
 
     private static final String QUESTION_OID = "2.16.840.1.114222.4.5.232";
-    private static final String QUESTION_OID_SYSTEM = "PHIN Questions";
 
+    private static final String NA = "N/A";
+    private static final String PHINQUESTION = "PHINQUESTION";
+    private static final String LN = "LN";
+    private static final String QUESTION_OID_SYSTEM_PHIN = "PHIN Questions";
+    private static final String QUESTION_OID_SYSTEM_LN = "LOINC";
+
+    Logger logger = LoggerFactory.getLogger(MMGPageBuilderRouter.class);
 
     @Override
     public EpisyncPublishResult publishDocument(MMGDocument document) throws EpisyncPublishException {
@@ -43,40 +51,66 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
         MmgData<String, List<Dictionary<String, String>>> episyncData = new MmgData<>();
 
         Dictionary<String, String> tmpData = new Hashtable<>();
-        tmpData.put("id", template.getId());
-        tmpData.put("type", template.getType());
-        tmpData.put("name", template.getName());
-        tmpData.put("shortName", template.getShortName());
-        tmpData.put("description", template.getDescription());
-        tmpData.put("profileIdentifier", template.getProfileIdentifier());
 
-        episyncData.put("template", Collections.singletonList(tmpData));
+        try {
+            logger.info("Start building template {}", template.getName());
 
-        List<Dictionary<String, String>> blocks = new ArrayList<>();
-        for (MmgBlock b: template.getBlocks()) {
-            List<MmgElement> elements = b.getElements();
-            blocks.add(build(b));
+            tmpData.put("id", template.getId());
+            tmpData.put("type", template.getType());
+            tmpData.put("name", template.getName());
+            tmpData.put("shortName", template.getShortName());
+            tmpData.put("description", template.getDescription());
+            tmpData.put("profileIdentifier", template.getProfileIdentifier());
 
-            List<Dictionary<String, String>> questions = new ArrayList<>(elements.size());
-            for (MmgElement e: elements) {
-                questions.add(build(e));
+            episyncData.put("template", Collections.singletonList(tmpData));
+
+            List<Dictionary<String, String>> blocks = new ArrayList<>();
+            for (MmgBlock b : template.getBlocks()) {
+                List<MmgElement> elements = b.getElements();
+                logger.info("Start building block {}", b.getName());
+                blocks.add(build(b));
+
+                List<Dictionary<String, String>> questions = new ArrayList<>(elements.size());
+                if (elements.isEmpty()) {
+                    logger.info("Successfully built block {}", b.getName());
+                } else {
+                    logger.info("Start building {} questions", elements.size());
+                    for (MmgElement e : elements) {
+                        questions.add(build(e));
+                    }
+                    logger.info("Successfully built block {} with {} questions", b.getName(), questions.size());
+                }
+
+                episyncData.put(b.getId(), questions);
             }
-            episyncData.put(b.getId(), questions);
+            episyncData.put(template.getId(), blocks);
+        } catch (NullPointerException ex) {
+            throw new NoSuchElementException("Cannot build template data for " + tmpData.get("name"));
         }
-        episyncData.put(template.getId(), blocks);
 
-        List<Dictionary<String, String>> vsets = new ArrayList<>();
-        for (MmgValueSet vs: template.getValueSets()) {
-            vsets.add(build(vs));
+        try {
+            List<Dictionary<String, String>> vsets = new ArrayList<>();
+            for (MmgValueSet vs : template.getValueSets()) {
+                logger.info("Building value set {}", vs.getValueSet().getValueSetCode());
+                vsets.add(build(vs));
 
-            List<MmgConcept> concepts = vs.getConcepts();
-            List<Dictionary<String, String>> values = new ArrayList<>(concepts.size());
-            for (MmgConcept c: concepts) {
-                values.add(build(c));
+                List<MmgConcept> concepts = vs.getConcepts();
+                List<Dictionary<String, String>> values = new ArrayList<>(concepts.size());
+
+                logger.info("Start building {} concepts", concepts.size());
+                for (MmgConcept c : concepts) {
+                    values.add(build(c));
+                }
+
+                logger.info("Successfully built {} concepts for value set {}", values.size(), vs.getValueSet().getValueSetCode());
+                episyncData.put(vs.getValueSet().getValueSetCode().toUpperCase(), values);
             }
-            episyncData.put(vs.getValueSet().getValueSetCode().toUpperCase(), values);
+
+            episyncData.put("values", vsets);
+        } catch (NullPointerException ex) {
+            throw new NoSuchElementException(ex.getMessage());
         }
-        episyncData.put("values", vsets);
+        logger.info("Successfully built template {}", template.getName());
 
         return episyncData;
     }
@@ -90,26 +124,36 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
     }
 
     private Dictionary<String, String> build(MmgElement e) {
-        MmgElement.Hl7 hl7map = e.getMappings().getHl7v251();
         Dictionary<String, String> qmData = new Hashtable<>();
+        try {
+            MmgElement.Hl7 hl7map = e.getMappings().getHl7v251();
 
-        qmData.put("identifier", hl7map.getLegacyIdentifier());
-        qmData.put("question_oid", QUESTION_OID);
-        qmData.put("question_oid_system", QUESTION_OID_SYSTEM);
-        qmData.put("data_type", e.getDataType());
-        qmData.put("name", e.getName());
-        qmData.put("short_name", e.getShortName());
-        qmData.put("desc_txt", e.getDescription());
+            String identifier = hl7map.getIdentifier();
 
-        qmData.put("value_set_code", Optional.ofNullable(e.getValueSetCode()).orElse("").toUpperCase());
-        qmData.put("identifier_nnd", (hl7map.getIdentifier().startsWith("N/A") ? hl7map.getLegacyIdentifier() : hl7map.getIdentifier()));
-        qmData.put("required_nnd", hl7map.getUsage().equals("R") ? "R" : "O");
-        qmData.put("data_type_nnd", hl7map.getDataType());
-        qmData.put("hl7_segment_field", hl7map.getSegmentType() + "-" + hl7map.getFieldPosition() + "." +
-                (hl7map.getComponentPosition() > 0 ? hl7map.getComponentPosition() : "0"));
+            String legacyCodeSystem = e.getLegacyCodeSystem();
+            String codeSystem = e.getCodeSystem();
+            codeSystem = getCodeSystem(legacyCodeSystem, codeSystem);
 
-        Optional<MmgElement.DefaultValue> defaultVal = Optional.ofNullable(e.getDefaultValue());
-        defaultVal.ifPresent(val -> qmData.put("default", val.getValue()));
+            qmData.put("identifier", getIdentifier(e));
+            qmData.put("question_oid", QUESTION_OID);
+            if (!codeSystem.isEmpty()) qmData.put("question_oid_system", codeSystem);
+            qmData.put("data_type", e.getDataType());
+            qmData.put("name", e.getName());
+            qmData.put("desc_txt", e.getDescription());
+
+            qmData.put("value_set_code", Optional.ofNullable(e.getValueSetCode()).orElse("").toUpperCase());
+            if (!identifier.startsWith(NA)) qmData.put("identifier_nnd", identifier);
+            qmData.put("required_nnd", hl7map.getUsage().equals("R") ? "R" : "O");
+            qmData.put("data_type_nnd", hl7map.getDataType());
+            qmData.put("hl7_segment_field", hl7map.getSegmentType() + "-" + hl7map.getFieldPosition() + "." +
+                    (hl7map.getComponentPosition() > 0 ? hl7map.getComponentPosition() : "0"));
+
+            Optional<MmgElement.DefaultValue> defaultVal = Optional.ofNullable(e.getDefaultValue());
+            defaultVal.ifPresent(val -> qmData.put("default", val.getValue()));
+        } catch (NullPointerException ex) {
+            throw new NoSuchElementException("Cannot convert element data for element " +
+                    qmData.get("identifier"));
+        }
         return qmData;
     }
 
@@ -121,7 +165,7 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
         vsData.put("name", vs.getValueSetName());
         vsData.put("code", vs.getValueSetCode().toUpperCase());
         vsData.put("status_date", vs.getStatusDate());
-        vsData.put("definition", vs.getDefinitionText());
+        vsData.put("definition", Optional.ofNullable(vs.getDefinitionText()).orElse(vs.getValueSetName()));
         vsData.put("authority", vs.getAssigningAuthorityId());
         return vsData;
     }
@@ -131,12 +175,24 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
         cData.put("id", c.getValueSetConceptId());
         cData.put("name", c.getCodeSystemConceptName());
         cData.put("status_date", c.getValueSetConceptStatusDate());
-        cData.put("def_text", Optional.ofNullable(c.getValueSetConceptDefinitionText()).orElse(""));
         cData.put("preferred", c.getCdcPreferredDesignation());
         cData.put("oid", c.getCodeSystemOid());
         cData.put("code", c.getConceptCode());
         cData.put("identifier", c.getHL70396Identifier());
-
         return cData;
+    }
+
+    private String getCodeSystem(String legacy, String system) {
+        String codeSystem = legacy.isEmpty() || legacy.startsWith(NA) ? system : legacy;
+
+        return codeSystem.equals(PHINQUESTION) ? QUESTION_OID_SYSTEM_PHIN
+                : codeSystem.equals(LN) ? QUESTION_OID_SYSTEM_LN : "";
+    }
+
+    private String getIdentifier(MmgElement e) {
+        MmgElement.Hl7 hl7map = e.getMappings().getHl7v251();
+        String legacyIdentifier = hl7map.getLegacyIdentifier();
+        return legacyIdentifier.isEmpty() || legacyIdentifier.startsWith(NA) ?
+                hl7map.getIdentifier().replace("N/A: ", "").replaceAll("[\\s-]", "_") : legacyIdentifier;
     }
 }
