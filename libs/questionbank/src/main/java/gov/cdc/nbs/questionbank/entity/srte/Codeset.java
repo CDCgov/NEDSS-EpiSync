@@ -55,8 +55,9 @@ public class Codeset implements Serializable {
     @Column(name = "status_to_time")
     private Instant statusToTime;
 
-    @Column(name = "code_set_group_id")
-    private Long codeSetGroupId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "code_set_group_id")
+    private CodesetGroupMetadata codeSetGroup;
 
     @Column(name = "admin_comments")
     private String adminComments;
