@@ -1,4 +1,3 @@
-@ignore
 Feature: sample karate test script
 
   Background:
