@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,16 +22,26 @@ public class PageService {
     private final WaQuestionRepository questionRepository;
     private final WaUiMetadataRepository uiRepository;
 
+    public Optional<WaTemplate> getTemplate(Long uid) {
+        return repository.findById(uid);
+    }
+
     public List<WaQuestion> findByIdentifiers(Collection<String> identifiers) {
-        return questionRepository.findByIdentifiers(identifiers);
+        return questionRepository.findAllByQuestionIdentifierIsIn(identifiers);
     }
 
-    public WaTemplate save(WaTemplate template) {
-        return repository.save(template);
-    }
-
-    public List<WaQuestion> save(Collection<WaQuestion> questions, Collection<WaUiMetadata> uiMetadata) {
-        uiRepository.saveAll(uiMetadata);
+    public List<WaQuestion> save(Collection<WaQuestion> questions) {
         return questionRepository.saveAll(questions);
+    }
+
+    public WaTemplate save(WaTemplate template, Collection<WaUiMetadata> uiMetadata) {
+        WaTemplate saved = repository.save(template);
+        uiMetadata.forEach(ui -> ui.setWaTemplateUid(saved.getWaTemplateUid()));
+        uiRepository.saveAll(uiMetadata);
+        return saved;
+    }
+
+    public List<WaUiMetadata> findUiByTemplateUid(Long uid) {
+        return uiRepository.findAllByWaTemplateUidOrderByOrderNbr(uid);
     }
 }

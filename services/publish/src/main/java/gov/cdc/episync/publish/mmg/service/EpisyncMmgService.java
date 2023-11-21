@@ -5,7 +5,9 @@ import org.springframework.http.ResponseEntity;
 
 import gov.cdc.episync.framework.EpisyncDocumentType.Type;
 
+import java.util.Optional;
+
 public interface EpisyncMmgService {
 
-    ResponseEntity<?> process(InputStreamSource xmlFile, Type type, String... params);
+    ResponseEntity<?> process(InputStreamSource xmlFile, Type type, Optional<Long> uid, String... params);
 }

@@ -29,10 +29,8 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
 
     @Override
     public EpisyncPublishResult publishDocument(MMGDocument document) throws EpisyncPublishException {
-        MmgTemplate template = getTemplate(document.getJson());
-
         try {
-            EpisyncRouteResult routeResult = router.routeData(build(template));
+            EpisyncRouteResult routeResult = router.routeData(build(document));
             return new EpisyncPublishResult(PublishResultCode.SUCCESS, routeResult.getResultMessage());
         } catch (EpisyncRouterException e) {
             throw new EpisyncPublishException(e.getMessage());
@@ -47,11 +45,11 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
         }
     }
 
-    private EpisyncData<String, List<Dictionary<String, String>>> build(MmgTemplate template) {
+    private EpisyncData<String, List<Dictionary<String, String>>> build(MMGDocument document) {
         MmgData<String, List<Dictionary<String, String>>> episyncData = new MmgData<>();
-
         Dictionary<String, String> tmpData = new Hashtable<>();
 
+        MmgTemplate template = getTemplate(document.getJson());
         try {
             logger.info("Start building template {}", template.getName());
 
@@ -61,6 +59,7 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
             tmpData.put("shortName", template.getShortName());
             tmpData.put("description", template.getDescription());
             tmpData.put("profileIdentifier", template.getProfileIdentifier());
+            Optional.ofNullable(document.getUid()).ifPresent(uid -> tmpData.put("nbs_uid", String.valueOf(uid)));
 
             episyncData.put("template", Collections.singletonList(tmpData));
 

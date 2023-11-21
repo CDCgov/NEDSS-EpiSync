@@ -1,12 +1,15 @@
 package gov.cdc.nbs.questionbank.entity.odse;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 
 @Data
+@AllArgsConstructor @NoArgsConstructor
 @Entity
 @Table(name = "WA_UI_metadata")
 public class WaUiMetadata implements Serializable {
@@ -186,4 +189,64 @@ public class WaUiMetadata implements Serializable {
     @Column(name = "block_nm")
     private String blockNm;
 
+    public static WaUiMetadata clone(WaUiMetadata original) {
+        return new WaUiMetadata(
+                null,
+                null,
+                original.getNbsUiComponentUid(),
+                original.getParentUid(),
+                original.getQuestionLabel(),
+                original.getQuestionToolTip(),
+                original.getEnableInd(),
+                original.getDefaultValue(),
+                original.getDisplayInd(),
+                original.getOrderNbr(),
+                original.getRequiredInd(),
+                original.getAddTime(),
+                original.getAddUserId(),
+                original.getLastChgTime(),
+                original.getLastChgUserId(),
+                original.getRecordStatusCd(),
+                original.getRecordStatusTime(),
+                original.getMaxLength(),
+                original.getAdminComment(),
+                original.getVersionCtrlNbr(),
+                original.getFieldSize(),
+                original.getFutureDateIndCd(),
+                original.getLocalId(),
+                original.getCodeSetGroupId(),
+                original.getDataCd(),
+                original.getDataLocation(),
+                original.getDataType(),
+                original.getDataUseCd(),
+                original.getLegacyDataLocation(),
+                original.getPartTypeCd(),
+                original.getQuestionGroupSeqNbr(),
+                original.getQuestionIdentifier(),
+                original.getQuestionOid(),
+                original.getQuestionOidSystemTxt(),
+                original.getQuestionUnitIdentifier(),
+                original.getRepeatsIndCd(),
+                original.getUnitParentIdentifier(),
+                original.getGroupNm(),
+                original.getSubGroupNm(),
+                original.getDescTxt(),
+                original.getMask(),
+                original.getEntryMethod(),
+                original.getQuestionType(),
+                original.getPublishIndCd(),
+                original.getMinValue(),
+                original.getMaxValue(),
+                original.getStandardQuestionIndCd(),
+                original.getStandardNndIndCd(),
+                original.getQuestionNm(),
+                original.getUnitTypeCd(),
+                original.getUnitValue(),
+                original.getOtherValueIndCd(),
+                original.getBatchTableAppearIndCd(),
+                original.getBatchTableHeader(),
+                original.getBatchTableColumnWidth(),
+                original.getCoinfectionIndCd(),
+                original.getBlockNm());
+    }
 }
