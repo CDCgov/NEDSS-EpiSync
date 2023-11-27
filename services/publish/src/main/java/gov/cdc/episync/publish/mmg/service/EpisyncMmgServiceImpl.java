@@ -15,15 +15,17 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 
 @Service @RequiredArgsConstructor
 public class EpisyncMmgServiceImpl implements EpisyncMmgService {
     private final Episync episync;
 
     @Override
-    public ResponseEntity<?> process(InputStreamSource file, Type type, String... params) {
+    public ResponseEntity<?> process(InputStreamSource file, Type type, Optional<Long> uid, String... params) {
         try {
             EpisyncDocument document = getInstance(file, type);
+            document.setUid(uid.orElse(null));
             document.setOrigin(new URL(params[0]));
 
             EpisyncPublishResult result = episync.publishDocument(document);
