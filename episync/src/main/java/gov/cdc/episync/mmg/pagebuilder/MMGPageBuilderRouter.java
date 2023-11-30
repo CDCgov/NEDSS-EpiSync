@@ -43,7 +43,6 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
     public static final String CREATE_CLASS_CD= "code_value_general";
     public static final String SOURCE_DOMAIN= "VADS";
     public static final String VALUESET_TYPE= "PHIN";
-    public static final String VALUESET_STATUS= "Active";
 
     private static final String DATA_LOCATION = "NBS_CASE_ANSWER.ANSWER_TXT";
     private static final String GROUP_NM = "GROUP_INV";
@@ -273,7 +272,7 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
                 c.setEffectiveFromTime(Instant.now());
                 c.setEffectiveToTime(Instant.now());
                 c.setModifiableInd("Y");
-                c.setSourceVersionTxt("1");
+                c.setSourceVersionTxt(vs.get("version"));
                 c.setSourceDomainNm(SOURCE_DOMAIN);
                 c.setStatusCd("A");
                 c.setStatusToTime(LocalDateTime.parse(vs.get("status_date")).toInstant(ZoneOffset.UTC));
@@ -283,7 +282,7 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
                 c.setValueSetCode(valueSetCode);
                 c.setValueSetTypeCd(VALUESET_TYPE);
                 c.setValueSetOid(vs.get("oid"));
-                c.setValueSetStatusCd(VALUESET_STATUS);
+                c.setValueSetStatusCd(ACTIVE);
                 c.setValueSetStatusTime(c.getStatusToTime());
                 c.setAddTime(Instant.now());
                 c.setAddUserId(PB_USER);
@@ -326,7 +325,7 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
                 value.setConceptNm(name);
                 value.setConceptPreferredNm(concept.get("preferred"));
 
-                value.setConceptStatusCd(VALUESET_STATUS);
+                value.setConceptStatusCd(ACTIVE);
                 value.setConceptStatusTime(value.getStatusTime());
                 value.setAddTime(Instant.now());
                 value.setAddUserId(PB_USER);
@@ -449,10 +448,16 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
                     long componentUid = q.getNbsUiComponentUid();
                     String dataType = q.getDataType();
 
-                    if (componentUid == CODED && groupId == null) {
-                        componentUid = fieldSize.length() > 2 ? TEXTAREA : INPUT;
-                        dataType = "TEXT";
+                    if (groupId == null) {
+                        if (componentUid == CODED) {
+                            componentUid = fieldSize.length() > 2 ? TEXTAREA : INPUT;
+                            dataType = "TEXT";
+                        }
+                    } else {
+                        componentUid = CODED;
+                        dataType = "CODED";
                     }
+
                     ui.setNbsUiComponentUid(componentUid);
                     ui.setQuestionLabel(trunkEncode(qmData.get("name"), 300));
                     ui.setQuestionToolTip(trunkEncode(qmData.get("desc_txt"), 2000));
@@ -544,7 +549,7 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
         }
 
         // update code group data
-        mmgUiData.forEach(mmgUI -> {
+        mmgUiData.stream().filter(mmgUi -> Objects.nonNull(mmgUi.getCodeSetGroupId())).forEach(mmgUI -> {
             WaUiMetadata nbsUI = nbsUiMap.get(mmgUI.getQuestionIdentifier());
             if (nbsUI != null && !Objects.equals(nbsUI.getCodeSetGroupId(), mmgUI.getCodeSetGroupId())) {
                 nbsUI.setCodeSetGroupId(mmgUI.getCodeSetGroupId());
