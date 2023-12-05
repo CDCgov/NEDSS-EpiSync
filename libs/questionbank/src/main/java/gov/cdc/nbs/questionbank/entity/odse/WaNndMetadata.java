@@ -1,11 +1,14 @@
 package gov.cdc.nbs.questionbank.entity.odse;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 
+@AllArgsConstructor @NoArgsConstructor
 @Data
 @Entity
 @Table(name = "WA_NND_metadata")
@@ -93,4 +96,34 @@ public class WaNndMetadata implements Serializable {
     @Column(name = "indicator_cd")
     private String indicatorCd;
 
+    public static WaNndMetadata clone(WaNndMetadata original) {
+        return new WaNndMetadata(
+                null,
+                null,
+                original.getQuestionIdentifierNnd(),
+                original.getQuestionLabelNnd(),
+                original.getQuestionRequiredNnd(),
+                original.getQuestionDataTypeNnd(),
+                original.getHl7SegmentField(),
+                original.getOrderGroupId(),
+                original.getTranslationTableNm(),
+                original.getAddTime(),
+                original.getAddUserId(),
+                original.getLastChgTime(),
+                original.getLastChgUserId(),
+                original.getRecordStatusCd(),
+                original.getRecordStatusTime(),
+                original.getQuestionIdentifier(),
+                original.getXmlPath(),
+                original.getXmlTag(),
+                original.getXmlDataType(),
+                original.getPartTypeCd(),
+                original.getRepeatGroupSeqNbr(),
+                original.getQuestionOrderNnd(),
+                original.getLocalId(),
+                original.getWaUiMetadataUid(),
+                original.getQuestionMap(),
+                original.getIndicatorCd()
+        );
+    }
 }

@@ -131,7 +131,7 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
 
             String legacyCodeSystem = e.getLegacyCodeSystem();
             String codeSystem = e.getCodeSystem();
-            codeSystem = getCodeSystem(legacyCodeSystem, codeSystem);
+            codeSystem = getCodeSystem(codeSystem, legacyCodeSystem);
 
             qmData.put("identifier", getIdentifier(e));
             qmData.put("question_oid", QUESTION_OID);
@@ -183,17 +183,16 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
         return cData;
     }
 
-    private String getCodeSystem(String legacy, String system) {
-        String codeSystem = legacy.isEmpty() || legacy.startsWith(NA) ? system : legacy;
-
-        return codeSystem.equals(PHINQUESTION) ? QUESTION_OID_SYSTEM_PHIN
-                : codeSystem.equals(LN) ? QUESTION_OID_SYSTEM_LN : "";
+    private String getCodeSystem(String system, String legacy) {
+        return system.equals(LN) ? QUESTION_OID_SYSTEM_LN
+                : legacy.equals(PHINQUESTION) ? QUESTION_OID_SYSTEM_PHIN : "";
     }
 
     private String getIdentifier(MmgElement e) {
         MmgElement.Hl7 hl7map = e.getMappings().getHl7v251();
         String legacyIdentifier = hl7map.getLegacyIdentifier();
         return legacyIdentifier.isEmpty() || legacyIdentifier.startsWith(NA) ?
-                hl7map.getIdentifier().replace("N/A: ", "").replaceAll("[\\s-]", "_") : legacyIdentifier;
+                hl7map.getIdentifier().replace("N/A: ", "").replaceAll("[\\s-]", "_")
+                : legacyIdentifier;
     }
 }

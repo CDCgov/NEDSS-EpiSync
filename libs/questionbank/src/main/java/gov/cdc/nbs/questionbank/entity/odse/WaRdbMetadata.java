@@ -1,11 +1,14 @@
 package gov.cdc.nbs.questionbank.entity.odse;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 
+@AllArgsConstructor @NoArgsConstructor
 @Data
 @Entity
 @Table(name = "WA_RDB_metadata")
@@ -63,4 +66,24 @@ public class WaRdbMetadata implements Serializable {
     @Column(name = "block_pivot_nbr")
     private Integer blockPivotNbr;
 
+    public static WaRdbMetadata clone(WaRdbMetadata original) {
+        return new WaRdbMetadata(
+                null,
+                null,
+                original.getUserDefinedColumnNm(),
+                original.getRecordStatusCd(),
+                original.getRecordStatusTime(),
+                original.getAddUserId(),
+                original.getAddTime(),
+                original.getLastChgTime(),
+                original.getLastChgUserId(),
+                original.getLocalId(),
+                original.getWaUiMetadataUid(),
+                original.getRdbTableNm(),
+                original.getRptAdminColumnNm(),
+                original.getRdbColumnNm(),
+                original.getQuestionIdentifier(),
+                original.getBlockPivotNbr()
+        );
+    }
 }
