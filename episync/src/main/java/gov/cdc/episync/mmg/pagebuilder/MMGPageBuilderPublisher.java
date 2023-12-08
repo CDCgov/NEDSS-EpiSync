@@ -157,6 +157,7 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
     }
 
     private Dictionary<String, String> build(MmgValueSet vset) {
+        MmgValueSet.MmgValueSetVersion ver = vset.getValueSetVersion();
         MmgValueSet.MmgValueSetInfo vs = vset.getValueSet();
         Dictionary<String, String> vsData = new Hashtable<>();
         vsData.put("id", vs.getValueSetId());
@@ -166,6 +167,7 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
         vsData.put("status_date", vs.getStatusDate());
         vsData.put("definition", Optional.ofNullable(vs.getDefinitionText()).orElse(vs.getValueSetName()));
         vsData.put("authority", vs.getAssigningAuthorityId());
+        vsData.put("version", String.valueOf(ver.getValueSetVersionNumber()));
         return vsData;
     }
 
