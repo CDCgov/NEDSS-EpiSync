@@ -1,4 +1,4 @@
-package gov.cdc.episync.mmg.pagebuilder;
+package gov.cdc.episync.pagebuilder.mmg;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

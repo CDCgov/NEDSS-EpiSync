@@ -64,10 +64,11 @@
           "relatedElement": "INV2002",
           "parentElement": null,
           "dataLocation": "PERSON.AGE_REPORTED",
-          "size": 3,
+          "size": "3",
           "min": 1,
           "max": 150,
           "version": 1,
+          "valueSetCode": null,
           "oid": "2.16.840.1.114222.4.5.232",
           "oidSystem": "PHIN Questions",
           "standard": true,
@@ -77,6 +78,10 @@
           "rdbTable": "D_PATIENT",
           "rdbColumn": "PATIENT_AGE_REPORTED",
           "otherValue": false,
+          "groupSeq": null,
+          "groupName": "GROUP_DEM",
+          "subGroupName": "IPO",
+          "blockName": null,
           "batchHeader": null,
           "batchColWidth": null,
           "mappings" : {
@@ -87,7 +92,7 @@
               "hl7Segment": "OBX-3.0",
               "required": "O",
               "dataType": "SN",
-              "orderGroup": 2
+              "orderGroup": "2"
             }
           }
         },
@@ -112,6 +117,7 @@
           "valueSetCode": "PHVS_AgeUnit_UCUM",
           "oid": "2.16.840.1.114222.4.5.232",
           "oidSystem": "PHIN Questions",
+          "standard": true,
           "nndMsg": true,
           "entryMethod": "USER",
           "questionType": "PHIN",
@@ -119,8 +125,8 @@
           "rdbColumn": "PATIENT_AGE_RPTD_UNIT",
           "otherValue": false,
           "groupSeq": null,
-          "groupName": null,
-          "subGroupName": null,
+          "groupName": "GROUP_DEM",
+          "subGroupName": "IPO",
           "blockName": null,
           "batchHeader": null,
           "batchColWidth": null,
@@ -132,7 +138,7 @@
               "hl7Segment": "OBX-6-Units",
               "required": "O",
               "dataType": "CE",
-              "orderGroup": 2
+              "orderGroup": "2"
             }
           }
         }
@@ -167,6 +173,7 @@
           "min": null,
           "max": null,
           "version": 1,
+          "valueSetCode": null,
           "oid": "2.16.840.1.113883.6.1",
           "oidSystem": "LOINC",
           "standard": true,
@@ -190,7 +197,7 @@
               "hl7Segment": "OBX-3.0",
               "required": "O",
               "dataType": "CWE",
-              "orderGroup": 2
+              "orderGroup": "2"
             }
           }
         },
@@ -212,6 +219,7 @@
           "min": null,
           "max": null,
           "version": 1,
+          "valueSetCode": null,
           "oid": "2.16.840.1.113883.6.1",
           "oidSystem": "LOINC",
           "standard": true,
@@ -235,7 +243,7 @@
               "hl7Segment": "OBX-3.0",
               "required": "O",
               "dataType": "CWE",
-              "orderGroup": 2
+              "orderGroup": "2"
             }
           }
         }

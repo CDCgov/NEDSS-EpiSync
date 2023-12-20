@@ -6,8 +6,7 @@ import lombok.Setter;
 
 @Getter @Setter @AllArgsConstructor
 public class EpisyncPublishResult {
-    @Getter
-    @AllArgsConstructor
+    @Getter @AllArgsConstructor
     public enum PublishResultCode {
         SUCCESS("Publishing succeeded"),
         FAILED("Publishing failed"),

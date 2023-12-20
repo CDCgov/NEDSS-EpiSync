@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
+import gov.cdc.episync.framework.EpisyncExtractResult.ExtractResultCode;
 import gov.cdc.episync.framework.EpisyncPublishResult.PublishResultCode;
+import gov.cdc.episync.pagebuilder.nbs.NbsPageExtractor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import java.lang.reflect.Method;
 @Service @RequiredArgsConstructor
 public class Episync {
     private final EpisyncPublisherFactory publisherFactory;
+    private final NbsPageExtractor extractor;
 
     @Getter
     private static final ObjectMapper mapper = new ObjectMapper()
@@ -30,7 +33,15 @@ public class Episync {
         } catch (InvocationTargetException t) {
             return new EpisyncPublishResult(PublishResultCode.FAILED, t.getTargetException().toString());
         } catch (Exception e) {
-            return new EpisyncPublishResult(PublishResultCode.FAILED, e.getMessage());
+            return new EpisyncPublishResult(PublishResultCode.FAILED, e.toString());
+        }
+    }
+
+    public EpisyncExtractResult extract(Long uid) {
+        try {
+            return extractor.extractData(uid);
+        } catch (Exception e) {
+            return new EpisyncExtractResult(ExtractResultCode.FAILED, e.toString(), null);
         }
     }
 }

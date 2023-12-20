@@ -30,6 +30,10 @@ public class PageService {
         return questionRepository.findAllByQuestionIdentifierIsIn(identifiers);
     }
 
+    public List<WaUiMetadata> findUiByTemplateUid(Long uid) {
+        return uiRepository.findAllByWaTemplateUidOrderByOrderNbr(uid);
+    }
+
     public List<WaQuestion> save(Collection<WaQuestion> questions) {
         return questionRepository.saveAll(questions);
     }
@@ -65,7 +69,7 @@ public class PageService {
     }
 
     public List<WaUiMetadata> copyWaTemplateUIMetaData(Long uid, Long userId) {
-        List<WaUiMetadata> uiData = uiRepository.findAllByWaTemplateUidOrderByOrderNbr(uid);
+        List<WaUiMetadata> uiData = findUiByTemplateUid(uid);
         List<WaUiMetadata> clonedUiData = new ArrayList<>();
         for (WaUiMetadata original : uiData) {
             WaUiMetadata clone = WaUiMetadata.clone(original);
