@@ -1,4 +1,4 @@
-package gov.cdc.episync.mmg.pagebuilder;
+package gov.cdc.episync.pagebuilder.mmg;
 
 import gov.cdc.episync.framework.*;
 import gov.cdc.nbs.questionbank.entity.odse.*;
@@ -30,7 +30,7 @@ import java.util.stream.Stream;
  * @see EpisyncRouter
  */
 @Service @RequiredArgsConstructor
-public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictionary<String, String>>> {
+public class MmgPageBuilderRouter implements EpisyncRouter<String, List<Dictionary<String, String>>> {
     private final ValueSetService valueSetService;
     private final PageService pageService;
 
@@ -60,7 +60,7 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
     private static final Long INPUT = 1008L;
     private static final Long TEXTAREA = 1009L;
 
-    Logger logger = LoggerFactory.getLogger(MMGPageBuilderRouter.class);
+    Logger logger = LoggerFactory.getLogger(MmgPageBuilderRouter.class);
 
     /**
      * Routes the provided data to the PageBuilder system. The data is saved
