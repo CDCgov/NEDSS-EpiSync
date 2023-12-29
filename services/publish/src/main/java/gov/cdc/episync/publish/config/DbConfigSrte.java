@@ -46,10 +46,8 @@ public class DbConfigSrte {
 
     @Bean
     public PlatformTransactionManager srteTransactionManager() {
-        JpaTransactionManager transactionManager
-                = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(
-                srteEntityManager().getObject());
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(srteEntityManager().getObject());
         return transactionManager;
     }
 }

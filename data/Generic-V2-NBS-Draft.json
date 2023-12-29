@@ -252,13 +252,18 @@
   ],
   "valueSets": [
     {
-      "oid": "2.16.840.1.114222.4.11.878",
+      "name": "AGE_UNIT",
       "assigningAuthority": "2.16.840.1.114222",
       "assigningAuthorityDesc": "Centers for Disease Control and Prevention",
-      "name": "Age unit",
-      "code": "PHVS_AgeUnit_UCUM",
-      "definitionText": "Units of measure for age",
-      "version": 1,
+      "description": "Units of measure for age",
+      "valueSetOid": "2.16.840.1.114222.4.11.878",
+      "valueSetName": "Age unit",
+      "valueSetCode": "PHVS_AgeUnit_UCUM",
+      "valueSetType": "PHIN",
+      "modifiable": true,
+      "version": "1",
+      "effectiveFrom": "2010-04-08T17:32:00",
+      "statusDate": "2008-10-22T00:00:00",
       "conceptsCount": 9,
       "concepts": [
         {
@@ -267,17 +272,14 @@
           "shortDesc": "Unknown",
           "codeSystem": "2.16.840.1.113883.6.8",
           "codeSystemDesc": "UCUM",
-          "indentLevel": 1,
           "modifiable": true,
-          "type": "PHIN",
+          "conceptType": "PHIN",
           "conceptCode": "UNK",
-          "name": "unknown",
+          "conceptName": "unknown",
           "preferredName": "Unknown",
+          "version": "1",
           "effectiveFrom": "2008-09-24 00:00:00",
-          "effectiveTo": null,
-          "statusTime": "",
-          "status": "Published",
-          "version": 1
+          "statusDate": "2010-05-13 16:20:00"
         },
         {
           "code": "a",
@@ -285,17 +287,14 @@
           "shortDesc": "Years",
           "codeSystem": "2.16.840.1.113883.6.8",
           "codeSystemDesc": "UCUM",
-          "indentLevel": 1,
           "modifiable": true,
-          "type": "PHIN",
+          "conceptType": "PHIN",
           "conceptCode": "a",
-          "name": "year",
+          "conceptName": "year",
           "preferredName": "Years",
+          "version": "1",
           "effectiveFrom": "2008-09-24 00:00:00",
-          "effectiveTo": null,
-          "statusTime": "",
-          "status": "Published",
-          "version": 1
+          "statusDate": "2010-05-13 16:20:0"
         }
       ]
     }
