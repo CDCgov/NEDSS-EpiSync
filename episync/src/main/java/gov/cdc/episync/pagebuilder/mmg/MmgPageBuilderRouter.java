@@ -135,7 +135,7 @@ public class MmgPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
         List<String> codes = data.get("values").stream()
                 .map(v -> v.get("code")).collect(Collectors.toList());
 
-        List<CodesetGroupMetadata> existingGroups = valueSetService.findValueSetGroupByCode(codes);
+        List<CodesetGroupMetadata> existingGroups = valueSetService.findValueSetGroupByCodes(codes);
         Set<String> existingCodes = existingGroups.stream()
                 .map(CodesetGroupMetadata::getCodeSetNm).collect(Collectors.toSet());
         List<String> newCodes = codes.stream()

@@ -11,7 +11,6 @@ import java.time.Instant;
 @Table(name = "Codeset")
 @IdClass(CodesetId.class)
 public class Codeset implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     @Id

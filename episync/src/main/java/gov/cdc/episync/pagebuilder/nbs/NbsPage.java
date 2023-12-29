@@ -18,4 +18,5 @@ public class NbsPage {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     List<NbsQuestion> elements;
     List<NbsBlock> blocks;
+    List<NbsCodeset> valueSets;
 }

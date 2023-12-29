@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service @RequiredArgsConstructor
@@ -19,8 +20,20 @@ public class ValueSetService {
     private final CodesetRepository codesetRepository;
     private final CodeValueGeneralRepository valueRepository;
 
-    public List<CodesetGroupMetadata> findValueSetGroupByCode(List<String> codes) {
-        return groupRepository.findAllByVadsValueSetCode(codes);
+    public List<CodesetGroupMetadata> findValueSetGroupByCodes(Collection<String> codes) {
+        return groupRepository.findAllByCodeSetNmIsIn(codes);
+    }
+
+    public List<CodesetGroupMetadata> findValueSetGroupByGroupIds(Collection<Long> ids) {
+        return groupRepository.findAllByCodeSetGroupIdIsIn(ids);
+    }
+
+    public List<Codeset> findCodesetsByGroupIds(Collection<Long> ids) {
+        return codesetRepository.findAllByCodeSetGroupCodeSetGroupIdIsIn(ids);
+    }
+
+    public List<CodeValueGeneral> findConceptsByCodes(Collection<String> codes) {
+        return valueRepository.findAllByCodeSetNmIsIn(codes);
     }
 
     public long getMaxGroupId() {
