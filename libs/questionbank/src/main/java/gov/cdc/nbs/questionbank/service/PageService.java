@@ -34,6 +34,10 @@ public class PageService {
         return uiRepository.findAllByWaTemplateUidOrderByOrderNbr(uid);
     }
 
+    public List<WaRuleMetadata> findRulesByTemplateUid(Long uid) {
+        return ruleRepository.findAllByWaTemplateUid(uid);
+    }
+
     public List<WaQuestion> save(Collection<WaQuestion> questions) {
         return questionRepository.saveAll(questions);
     }
@@ -99,7 +103,7 @@ public class PageService {
     }
 
     public List<WaRuleMetadata> copyWaTemplateRuleMetaData(Long uid, Long userId) {
-        List<WaRuleMetadata> ruleData = ruleRepository.findAllByWaTemplateUid(uid);
+        List<WaRuleMetadata> ruleData = findRulesByTemplateUid(uid);
         List<WaRuleMetadata> clonedRuleData = new ArrayList<>();
         for (WaRuleMetadata original : ruleData) {
             WaRuleMetadata clone = WaRuleMetadata.clone(original);
