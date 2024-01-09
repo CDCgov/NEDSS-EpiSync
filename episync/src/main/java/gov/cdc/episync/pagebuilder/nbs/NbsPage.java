@@ -19,4 +19,5 @@ public class NbsPage {
     List<NbsQuestion> elements;
     List<NbsBlock> blocks;
     List<NbsCodeset> valueSets;
+    List<NbsRule> rules;
 }
