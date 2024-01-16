@@ -1,9 +1,9 @@
-package gov.cdc.episync.mmg.pagebuilder;
+package gov.cdc.episync.pagebuilder.mmg;
 
 import gov.cdc.episync.framework.*;
 import gov.cdc.episync.framework.EpisyncPublishResult.PublishResultCode;
-import gov.cdc.episync.mmg.MMGDocument;
-import gov.cdc.episync.mmg.MMGPublisher;
+import gov.cdc.episync.mmg.MmgDocument;
+import gov.cdc.episync.mmg.MmgPublisher;
 import gov.cdc.episync.mmg.MmgData;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -14,8 +14,8 @@ import java.io.InputStream;
 import java.util.*;
 
 @Service("mmg") @RequiredArgsConstructor
-public class MMGPageBuilderPublisher extends MMGPublisher {
-    private final MMGPageBuilderRouter router;
+public class MmgPageBuilderPublisher extends MmgPublisher {
+    private final MmgPageBuilderRouter router;
 
     private static final String QUESTION_OID = "2.16.840.1.114222.4.5.232";
 
@@ -25,10 +25,10 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
     private static final String QUESTION_OID_SYSTEM_PHIN = "PHIN Questions";
     private static final String QUESTION_OID_SYSTEM_LN = "LOINC";
 
-    Logger logger = LoggerFactory.getLogger(MMGPageBuilderRouter.class);
+    Logger logger = LoggerFactory.getLogger(MmgPageBuilderRouter.class);
 
     @Override
-    public EpisyncPublishResult publishDocument(MMGDocument document) throws EpisyncPublishException {
+    public EpisyncPublishResult publishDocument(MmgDocument document) throws EpisyncPublishException {
         try {
             EpisyncRouteResult routeResult = router.routeData(build(document));
             return new EpisyncPublishResult(PublishResultCode.SUCCESS, routeResult.getResultMessage());
@@ -45,7 +45,7 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
         }
     }
 
-    private EpisyncData<String, List<Dictionary<String, String>>> build(MMGDocument document) {
+    private EpisyncData<String, List<Dictionary<String, String>>> build(MmgDocument document) {
         MmgData<String, List<Dictionary<String, String>>> episyncData = new MmgData<>();
         Dictionary<String, String> tmpData = new Hashtable<>();
 
@@ -131,7 +131,7 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
 
             String legacyCodeSystem = e.getLegacyCodeSystem();
             String codeSystem = e.getCodeSystem();
-            codeSystem = getCodeSystem(legacyCodeSystem, codeSystem);
+            codeSystem = getCodeSystem(codeSystem, legacyCodeSystem);
 
             qmData.put("identifier", getIdentifier(e));
             qmData.put("question_oid", QUESTION_OID);
@@ -183,17 +183,16 @@ public class MMGPageBuilderPublisher extends MMGPublisher {
         return cData;
     }
 
-    private String getCodeSystem(String legacy, String system) {
-        String codeSystem = legacy.isEmpty() || legacy.startsWith(NA) ? system : legacy;
-
-        return codeSystem.equals(PHINQUESTION) ? QUESTION_OID_SYSTEM_PHIN
-                : codeSystem.equals(LN) ? QUESTION_OID_SYSTEM_LN : "";
+    private String getCodeSystem(String system, String legacy) {
+        return system.equals(LN) ? QUESTION_OID_SYSTEM_LN
+                : legacy.equals(PHINQUESTION) ? QUESTION_OID_SYSTEM_PHIN : "";
     }
 
     private String getIdentifier(MmgElement e) {
         MmgElement.Hl7 hl7map = e.getMappings().getHl7v251();
         String legacyIdentifier = hl7map.getLegacyIdentifier();
         return legacyIdentifier.isEmpty() || legacyIdentifier.startsWith(NA) ?
-                hl7map.getIdentifier().replace("N/A: ", "").replaceAll("[\\s-]", "_") : legacyIdentifier;
+                hl7map.getIdentifier().replace("N/A: ", "").replaceAll("[\\s-]", "_")
+                : legacyIdentifier;
     }
 }

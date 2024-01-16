@@ -10,8 +10,8 @@ import java.util.List;
 
 public interface CodesetGroupMetadataRepository extends JpaRepository<CodesetGroupMetadata, Long>, JpaSpecificationExecutor<CodesetGroupMetadata> {
 
-    @Query ("SELECT g FROM CodesetGroupMetadata g JOIN Codeset c ON g.codeSetNm=c.codeSetNm AND c.codeSetNm IN :codes")
-    List<CodesetGroupMetadata> findAllByVadsValueSetCode(Collection<String> codes);
+    List<CodesetGroupMetadata> findAllByCodeSetNmIsIn(Collection<String> codes);
+    List<CodesetGroupMetadata> findAllByCodeSetGroupIdIsIn(Collection<Long> ids);
 
     @Query("SELECT COALESCE(MAX(codeSetGroupId), 0) FROM CodesetGroupMetadata")
     long getMaxCodesetGroupId();

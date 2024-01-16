@@ -9,9 +9,8 @@ import java.time.Instant;
 @Data
 @Entity
 @Table(name = "Code_value_general")
-@IdClass(CodeValueGeneral.class)
+@IdClass(CodeValueGeneralId.class)
 public class CodeValueGeneral implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     @Id

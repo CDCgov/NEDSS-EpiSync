@@ -1,11 +1,14 @@
 package gov.cdc.nbs.questionbank.entity.odse;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 
+@AllArgsConstructor @NoArgsConstructor
 @Data
 @Entity
 @Table(name = "WA_rule_metadata")
@@ -75,4 +78,28 @@ public class WaRuleMetadata implements Serializable {
     @Column(name = "target_type")
     private String targetType;
 
+    public static WaRuleMetadata clone(WaRuleMetadata original) {
+        return new WaRuleMetadata(
+                null,
+                null,
+                original.getRuleCd(),
+                original.getRuleExpression(),
+                original.getErrMsgTxt(),
+                original.getSourceQuestionIdentifier(),
+                original.getTargetQuestionIdentifier(),
+                original.getRecordStatusCd(),
+                original.getRecordStatusTime(),
+                original.getAddTime(),
+                original.getAddUserId(),
+                original.getLastChgTime(),
+                original.getLastChgUserId(),
+                original.getRuleDescTxt(),
+                original.getJavascriptFunction(),
+                original.getJavascriptFunctionNm(),
+                original.getUserRuleId(),
+                original.getLogic(),
+                original.getSourceValues(),
+                original.getTargetType()
+        );
+    }
 }

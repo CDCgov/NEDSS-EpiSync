@@ -8,10 +8,10 @@ import lombok.EqualsAndHashCode;
 import java.io.InputStream;
 
 @Data @EqualsAndHashCode(callSuper = true)
-public class MMGDocument extends EpisyncDocument {
+public class MmgDocument extends EpisyncDocument {
     InputStream json;
 
-    public MMGDocument(InputStream stream) {
+    public MmgDocument(InputStream stream) {
         this.json = stream;
         setDocumentType(EpisyncDocumentType.of(EpisyncDocumentType.Type.MMG));
     }

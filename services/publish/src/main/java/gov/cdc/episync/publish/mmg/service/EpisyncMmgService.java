@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface EpisyncMmgService {
 
     ResponseEntity<?> process(InputStreamSource xmlFile, Type type, Optional<Long> uid, String... params);
+
+    ResponseEntity<?> extract(Long uid);
 }

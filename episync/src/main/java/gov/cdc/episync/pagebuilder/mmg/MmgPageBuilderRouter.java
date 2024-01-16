@@ -1,9 +1,7 @@
-package gov.cdc.episync.mmg.pagebuilder;
+package gov.cdc.episync.pagebuilder.mmg;
 
 import gov.cdc.episync.framework.*;
-import gov.cdc.nbs.questionbank.entity.odse.WaQuestion;
-import gov.cdc.nbs.questionbank.entity.odse.WaTemplate;
-import gov.cdc.nbs.questionbank.entity.odse.WaUiMetadata;
+import gov.cdc.nbs.questionbank.entity.odse.*;
 import gov.cdc.nbs.questionbank.entity.srte.CodeValueGeneral;
 import gov.cdc.nbs.questionbank.entity.srte.Codeset;
 import gov.cdc.nbs.questionbank.entity.srte.CodesetGroupMetadata;
@@ -32,7 +30,7 @@ import java.util.stream.Stream;
  * @see EpisyncRouter
  */
 @Service @RequiredArgsConstructor
-public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictionary<String, String>>> {
+public class MmgPageBuilderRouter implements EpisyncRouter<String, List<Dictionary<String, String>>> {
     private final ValueSetService valueSetService;
     private final PageService pageService;
 
@@ -62,7 +60,7 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
     private static final Long INPUT = 1008L;
     private static final Long TEXTAREA = 1009L;
 
-    Logger logger = LoggerFactory.getLogger(MMGPageBuilderRouter.class);
+    Logger logger = LoggerFactory.getLogger(MmgPageBuilderRouter.class);
 
     /**
      * Routes the provided data to the PageBuilder system. The data is saved
@@ -106,13 +104,19 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
         groupMap = questions.stream().filter(q -> q.getCodeSetGroupId() != null).collect(Collectors.toMap(WaQuestion::getQuestionIdentifier, WaQuestion::getCodeSetGroupId, Math::max));
 
         Long nbsTemplateUid = Optional.ofNullable(getTmpData(data).get("nbs_uid")).map(Long::parseLong).orElse(null);
-        List<WaUiMetadata> nbsUiData = copyWaTemplateUIMetaData(nbsTemplateUid);
+        List<WaUiMetadata> nbsUiData = pageService.copyWaTemplateUIMetaData(nbsTemplateUid, PB_USER);
+        List<WaNndMetadata> nbsNndData = pageService.copyWaTemplateNndMetaData(nbsTemplateUid, PB_USER);
+        List<WaRuleMetadata> nbsRuleData = pageService.copyWaTemplateRuleMetaData(nbsTemplateUid, PB_USER);
+        List<WaRdbMetadata> nbsRdbData = pageService.copyWaTemplateRdbMetaData(nbsTemplateUid, PB_USER);
 
         logger.info("Storing template data: {}", template.getTemplateNm());
         try {
             List<WaUiMetadata> mmgUiData = convert(data, template, questionMap, groupMap);
-            List<WaUiMetadata> mergedUiData = merge(nbsUiData, mmgUiData);
-            WaTemplate saved = pageService.save(template, mergedUiData);
+            List<WaUiMetadata> mergedUiData = mergeUi(nbsUiData, mmgUiData);
+            List<WaNndMetadata> mmgNndData = convert(questionMap.values());
+            List<WaNndMetadata> mergedNndData = mergeNnd(nbsNndData, mmgNndData);
+
+            WaTemplate saved = pageService.save(template, mergedUiData, mergedNndData, nbsRuleData, nbsRdbData);
 
             logger.info("Successfully stored template data: {}, id: {}", saved.getTemplateNm(), saved.getWaTemplateUid());
             String msg = "template_id:" + saved.getWaTemplateUid() + " template_name:" + saved.getTemplateNm()
@@ -124,17 +128,6 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
         }
     }
 
-    private List<WaUiMetadata> copyWaTemplateUIMetaData(Long uid) {
-        List<WaUiMetadata> nbsUiData = pageService.findUiByTemplateUid(uid);
-        List<WaUiMetadata> clonedUiData = new ArrayList<>();
-        for (WaUiMetadata original : nbsUiData) {
-            WaUiMetadata clone = WaUiMetadata.clone(original);
-            clonedUiData.add(clone);
-        }
-        return clonedUiData;
-    }
-
-
     private Map<String, Long> processValues(EpisyncData<String, List<Dictionary<String, String>>> data) {
 
         logger.info("Start processing value sets metadata");
@@ -142,7 +135,7 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
         List<String> codes = data.get("values").stream()
                 .map(v -> v.get("code")).collect(Collectors.toList());
 
-        List<CodesetGroupMetadata> existingGroups = valueSetService.findValueSetGroupByCode(codes);
+        List<CodesetGroupMetadata> existingGroups = valueSetService.findValueSetGroupByCodes(codes);
         Set<String> existingCodes = existingGroups.stream()
                 .map(CodesetGroupMetadata::getCodeSetNm).collect(Collectors.toSet());
         List<String> newCodes = codes.stream()
@@ -403,15 +396,9 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
         int order = 0;
         int uiNum = 0;
 
-        WaUiMetadata page = getMetaData(PAGE, template.getTemplateNm(), ++order, ++uiNum);
-        page.setQuestionIdentifier("MMG_UI_" + uiNum++);
-        uiMetadata.add(page);
-
-        WaUiMetadata tab = getMetaData(TAB, "MMG", ++order, ++uiNum);
-        uiMetadata.add(tab);
-
-        WaUiMetadata sec = getMetaData(SECTION, "Blocks", ++order, ++uiNum);
-        uiMetadata.add(sec);
+        uiMetadata.add(getMetaData(PAGE, template.getTemplateNm(), ++order, ++uiNum));
+        uiMetadata.add(getMetaData(TAB, "MMG", ++order, ++uiNum));
+        uiMetadata.add(getMetaData(SECTION, "Blocks", ++order, ++uiNum));
 
         List<Dictionary<String, String>> blocks = data.get(template.getLocalId());
 
@@ -419,7 +406,6 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
         for (Dictionary<String, String> blockData: blocks) {
 
             List<Dictionary<String, String>> elements = data.get(blockData.get("id"));
-            //boolean visible = elements.stream().anyMatch(e -> !"EI".equals(e.get("data_type_nnd")));
             boolean visible = elements.stream().map(e -> questions.get(e.get("identifier"))).anyMatch(q -> !"T".equals(q.getStandardNndIndCd()));
             boolean blockRepeat = blockData.get("type").equalsIgnoreCase("repeat");
             int batchWidth = 0;
@@ -464,15 +450,20 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
                     ui.setOrderNbr("T".equalsIgnoreCase(q.getStandardNndIndCd()) ? 0 : ++order);
                     ui.setEnableInd("T");
                     ui.setDisplayInd("T");
-                    ui.setRequiredInd(q.getQuestionRequiredNnd());
+                    ui.setRequiredInd("R".equals(q.getQuestionRequiredNnd()) ? "T" : "F");
+
+                    ui.setAddTime(Instant.now());
+                    ui.setAddUserId(PB_USER);
+                    ui.setLastChgTime(Instant.now());
+                    ui.setLastChgUserId(PB_USER);
+
                     ui.setVersionCtrlNbr(q.getVersionCtrlNbr());
 
                     ui.setMask(q.getMask());
                     ui.setEntryMethod(q.getEntryMethod());
                     ui.setCodeSetGroupId(groupId);
 
-                    ui.setAddTime(Instant.now());
-                    ui.setAddUserId(PB_USER);
+                    ui.setDataLocation(q.getDataLocation());
                     ui.setDataType(dataType);
 
                     ui.setQuestionIdentifier(identifier);
@@ -510,7 +501,45 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
         return uiMetadata;
     }
 
-    private List<WaUiMetadata> merge(List<WaUiMetadata> nbsUiData, List<WaUiMetadata> mmgUiData) {
+    private List<WaNndMetadata> convert(Collection<WaQuestion> questions) {
+        List<WaNndMetadata> nndMetadata = new ArrayList<>();
+
+        questions.stream().filter(q -> !ENTRY_SYSTEM.equals(q.getEntryMethod())).forEach(question -> {
+            WaNndMetadata nnd = new WaNndMetadata();
+
+            nnd.setQuestionIdentifierNnd(question.getQuestionIdentifierNnd());
+            nnd.setQuestionLabelNnd(question.getQuestionLabel());
+            nnd.setQuestionRequiredNnd(question.getQuestionRequiredNnd());
+            nnd.setQuestionDataTypeNnd(question.getQuestionDataTypeNnd());
+            nnd.setHl7SegmentField(question.getHl7SegmentField());
+            nnd.setAddUserId(PB_USER);
+            nnd.setAddTime(Instant.now());
+            nnd.setLastChgUserId(PB_USER);
+            nnd.setLastChgTime(Instant.now());
+            nnd.setRecordStatusCd(ACTIVE);
+            nnd.setRecordStatusTime(Instant.now());
+            nnd.setQuestionIdentifier(question.getQuestionIdentifier());
+
+            nndMetadata.add(nnd);
+
+        });
+        return nndMetadata;
+    }
+
+    private List<WaNndMetadata> mergeNnd(List<WaNndMetadata> nbsData, List<WaNndMetadata> mmgData) {
+
+        if (nbsData.isEmpty()) return mmgData;
+
+        List<String> nbsIds = nbsData.stream().map(WaNndMetadata::getQuestionIdentifier).collect(Collectors.toList());
+        List<WaNndMetadata> newData = mmgData.stream()
+                .filter(nnd -> !nbsIds.contains(nnd.getQuestionIdentifier()))
+                .collect(Collectors.toList());
+
+        nbsData.addAll(newData);
+        return nbsData;
+    }
+
+    private List<WaUiMetadata> mergeUi(List<WaUiMetadata> nbsUiData, List<WaUiMetadata> mmgUiData) {
 
         if (nbsUiData.isEmpty()) return mmgUiData;
 
@@ -521,11 +550,7 @@ public class MMGPageBuilderRouter implements EpisyncRouter<String, List<Dictiona
 
         List<String> nbsIds = nbsUiData.stream().map(WaUiMetadata::getQuestionIdentifier).collect(Collectors.toList());
         List<WaUiMetadata> newUiData = mmgUiData.stream()
-                .filter(ui -> !(PAGE.equals(ui.getNbsUiComponentUid())
-                        || TAB.equals(ui.getNbsUiComponentUid())
-                        || SECTION.equals(ui.getNbsUiComponentUid())
-                        || SUBSEC.equals(ui.getNbsUiComponentUid())
-                        || nbsIds.contains(ui.getQuestionIdentifier())))
+                .filter(ui -> !(ui.getDataType() == null || nbsIds.contains(ui.getQuestionIdentifier())))
                 .collect(Collectors.toList());
 
         int maxNbr = nbsUiData.get(nbsUiData.size()-1).getOrderNbr();
