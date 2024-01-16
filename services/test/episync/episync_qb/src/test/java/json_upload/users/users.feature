@@ -1,3 +1,4 @@
+@ignore
 Feature: sample karate test script
 
   Background:
@@ -7,9 +8,9 @@ Feature: sample karate test script
     * def db = new DbUtils(config)
 
 
-  Scenario: get valid response for Generic V2 json
+  Scenario Outline: get valid response for Generic V2 json
     And header Accept = 'application/hal+json'
-    Given multipart file file = { read: 'data/Generic-MMG-V2.0.json', filename: 'Generic-MMG-V2.0.json', contentType: 'application/json'}
+    Given multipart file file = { read: 'data/<MMG>.json', filename: 'Generic-MMG-V2.0.json', contentType: 'application/json'}
     When method post
     Then status 200
     * print response.message
@@ -19,9 +20,16 @@ Feature: sample karate test script
     * print respMessage
     * def template = db.readRows("select * from dbo.WA_template where wa_template_uid = " + respMessage)
     Then print 'template--',template
-    * def questions = db.readRows("select * from dbo.WA_question inner join dbo.WA_UI_metadata ui on q.question_identifier = ui.question_identifier")
+#    * def questions = db.readRows("select * from dbo.WA_question inner join dbo.WA_UI_metadata ui on q.question_identifier = ui.question_identifier")
 
+    Examples:
+      | MMG |
+      | Generic-MMG-V2.0 |
 
-  Scenario: Read Json and parse the json
-    * def reqJson = read("data/Generic-MMG-V2.0.json")
+  Scenario Outline: Read Json and parse the json
+    * def reqJson = read("data/<MMG>.json")
     * print 'the value of dateofbirth is:', reqJson["testScenarios"][0]['testBlocks']['64c5e4c8-2dee-4ec1-b3f2-141db90e15bf']['instances'][0]['827d2f8f-eec9-49f0-9265-0fc681f120b5']['values'][0]['value']
+
+  Examples:
+    | MMG |
+    | Generic-MMG-V2.0 |

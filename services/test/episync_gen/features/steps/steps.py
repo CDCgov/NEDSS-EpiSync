@@ -7,6 +7,7 @@ import csv
 from datetime import datetime
 import uuid
 import os.path
+import time
 
 def capitalize(str):
     return str.capitalize()
@@ -158,10 +159,8 @@ def step_impl(context):
                         'episync_mmg_admission_date',
                         'episync_mmg_discharge_date',
                         'episync_mmg_subject_died',
-                        # 'episync_mmg_deceased_date',
+                        'episync_mmg_deceased_date',
                         ])
 
         for n in range(1, 100):
             writer.writerow(generate_data())
-
-
