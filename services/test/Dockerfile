@@ -2,10 +2,10 @@
 
 # RUN curl -L -o karate.jar https://github.com/karatelabs/karate/releases/download/v1.4.0/karate-1.4.0.jar
 
-# FROM maven:3-jdk-11
-# COPY services/test/episync/episync_qb/pom.xml .
-# COPY episync/episync_qb/pom.xml .
-# RUN mvn clean install
+FROM maven:3-jdk-11
+COPY services/test/episync/episync_qb/pom.xml .
+COPY episync/episync_qb/pom.xml .
+RUN mvn clean install
 
 FROM python:3.10
 RUN apt-get update
