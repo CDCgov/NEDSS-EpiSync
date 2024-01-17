@@ -8,6 +8,8 @@ function fn() {
     env: env,
     myVarName: 'someValue'
   }
+  config.faker = Java.type('com.github.javafaker.Faker');
+
   if (env == 'dev') {
     // customize
     // e.g. config.foo = 'bar';

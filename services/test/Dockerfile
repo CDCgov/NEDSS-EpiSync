@@ -5,10 +5,13 @@
 FROM maven:3-jdk-11 
 COPY services/test/episync/episync_qb/pom.xml .
 # COPY episync/episync_qb/pom.xml .
+FROM maven:3-jdk-11
+COPY services/test/episync/episync_qb/pom.xml .
+COPY episync/episync_qb/pom.xml .
 RUN mvn clean install
 
-# FROM python:3.10
-# RUN apt-get update
+FROM python:3.10
+RUN apt-get update
 
 # RUN mkdir -p /opt/episync
 # WORKDIR /opt/episync
@@ -27,10 +30,11 @@ RUN mvn clean install
 # RUN venv/bin/pip3 install -r requirements.txt
 # RUN venv/bin/python3 setup.py install
 
-# RUN pip install behave
-# RUN pip install behave-html-formatter
-# RUN pip install faker
-# COPY services/test/episync_gen/* /app/
-# WORKDIR /app/
+RUN pip install behave
+RUN pip install requests
+RUN pip install behave-html-formatter
+RUN pip install faker
+COPY services/test/episync_gen/* /app/
+WORKDIR /app/
 
-# CMD ["behave"]
+CMD ["behave", "datagen.feature"]
