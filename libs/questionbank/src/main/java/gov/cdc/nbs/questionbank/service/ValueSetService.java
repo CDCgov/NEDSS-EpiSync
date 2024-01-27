@@ -1,11 +1,7 @@
 package gov.cdc.nbs.questionbank.service;
 
-import gov.cdc.nbs.questionbank.entity.srte.CodeValueGeneral;
-import gov.cdc.nbs.questionbank.entity.srte.Codeset;
-import gov.cdc.nbs.questionbank.entity.srte.CodesetGroupMetadata;
-import gov.cdc.nbs.questionbank.repository.srte.CodeValueGeneralRepository;
-import gov.cdc.nbs.questionbank.repository.srte.CodesetGroupMetadataRepository;
-import gov.cdc.nbs.questionbank.repository.srte.CodesetRepository;
+import gov.cdc.nbs.questionbank.entity.srte.*;
+import gov.cdc.nbs.questionbank.repository.srte.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +16,9 @@ public class ValueSetService {
     private final CodesetGroupMetadataRepository groupRepository;
     private final CodesetRepository codesetRepository;
     private final CodeValueGeneralRepository valueRepository;
+    private final JurisdictionCodeRepository jurisdictionCodeRepository;
+    private final ProgramAreaCodeRepository programAreaCodeRepository;
+    private final ConditionCodeRepository conditionCodeRepository;
 
     public List<CodesetGroupMetadata> findValueSetGroupByCodes(Collection<String> codes) {
         return codes.isEmpty() ? Collections.emptyList() : groupRepository.findAllByCodeSetNmIsIn(codes);
@@ -35,6 +34,18 @@ public class ValueSetService {
 
     public List<CodeValueGeneral> findConceptsByCodes(Collection<String> codes) {
         return codes.isEmpty() ? Collections.emptyList() : valueRepository.findAllByCodeSetNmIsIn(codes);
+    }
+
+    public List<JurisdictionCode> getJurisdictionCodes(String name) {
+        return jurisdictionCodeRepository.findAllByCodeSetNm(name);
+    }
+
+    public List<ProgramAreaCode> getProgramAreaCodes(String name) {
+        return programAreaCodeRepository.findAllByCodeSetNm(name);
+    }
+
+    public List<ConditionCode> getConditionCodes(String name) {
+        return conditionCodeRepository.findAllByConditionCodesetNm(name);
     }
 
     public long getMaxGroupId() {
