@@ -178,7 +178,7 @@ def generate_data():
         ('DEM177', 1130116, get_phone_number()),
         ('DEM182', 1130120, get_email()),
         ('DEM155', 1130123, get_ethnic_grp()),
-        ('NBS101', 1130124, get_date_submitted), #raceinfoasofdate
+        ('NBS101', 1130124, get_date_submitted()), #raceinfoasofdate
         ('DEM152', 1130125, get_race_code()),
          ('INV107', 1130129, get_jurisdiction_code()),
          ('NOT103', 1129983, get_date_submitted()),
