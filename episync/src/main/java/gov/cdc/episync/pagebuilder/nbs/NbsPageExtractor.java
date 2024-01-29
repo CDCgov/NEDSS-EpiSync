@@ -7,9 +7,7 @@ import gov.cdc.nbs.questionbank.entity.odse.WaQuestion;
 import gov.cdc.nbs.questionbank.entity.odse.WaRuleMetadata;
 import gov.cdc.nbs.questionbank.entity.odse.WaTemplate;
 import gov.cdc.nbs.questionbank.entity.odse.WaUiMetadata;
-import gov.cdc.nbs.questionbank.entity.srte.CodeValueGeneral;
-import gov.cdc.nbs.questionbank.entity.srte.Codeset;
-import gov.cdc.nbs.questionbank.entity.srte.CodesetGroupMetadata;
+import gov.cdc.nbs.questionbank.entity.srte.*;
 import gov.cdc.nbs.questionbank.service.PageService;
 import gov.cdc.nbs.questionbank.service.ValueSetService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +31,10 @@ public class NbsPageExtractor implements EpisyncExtractor<Long> {
     private final PageService pageService;
     private final ValueSetService valueSetService;
     private final EpisyncWriter<NbsPage> pageWriter;
+
+    private static final String JURISDICTION_CODE = "S_JURDIC_C";
+    private static final String PROGRAM_AREA_CODE = "S_PROGRA_C";
+    private static final String CONDITION_CODE = "PHC_TYPE";
 
     Logger logger = LoggerFactory.getLogger(NbsPageExtractor.class);
 
@@ -165,8 +167,33 @@ public class NbsPageExtractor implements EpisyncExtractor<Long> {
 
             List<NbsCodeset> valueSets = new ArrayList<>();
             for (Codeset cs : codesets) {
-                if (!conceptMap.containsKey(cs.getCodeSetNm())) continue; // skipping non-general concepts for know
-                valueSets.add(getNbsCodeset(cs, conceptMap));
+                final String codeSetName = cs.getCodeSetNm();
+                List<NbsConcept> concepts = new ArrayList<>();
+                if (!conceptMap.containsKey(codeSetName)) {
+                    switch (codeSetName) {
+                        case JURISDICTION_CODE:
+                            List<JurisdictionCode> jdCodes = valueSetService.getJurisdictionCodes(codeSetName);
+                            jdCodes.forEach(val -> concepts.add(getNbsConcept(val)));
+                            break;
+                        case PROGRAM_AREA_CODE:
+                            List<ProgramAreaCode> paCodes = valueSetService.getProgramAreaCodes(codeSetName);
+                            paCodes.forEach(val -> concepts.add(getNbsConcept(val)));
+                            break;
+                        case CONDITION_CODE:
+                            List<ConditionCode> codes = valueSetService.getConditionCodes(codeSetName);
+                            codes.forEach(val -> concepts.add(getNbsConcept(val)));
+                            break;
+                        default:
+                            continue;
+                    }
+                } else {
+                    conceptMap.get(codeSetName).forEach(val -> concepts.add(getNbsConcept(val)));
+                }
+                NbsCodeset ncs = getNbsCodeset(cs);
+                ncs.setConceptsCount(concepts.size());
+                ncs.setConcepts(concepts);
+
+                valueSets.add(ncs);
             }
             page.setValueSets(valueSets);
             logger.info("Successfully extracted {} value sets", valueSets.size());
@@ -263,7 +290,7 @@ public class NbsPageExtractor implements EpisyncExtractor<Long> {
         return elem;
     }
 
-    private NbsCodeset getNbsCodeset(Codeset cs, Map<String, List<CodeValueGeneral>> conceptMap) {
+    private NbsCodeset getNbsCodeset(Codeset cs) {
         NbsCodeset ncs = new NbsCodeset();
 
         ncs.setName(cs.getCodeSetNm());
@@ -279,10 +306,6 @@ public class NbsPageExtractor implements EpisyncExtractor<Long> {
         Optional.ofNullable(cs.getEffectiveFromTime()).ifPresent(time -> ncs.setEffectiveFrom(LocalDateTime.ofInstant(time, ZoneOffset.UTC).toString()));
         Optional.ofNullable(cs.getValueSetStatusTime()).ifPresent(time -> ncs.setStatusDate(LocalDateTime.ofInstant(time, ZoneOffset.UTC).toString()));
 
-        List<NbsConcept> concepts = new ArrayList<>();
-        conceptMap.get(cs.getCodeSetNm()).forEach(val -> concepts.add(getNbsConcept(val)));
-        ncs.setConceptsCount(concepts.size());
-        ncs.setConcepts(concepts);
         return ncs;
     }
 
@@ -304,6 +327,50 @@ public class NbsPageExtractor implements EpisyncExtractor<Long> {
         Optional.ofNullable(val.getStatusTime()).ifPresent(time -> concept.setStatusDate(LocalDateTime.ofInstant(time, ZoneOffset.UTC).toString()));
         return concept;
     }
+
+    private NbsConcept getNbsConcept(JurisdictionCode val) {
+        NbsConcept concept = new NbsConcept();
+
+        concept.setCode(val.getCode());
+        concept.setDescription(val.getCodeDescTxt());
+        concept.setShortDesc(val.getCodeShortDescTxt());
+        concept.setCodeSystem(val.getCodeSystemCd());
+        concept.setCodeSystemDesc(val.getCodeSystemDescTxt());
+        concept.setModifiable("Y".equals(val.getModifiableInd()));
+        concept.setConceptType(val.getTypeCd());
+        concept.setConceptCode(val.getCode());
+        Optional.ofNullable(val.getEffectiveFromTime()).ifPresent(time -> concept.setEffectiveFrom(LocalDateTime.ofInstant(time, ZoneOffset.UTC).toString()));
+        Optional.ofNullable(val.getStatusTime()).ifPresent(time -> concept.setStatusDate(LocalDateTime.ofInstant(time, ZoneOffset.UTC).toString()));
+        return concept;
+    }
+
+    private NbsConcept getNbsConcept(ProgramAreaCode val) {
+        NbsConcept concept = new NbsConcept();
+
+        concept.setCode(val.getProgAreaCd());
+        concept.setDescription(val.getProgAreaDescTxt());
+        concept.setShortDesc(val.getProgAreaDescTxt());
+        concept.setConceptCode(val.getProgAreaCd());
+        Optional.ofNullable(val.getStatusTime()).ifPresent(time -> concept.setStatusDate(LocalDateTime.ofInstant(time, ZoneOffset.UTC).toString()));
+        return concept;
+    }
+
+    private NbsConcept getNbsConcept(ConditionCode val) {
+        NbsConcept concept = new NbsConcept();
+
+        concept.setCode(val.getConditionCd());
+        concept.setDescription(val.getConditionDescTxt());
+        concept.setShortDesc(val.getConditionShortNm());
+        concept.setCodeSystem(val.getCodeSystemCd());
+        concept.setCodeSystemDesc(val.getCodeSystemDescTxt());
+        concept.setModifiable("Y".equals(val.getModifiableInd()));
+        concept.setConceptCode(val.getConditionCd());
+        concept.setConceptName(val.getConditionShortNm());
+        Optional.ofNullable(val.getEffectiveFromTime()).ifPresent(time -> concept.setEffectiveFrom(LocalDateTime.ofInstant(time, ZoneOffset.UTC).toString()));
+        Optional.ofNullable(val.getStatusTime()).ifPresent(time -> concept.setStatusDate(LocalDateTime.ofInstant(time, ZoneOffset.UTC).toString()));
+        return concept;
+    }
+
 
     private NbsRule getNbsRule(WaRuleMetadata rdata) {
         NbsRule rule = new NbsRule();
